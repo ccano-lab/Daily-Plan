@@ -1505,10 +1505,13 @@
             <h1 class="login-title">My Plan</h1>
             <p class="login-subtitle">Sign in to access your daily plan</p>
             <select id="userSelect" class="login-select">
-                <option value="">Loading team...</option>
+                <option value="">Select your name...</option>
             </select>
             <button id="loginBtn" class="login-btn" disabled>Sign In</button>
             <div id="loginError" class="login-error"></div>
+            <button onclick="openSettings()" style="margin-top:1rem; width:100%; padding:0.75rem; background:transparent; border:2px solid var(--smoke); border-radius:12px; color:var(--silver); font-family:'DM Sans',sans-serif; font-size:0.9rem; cursor:pointer;">
+                ⚙️ Configure Connection Settings
+            </button>
         </div>
     </div>
     
@@ -2076,26 +2079,30 @@
             
             // Set training message
             setTrainingMessage();
+
+            // Populate login immediately with fallback names — no waiting for sheet
+            populateUserSelect();
+
+            // Setup login handlers
+            document.getElementById('userSelect').addEventListener('change', function() {
+                document.getElementById('loginBtn').disabled = !this.value;
+            });
+            document.getElementById('loginBtn').addEventListener('click', login);
             
-            // Load data from Google Sheets
+            // Load data from Google Sheets (will update dropdown if more employees found)
             await loadDataFromSheet();
-            
-            // Check if user was logged in
+
+            // Check if user was previously logged in — auto sign them back in
             const savedUser = localStorage.getItem('wtc_current_user');
-            if (savedUser && data.employees.length > 0) {
-                const user = data.employees.find(m => m.id === savedUser || m.Name === savedUser);
+            if (savedUser) {
+                const source = (data.employees && data.employees.length > 0) ? data.employees : FALLBACK_EMPLOYEES;
+                const user = source.find(m => (m.id === savedUser || m.Name === savedUser));
                 if (user) {
                     currentUser = normalizeEmployee(user);
                     showMainApp();
                     return;
                 }
             }
-            
-            // Setup login handlers
-            document.getElementById('userSelect').addEventListener('change', function() {
-                document.getElementById('loginBtn').disabled = !this.value;
-            });
-            document.getElementById('loginBtn').addEventListener('click', login);
         }
         
         async function loadDataFromSheet() {
@@ -2145,6 +2152,9 @@
                 const loginError = document.getElementById('loginError');
                 loginError.textContent = `Unable to connect: ${error.message}. Check your Apps Script URL.`;
                 loginError.classList.add('visible');
+
+                // Always show team members so login still works
+                populateUserSelect();
             }
         }
         
@@ -2159,11 +2169,23 @@
             textEl.textContent = text;
         }
         
+        // Fallback team members — always available even without a connection
+        const FALLBACK_EMPLOYEES = [
+            { Name: 'MacKenzie Ort',  Role: 'cerologist' },
+            { Name: 'Mary Zangana',   Role: 'cerologist' },
+            { Name: 'Chris Cano',     Role: 'manager'    }
+        ];
+
         function populateUserSelect() {
             const select = document.getElementById('userSelect');
             select.innerHTML = '<option value="">Select your name...</option>';
-            
-            data.employees.forEach(emp => {
+
+            // Use sheet employees if loaded, otherwise fall back to hardcoded list
+            const source = (data.employees && data.employees.length > 0)
+                ? data.employees
+                : FALLBACK_EMPLOYEES;
+
+            source.forEach(emp => {
                 const name = emp.Name || `${emp.FirstName || ''} ${emp.LastName || ''}`.trim();
                 if (name) {
                     const option = document.createElement('option');
@@ -2172,7 +2194,7 @@
                     select.appendChild(option);
                 }
             });
-            
+
             document.getElementById('loginBtn').disabled = true;
         }
         
