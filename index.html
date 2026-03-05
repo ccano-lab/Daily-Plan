@@ -1141,13 +1141,12 @@
 
         // Check health & load employees
         await checkHealth();
-
-        if (serverOnline) {
-            await loadEmployeesFromServer();
-        } else {
-            // Try from localStorage cache
-            loadEmployeesFromCache();
-        }
+    // Always attempt server load — fall back to cache only if it throws
+    try {
+        await loadEmployeesFromServer();
+    } catch(e) {
+        loadEmployeesFromCache();
+    }
 
         document.getElementById('loginLoading').classList.remove('visible');
 
@@ -1366,8 +1365,11 @@
     // HEALTH CHECK
     // ============================================================
     async function checkHealth() {
-        try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { signal: AbortSignal.timeout(5000) });
+    try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5000);
+        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { signal: controller.signal });
+        clearTimeout(timer);
             const json = await resp.json();
             if (json.status === 'ok') {
                 setServerOnline(true);
