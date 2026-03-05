@@ -999,8 +999,9 @@
     // CONFIGURATION
     // ============================================================
     const CONFIG = {
-        APPS_SCRIPT_URL: https://script.google.com/macros/s/AKfycbxB6VSwtkXlNWsZMzFaTx9KPkkvUPNrtlA9khZNfkvvZux6O2mR6jsTYRM0W2eTHgU7/exec,
+        APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxB6VSwtkXlNWsZMzFaTx9KPkkvUPNrtlA9khZNfkvvZux6O2mR6jsTYRM0W2eTHgU7/exec',
         API_KEY: 'wtc2024shawneehills',
+        // Slack webhooks live in Apps Script only — not stored in client HTML
         STUDIO_NAME: 'Waxing the City - Shawnee Hills (W661)',
         TRAINING_START_DATE: '2025-01-01',
         SAVE_DEBOUNCE_MS: 2000  // 2 seconds after last change before syncing to sheet
@@ -1136,71 +1137,94 @@
     // LOGIN FLOW
     // ============================================================
     async function initLogin() {
-        // Show loading
-        document.getElementById('loginLoading').classList.add('visible');
+        const loadingEl = document.getElementById('loginLoading');
+        const errorEl   = document.getElementById('loginError');
+        loadingEl.classList.add('visible');
+        errorEl.classList.remove('visible');
 
-        // Always try server first — health check only updates the UI indicator
-        await checkHealth();
         try {
-            await loadEmployeesFromServer();
-        } catch(e) {
-            console.warn('Server load failed, using cache:', e);
+            const url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`;
+            const resp = await fetch(url, { method: 'GET', redirect: 'follow' });
+            const text = await resp.text();
+
+            let json;
+            try {
+                json = JSON.parse(text);
+            } catch(parseErr) {
+                errorEl.textContent = 'Server returned unexpected data. Check your deployment URL.';
+                errorEl.classList.add('visible');
+                loadingEl.classList.remove('visible');
+                loadEmployeesFromCache();
+                return;
+            }
+
+            if (json.employees && json.employees.length > 0) {
+                teamMembers = json.employees.map(e => ({
+                    id: e.id || (e.Name || '').toLowerCase().replace(/\s+/g, '_'),
+                    name: e.Name || e.name || '',
+                    initials: getInitials(e.Name || e.name || ''),
+                    role: (e.Role || e.role || 'cerologist').toLowerCase(),
+                    pin: String(e.PIN || e.pin || ''),
+                    serviceCommission: parseFloat(e.ServiceCommission || 0.05),
+                    productCommission: parseFloat(e.ProductCommission || 0.10)
+                }));
+                localStorage.setItem('wtc_employees_cache', JSON.stringify(teamMembers));
+                if (json.appointments) { data.appointments = json.appointments; localStorage.setItem('wtc_appts_cache', JSON.stringify(json.appointments)); }
+                if (json.salesAccrual) data.salesAccrual = json.salesAccrual;
+                if (json.retail)       data.retail = json.retail;
+                if (json.addons)       data.addons = json.addons;
+                if (json.memberships)  data.memberships = json.memberships;
+                if (json.checklists)   data.checklists = json.checklists;
+                setServerOnline(true);
+            } else {
+                errorEl.textContent = 'No employees returned from server. Check your Employees sheet.';
+                errorEl.classList.add('visible');
+                loadEmployeesFromCache();
+            }
+
+        } catch(fetchErr) {
+            errorEl.textContent = 'Could not reach server: ' + fetchErr.message;
+            errorEl.classList.add('visible');
             loadEmployeesFromCache();
         }
 
-        document.getElementById('loginLoading').classList.remove('visible');
+        loadingEl.classList.remove('visible');
+        populateUserSelect();
 
-        // Auto-login if saved session
+        // Auto-login if valid session token exists
         const savedId = localStorage.getItem('wtc_current_user');
         if (savedId && teamMembers.find(m => m.id === savedId)) {
-            const user = teamMembers.find(m => m.id === savedId);
-            // Skip PIN for remembered session (session token check)
-            const sessionToken = localStorage.getItem('wtc_session_token');
             const sessionExpiry = localStorage.getItem('wtc_session_expiry');
-            if (sessionToken && sessionExpiry && Date.now() < parseInt(sessionExpiry)) {
-                currentUser = user;
+            if (sessionExpiry && Date.now() < parseInt(sessionExpiry)) {
+                currentUser = teamMembers.find(m => m.id === savedId);
                 completeLogin();
                 return;
-            }
-        }
-
-        // Check if already have a remembered user to pre-select
-        if (savedId) {
-            const sel = document.getElementById('userSelect');
-            sel.value = savedId;
-            if (sel.value) {
-                document.getElementById('nextBtn').disabled = false;
             }
         }
     }
 
     async function loadEmployeesFromServer() {
-        try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`);
-            const json = await resp.json();
-            if (json.employees && json.employees.length > 0) {
-                teamMembers = json.employees.map(e => ({
-                    id: e.id || e.Name?.toLowerCase().replace(/\s+/g, '_'),
-                    name: e.Name || e.name,
-                    initials: getInitials(e.Name || e.name),
-                    role: (e.Role || e.role || 'cerologist').toLowerCase(),
-                    pin: String(e.PIN || e.pin || ''),
-                    serviceCommission: parseFloat(e.ServiceCommission || e.serviceCommission || 0.05),
-                    productCommission: parseFloat(e.ProductCommission || e.productCommission || 0.10)
-                }));
-                localStorage.setItem('wtc_employees_cache', JSON.stringify(teamMembers));
-                // Also cache full data
-                if (json.appointments) { data.appointments = json.appointments; localStorage.setItem('wtc_appts_cache', JSON.stringify(json.appointments)); }
-                if (json.salesAccrual) { data.salesAccrual = json.salesAccrual; }
-                if (json.retail) { data.retail = json.retail; }
-                if (json.addons) { data.addons = json.addons; }
-                if (json.memberships) { data.memberships = json.memberships; }
-                if (json.checklists) { data.checklists = json.checklists; }
-                usingCsvFallback = false;
-            }
-        } catch (e) {
-            console.warn('Failed to load employees from server:', e);
-            loadEmployeesFromCache();
+        // Kept for refreshData() compatibility — initLogin now handles initial load directly
+        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow' });
+        const json = await resp.json();
+        if (json.employees && json.employees.length > 0) {
+            teamMembers = json.employees.map(e => ({
+                id: e.id || (e.Name || '').toLowerCase().replace(/\s+/g, '_'),
+                name: e.Name || e.name || '',
+                initials: getInitials(e.Name || e.name || ''),
+                role: (e.Role || e.role || 'cerologist').toLowerCase(),
+                pin: String(e.PIN || e.pin || ''),
+                serviceCommission: parseFloat(e.ServiceCommission || 0.05),
+                productCommission: parseFloat(e.ProductCommission || 0.10)
+            }));
+            localStorage.setItem('wtc_employees_cache', JSON.stringify(teamMembers));
+            if (json.appointments) { data.appointments = json.appointments; localStorage.setItem('wtc_appts_cache', JSON.stringify(json.appointments)); }
+            if (json.salesAccrual) data.salesAccrual = json.salesAccrual;
+            if (json.retail)       data.retail = json.retail;
+            if (json.addons)       data.addons = json.addons;
+            if (json.memberships)  data.memberships = json.memberships;
+            if (json.checklists)   data.checklists = json.checklists;
+            setServerOnline(true);
         }
         populateUserSelect();
     }
