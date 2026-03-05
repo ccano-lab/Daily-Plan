@@ -1139,14 +1139,14 @@
         // Show loading
         document.getElementById('loginLoading').classList.add('visible');
 
-        // Check health & load employees
+        // Always try server first — health check only updates the UI indicator
         await checkHealth();
-    // Always attempt server load — fall back to cache only if it throws
-    try {
-        await loadEmployeesFromServer();
-    } catch(e) {
-        loadEmployeesFromCache();
-    }
+        try {
+            await loadEmployeesFromServer();
+        } catch(e) {
+            console.warn('Server load failed, using cache:', e);
+            loadEmployeesFromCache();
+        }
 
         document.getElementById('loginLoading').classList.remove('visible');
 
@@ -1365,11 +1365,11 @@
     // HEALTH CHECK
     // ============================================================
     async function checkHealth() {
-    try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { signal: controller.signal });
-        clearTimeout(timer);
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 6000);
+            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { signal: controller.signal });
+            clearTimeout(timer);
             const json = await resp.json();
             if (json.status === 'ok') {
                 setServerOnline(true);
