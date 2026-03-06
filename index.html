@@ -1147,7 +1147,7 @@
 
         try {
             const url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`;
-            const resp = await fetch(url, { method: 'GET', redirect: 'follow' });
+            const resp = await fetch(url, { method: 'GET', redirect: 'follow', credentials: 'omit', cache: 'no-store' });
             const text = await resp.text();
 
             let json;
@@ -1208,7 +1208,7 @@
 
     async function loadEmployeesFromServer() {
         // Kept for refreshData() compatibility — initLogin now handles initial load directly
-        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow' });
+        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
         const json = await resp.json();
         if (json.employees && json.employees.length > 0) {
             teamMembers = json.employees.map(e => ({
@@ -1400,7 +1400,7 @@
         try {
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 6000);
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { signal: controller.signal });
+            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { redirect: 'follow', credentials: 'omit', cache: 'no-store', signal: controller.signal });
             clearTimeout(timer);
             const json = await resp.json();
             if (json.status === 'ok') {
@@ -1431,7 +1431,7 @@
         const online = await checkHealth();
         if (!online) { updateSyncLabel('error'); showToast('Server unavailable — using cached data', 'error'); return; }
         try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`);
+            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
             const json = await resp.json();
             if (json.appointments) { data.appointments = json.appointments; localStorage.setItem('wtc_appts_cache', JSON.stringify(json.appointments)); }
             if (json.salesAccrual) data.salesAccrual = json.salesAccrual;
@@ -1747,7 +1747,7 @@
 
     async function loadShiftStateFromServer() {
         try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getShiftState&date=${todayKey()}&cerologistId=${currentUser.id}`);
+            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getShiftState&date=${todayKey()}&cerologistId=${currentUser.id}`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
             const json = await resp.json();
             if (json.success && json.states) {
                 appointmentStates = json.states;
@@ -2090,11 +2090,17 @@
     // APPS SCRIPT API
     // ============================================================
     async function appsScriptPost(payload) {
-        // API key goes in both URL (for CORS) and body for security
+        // IMPORTANT: Content-Type must be 'text/plain' — NOT 'application/json'.
+        // Using application/json triggers a CORS preflight (OPTIONS) request that
+        // Apps Script cannot respond to, which causes iOS Safari/WebKit to block
+        // the call entirely. text/plain is a "simple request" — no preflight needed.
+        // Apps Script reads postData.contents as a string regardless of content-type.
         const url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}`;
         const resp = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            redirect: 'follow',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ ...payload, key: CONFIG.API_KEY })
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
