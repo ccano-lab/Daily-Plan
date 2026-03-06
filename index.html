@@ -462,24 +462,29 @@
         .rebook-date { font-weight: 600; color: var(--blue); }
 
         /* ==================== RGA SECTION ==================== */
-        .rga-card {
-            background: var(--slate);
-            border-radius: 16px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-        .rga-title { font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .rga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; }
-        .rga-item {
-            padding: 0.6rem 0.75rem;
-            background: var(--smoke); border-radius: 8px;
-            font-size: 0.85rem; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;
-        }
-        .rga-item:hover { background: var(--charcoal); }
-        .rga-item.selected { background: rgba(255, 107, 53, 0.2); border: 1px solid var(--orange-primary); }
-        .rga-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--silver); flex-shrink: 0; transition: background 0.2s; }
-        .rga-item.selected .rga-dot { background: var(--orange-primary); }
+        .rga-section-wrap { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .rga-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 1rem; }
+        .rga-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--smoke); }
+        .rga-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .rga-row-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
+        .rga-number { width: 26px; height: 26px; border-radius: 50%; background: var(--orange-primary); color: var(--white); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .rga-label-text { font-weight: 600; font-size: 0.9rem; }
+        .rga-select { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; transition: border-color 0.2s; }
+        .rga-select:focus { outline: none; border-color: var(--orange-primary); }
+        .rga-select.selected { border-color: var(--success); background-color: rgba(52,211,153,0.1); }
+        .rga-select option { background: var(--slate); }
+        .rga-notes { width: 100%; padding: 0.6rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; resize: vertical; min-height: 50px; transition: border-color 0.2s; }
+        .rga-notes:focus { outline: none; border-color: var(--orange-primary); }
+        .rga-notes::placeholder { color: var(--silver); }
+        /* Shift Notes */
+        .shift-notes-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        /* Dynamic multi-select */
+        .multi-select-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .multi-select-row .product-select { flex: 1; margin-bottom: 0; }
+        .btn-remove-item { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--smoke); color: var(--silver); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+        .btn-remove-item:hover { background: var(--danger); color: var(--white); }
+        .btn-add-item { padding: 0.5rem 1rem; background: transparent; border: 1px dashed var(--silver); border-radius: 8px; color: var(--silver); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; width: 100%; text-align: left; transition: all 0.2s; margin-top: 0.25rem; }
+        .btn-add-item:hover { border-color: var(--orange-primary); color: var(--orange-primary); }
 
         /* ==================== CHECKLISTS TAB ==================== */
         .checklist-selector {
@@ -772,12 +777,7 @@
                 <button class="tab-btn" data-tab="checklistsTab" onclick="switchTab('checklistsTab')">
                     ✅ Checklists
                 </button>
-                <button class="tab-btn" data-tab="studioPlan" onclick="switchTab('studioPlan')">
-                    🏢 Studio Plan
-                </button>
-                <button class="tab-btn" data-tab="managerReport" onclick="switchTab('managerReport')">
-                    📊 Reports
-                </button>
+
             </div>
         </header>
 
@@ -864,12 +864,20 @@
                     </div>
                 </div>
 
-                <!-- RGA section -->
-                <div class="rga-card">
-                    <div class="rga-title">🎯 Today's Revenue Activities</div>
-                    <div class="rga-grid" id="rgaGrid">
-                        <!-- populated by JS -->
+                <!-- RGA section — 3 numbered dropdown + notes rows -->
+                <div class="rga-section-wrap" id="rgaSectionWrap">
+                    <div class="rga-section-title">🎯 Today's Revenue Generating Activities</div>
+                    <div class="rga-row-list" id="rgaRowList">
+                        <!-- populated by renderRGA() -->
                     </div>
+                </div>
+
+                <!-- Shift Notes -->
+                <div class="shift-notes-card">
+                    <div class="action-title">📝 Shift Notes</div>
+                    <textarea class="notes-input" id="shiftNotesInput"
+                        placeholder="General notes for today's shift..."
+                        oninput="updateShiftNotes(this.value)"></textarea>
                 </div>
 
                 <div class="appointments-list" id="appointmentsList">
@@ -896,55 +904,7 @@
                 </div>
             </div>
 
-            <!-- ===== STUDIO PLAN TAB ===== -->
-            <div id="studioPlanTab" class="tab-content">
-                <div class="training-banner">
-                    <div class="training-day" id="spTrainingDay"></div>
-                    <div class="training-title" id="spTrainingTitle"></div>
-                    <div class="training-body" id="spTrainingBody"></div>
-                </div>
-                <div id="studioPlanSections">
-                    <div style="text-align:center;padding:3rem;color:var(--silver);">
-                        <p style="font-size:1.1rem;">Loading studio plan...</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- ===== REPORTS TAB ===== -->
-            <div id="managerReportTab" class="tab-content">
-                <div class="report-card">
-                    <div class="report-title"><span>💰</span> Today's Studio Overview</div>
-                    <div class="stats-grid" id="todayStats">
-                        <div class="stat-box">
-                            <div class="stat-value" id="rptAppts">—</div>
-                            <div class="stat-label">Appointments</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value success" id="rptCompleted">—</div>
-                            <div class="stat-label">Completed</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="rptRebooks">—</div>
-                            <div class="stat-label">Rebooks</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value" id="rptCO">—</div>
-                            <div class="stat-label">CO Signups</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="report-card">
-                    <div class="report-title"><span>👥</span> Team Activity Today</div>
-                    <div id="teamActivity" style="color:var(--silver);font-size:0.9rem;">
-                        Loading team data...
-                    </div>
-                </div>
-
-                <button class="btn btn-primary btn-block" onclick="sendManagerReport()">
-                    📧 Send Report to Manager
-                </button>
-            </div>
         </main>
 
         <!-- Footer -->
@@ -1026,12 +986,18 @@
     let cashDrawerValues = {};
     let followUpNotes = {};
 
-    const RGA_OPTIONS = [
-        'Pre-booked next appt', 'Offered Club Orange', 'Sold retail product',
-        'Added enhancement', 'Sent follow-up text', 'Requested referral',
-        'Updated client notes', 'Introduced new service'
+    // RGA fallback options (used if sheet tab is unavailable)
+    const RGA_OPTIONS_FALLBACK = [
+        'High Rebook %', 'Club Orange Sign Up', 'Text Messages',
+        'Business Drop Ins', 'Attending Event', 'Social Post',
+        'Story Post', 'Thank You Card', 'Client Referral',
+        'Business Referral', 'Got a Review', 'Other'
     ];
-    let selectedRGAs = [];
+    let rgaOptions = [...RGA_OPTIONS_FALLBACK]; // populated from sheet when available
+
+    // rgaState: { 1: {activity:'', notes:''}, 2: {activity:'', notes:''}, 3: {activity:'', notes:''} }
+    let rgaState = { 1: { activity: '', notes: '' }, 2: { activity: '', notes: '' }, 3: { activity: '', notes: '' } };
+    let shiftNotes = '';
 
     // ============================================================
     // TRAINING MESSAGES
@@ -1110,27 +1076,59 @@
         const idx = (((Math.floor((today - start) / 86400000)) % 30) + 30) % 30;
         const t = TRAINING_MESSAGES[idx];
         const dayLabel = `Day ${idx + 1} of 30`;
-        ['trainingDay','clTrainingDay','spTrainingDay'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = dayLabel; });
-        ['trainingTitle','clTrainingTitle','spTrainingTitle'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = t.title; });
-        ['trainingBody','clTrainingBody','spTrainingBody'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = t.body; });
+        ['trainingDay','clTrainingDay'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = dayLabel; });
+        ['trainingTitle','clTrainingTitle'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = t.title; });
+        ['trainingBody','clTrainingBody'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = t.body; });
     }
 
     function renderRGA() {
-        const grid = document.getElementById('rgaGrid');
-        if (!grid) return;
-        grid.innerHTML = RGA_OPTIONS.map((r, i) => `
-            <div class="rga-item ${selectedRGAs.includes(i) ? 'selected' : ''}" onclick="toggleRGA(${i})">
-                <span class="rga-dot"></span>
-                <span>${r}</span>
-            </div>
-        `).join('');
+        const container = document.getElementById('rgaRowList');
+        if (!container) return;
+        const opts = rgaOptions.map(o => `<option value="${o}">${o}</option>`).join('');
+        container.innerHTML = [1, 2, 3].map(n => {
+            const st = rgaState[n] || { activity: '', notes: '' };
+            return `
+            <div class="rga-row">
+                <div class="rga-row-header">
+                    <div class="rga-number">${n}</div>
+                    <span class="rga-label-text">Revenue Generating Activity ${n}</span>
+                </div>
+                <select class="rga-select ${st.activity ? 'selected' : ''}"
+                        id="rgaSelect${n}"
+                        onchange="updateRGAActivity(${n}, this.value)">
+                    <option value="">Select activity...</option>
+                    ${opts}
+                </select>
+                <textarea class="rga-notes"
+                          id="rgaNotes${n}"
+                          placeholder="Notes..."
+                          oninput="updateRGANotes(${n}, this.value)">${st.notes || ''}</textarea>
+            </div>`;
+        }).join('');
+        // Re-apply saved selections
+        [1, 2, 3].forEach(n => {
+            const sel = document.getElementById(`rgaSelect${n}`);
+            if (sel && rgaState[n]?.activity) sel.value = rgaState[n].activity;
+        });
     }
 
-    function toggleRGA(idx) {
-        const pos = selectedRGAs.indexOf(idx);
-        if (pos === -1) selectedRGAs.push(idx); else selectedRGAs.splice(pos, 1);
-        renderRGA();
-        scheduleStateSave();
+    function updateRGAActivity(num, value) {
+        if (!rgaState[num]) rgaState[num] = { activity: '', notes: '' };
+        rgaState[num].activity = value;
+        const sel = document.getElementById(`rgaSelect${num}`);
+        if (sel) sel.classList.toggle('selected', !!value);
+        saveLocally(); scheduleStateSave();
+    }
+
+    function updateRGANotes(num, value) {
+        if (!rgaState[num]) rgaState[num] = { activity: '', notes: '' };
+        rgaState[num].notes = value;
+        saveLocally(); scheduleStateSave();
+    }
+
+    function updateShiftNotes(value) {
+        shiftNotes = value;
+        saveLocally(); scheduleStateSave();
     }
 
     // ============================================================
@@ -1139,6 +1137,11 @@
     async function initLogin() {
         const loadingEl = document.getElementById('loginLoading');
         const errorEl   = document.getElementById('loginError');
+
+        // ── Step 1: Show cached names IMMEDIATELY so the dropdown is never empty ──
+        loadEmployeesFromCache();   // fills teamMembers from localStorage or hardcoded fallback
+        populateUserSelect();       // dropdown is now populated before any network call
+
         loadingEl.classList.add('visible');
         errorEl.classList.remove('visible');
 
@@ -1234,11 +1237,13 @@
         if (cached) {
             teamMembers = JSON.parse(cached);
         } else {
-            // Absolute fallback
+            // Absolute fallback — keep in sync with Employees sheet
             teamMembers = [
-                { id: 'mackenzie_ort', name: 'MacKenzie Ort', initials: 'MO', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
-                { id: 'mary_zangana', name: 'Mary Zangana', initials: 'MZ', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
-                { id: 'chris_cano', name: 'Chris Cano', initials: 'CC', role: 'manager', pin: '', serviceCommission: 0.05, productCommission: 0.10 }
+                { id: 'mackenzie_ort',  name: 'MacKenzie Ort',  initials: 'MO', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
+                { id: 'mary_zangana',   name: 'Mary Zangana',   initials: 'MZ', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
+                { id: 'moriah_jones',   name: 'Moriah Jones',   initials: 'MJ', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
+                { id: 'cali_mclamara',  name: 'Cali Mclamara',  initials: 'CM', role: 'cerologist', pin: '', serviceCommission: 0.05, productCommission: 0.10 },
+                { id: 'chris_cano',     name: 'Chris Cano',     initials: 'CC', role: 'manager',    pin: '', serviceCommission: 0.05, productCommission: 0.10 }
             ];
         }
         populateUserSelect();
@@ -1358,11 +1363,14 @@
         // Render everything
         if (data.appointments) {
             renderAppointments();
-            renderStudioPlan();
-            updateReports();
+            loadRGAOptionsFromData();
         }
         renderChecklists();
         renderRGA();
+
+        // Restore shift notes
+        const snEl = document.getElementById('shiftNotesInput');
+        if (snEl && shiftNotes) snEl.value = shiftNotes;
 
         updateSyncLabel('saved');
     }
@@ -1432,8 +1440,8 @@
             if (json.memberships) data.memberships = json.memberships;
             if (json.checklists) data.checklists = json.checklists;
             renderAppointments();
-            renderStudioPlan();
-            updateReports();
+
+
             renderChecklists();
             updateSyncLabel('saved');
             showToast('Data refreshed from Google Sheets', 'success');
@@ -1464,7 +1472,7 @@
                 btn.classList.add('loaded');
                 usingCsvFallback = true;
                 document.getElementById('dataSourceInfo').textContent = '📁 Manual CSV upload';
-                if (data.appointments) { renderAppointments(); renderStudioPlan(); updateReports(); }
+                if (data.appointments) { renderAppointments(); loadRGAOptionsFromData(); }
                 showToast('CSV loaded', 'success');
             } catch(err) { btn.textContent = 'Error - retry'; console.error(err); }
         };
@@ -1504,7 +1512,7 @@
         const el = document.getElementById(contentId);
         if (el) el.classList.add('active');
 
-        document.getElementById('footerActions').style.display = tab === 'managerReport' ? 'none' : 'flex';
+        document.getElementById('footerActions').style.display = false ? 'none' : 'flex';
     }
 
     // ============================================================
@@ -1564,11 +1572,14 @@
         container.innerHTML = appts.map(appt => {
             const st = appointmentStates[appt.guestCode] || {};
             const clientType = getClientType(appt);
-            const serviceType = inferServiceType(appt.services[0]?.name);
-            const addons = getSuggestedAddons(serviceType);
-            const products = getSuggestedProducts(serviceType);
+            const addons  = getAllAddons();
+            const products = getAllProducts();
             const history = getClientHistory(appt.guestCode);
             const rebookDate = getRebookDate(appt.startTime);
+            const addonsArr   = st.addonsSelected   || [''];
+            const productsArr = st.productsSelected || [''];
+            const addonOpts   = addons.map(a  => `<option value="${a.name}">${a.name} (${fmt$(a.cost)})</option>`).join('');
+            const productOpts = products.map(p => `<option value="${p.name}">${p.name} (${fmt$(p.cost)})</option>`).join('');
 
             return `
             <div class="appointment-card ${st.completed ? 'completed' : ''}" data-guest="${appt.guestCode}">
@@ -1590,21 +1601,35 @@
                         </div>`).join('')}
 
                     <div class="action-section">
-                        <div class="action-title">Add-On Opportunity</div>
-                        <select class="product-select ${st.addonSelected ? 'selected' : ''}"
-                                onchange="updateField('${appt.guestCode}','addonSelected',this.value)">
-                            <option value="">Select add-on...</option>
-                            ${addons.map(a => `<option value="${a.name}" ${st.addonSelected===a.name?'selected':''}>${a.name} (${fmt$(a.cost)})</option>`).join('')}
-                        </select>
+                        <div class="action-title">Add-On Opportunity <span style="color:var(--silver);font-size:0.75rem;">${addonsArr.filter(v=>v).length > 0 ? `(${addonsArr.filter(v=>v).length} selected)` : ''}</span></div>
+                        <div id="addons_${appt.guestCode}">
+                            ${addonsArr.map((val, idx) => `
+                            <div class="multi-select-row">
+                                <select class="product-select ${val ? 'selected' : ''}"
+                                        onchange="updateMultiItem('${appt.guestCode}','addonsSelected',${idx},this.value)">
+                                    <option value="">Select add-on...</option>
+                                    ${addonOpts}
+                                </select>
+                                ${addonsArr.length > 1 ? `<button class="btn-remove-item" onclick="removeMultiItem('${appt.guestCode}','addonsSelected',${idx})">×</button>` : ''}
+                            </div>`).join('')}
+                        </div>
+                        <button class="btn-add-item" onclick="addMultiItem('${appt.guestCode}','addonsSelected')">+ Add another add-on</button>
                     </div>
 
                     <div class="action-section">
-                        <div class="action-title">Product Suggestion</div>
-                        <select class="product-select ${st.productSelected ? 'selected' : ''}"
-                                onchange="updateField('${appt.guestCode}','productSelected',this.value)">
-                            <option value="">Select product...</option>
-                            ${products.map(p => `<option value="${p.name}" ${st.productSelected===p.name?'selected':''}>${p.name} (${fmt$(p.cost)})</option>`).join('')}
-                        </select>
+                        <div class="action-title">Product Suggestion <span style="color:var(--silver);font-size:0.75rem;">${productsArr.filter(v=>v).length > 0 ? `(${productsArr.filter(v=>v).length} selected)` : ''}</span></div>
+                        <div id="products_${appt.guestCode}">
+                            ${productsArr.map((val, idx) => `
+                            <div class="multi-select-row">
+                                <select class="product-select ${val ? 'selected' : ''}"
+                                        onchange="updateMultiItem('${appt.guestCode}','productsSelected',${idx},this.value)">
+                                    <option value="">Select product...</option>
+                                    ${productOpts}
+                                </select>
+                                ${productsArr.length > 1 ? `<button class="btn-remove-item" onclick="removeMultiItem('${appt.guestCode}','productsSelected',${idx})">×</button>` : ''}
+                            </div>`).join('')}
+                        </div>
+                        <button class="btn-add-item" onclick="addMultiItem('${appt.guestCode}','productsSelected')">+ Add another product</button>
                     </div>
 
                     <div class="checkbox-actions">
@@ -1658,6 +1683,30 @@
         saveLocally(); scheduleStateSave();
     }
 
+    function updateMultiItem(gc, field, idx, value) {
+        if (!appointmentStates[gc]) appointmentStates[gc] = {};
+        if (!appointmentStates[gc][field]) appointmentStates[gc][field] = [''];
+        appointmentStates[gc][field][idx] = value;
+        saveLocally(); scheduleStateSave();
+        renderAppointments();
+    }
+
+    function addMultiItem(gc, field) {
+        if (!appointmentStates[gc]) appointmentStates[gc] = {};
+        if (!appointmentStates[gc][field]) appointmentStates[gc][field] = [''];
+        appointmentStates[gc][field].push('');
+        saveLocally();
+        renderAppointments();
+    }
+
+    function removeMultiItem(gc, field, idx) {
+        if (!appointmentStates[gc]?.[field]) return;
+        appointmentStates[gc][field].splice(idx, 1);
+        if (appointmentStates[gc][field].length === 0) appointmentStates[gc][field] = [''];
+        saveLocally(); scheduleStateSave();
+        renderAppointments();
+    }
+
     // Debounced save — waits SAVE_DEBOUNCE_MS after last change before syncing to server
     function scheduleStateSave() {
         pendingSync = true;
@@ -1679,7 +1728,8 @@
                 cerologistId: currentUser.id,
                 cerologistName: currentUser.name,
                 states: appointmentStates,
-                rgas: selectedRGAs.map(i => RGA_OPTIONS[i]),
+                rgas: rgaState,
+                shiftNotes: shiftNotes,
                 updatedAt: new Date().toISOString()
             };
             const result = await appsScriptPost(payload);
@@ -1702,9 +1752,21 @@
             if (json.success && json.states) {
                 appointmentStates = json.states;
                 if (json.rgas) {
-                    selectedRGAs = json.rgas.map(r => RGA_OPTIONS.indexOf(r)).filter(i => i !== -1);
+                    // Support both old array format and new object format
+                    if (Array.isArray(json.rgas)) {
+                        json.rgas.forEach((val, i) => {
+                            if (i < 3) rgaState[i + 1] = typeof val === 'object' ? val : { activity: val, notes: '' };
+                        });
+                    } else {
+                        rgaState = json.rgas;
+                    }
                 }
-                saveLocally(); // Mirror to localStorage
+                if (json.shiftNotes) {
+                    shiftNotes = json.shiftNotes;
+                    const el = document.getElementById('shiftNotesInput');
+                    if (el) el.value = shiftNotes;
+                }
+                saveLocally();
             }
         } catch(e) { console.warn('Could not load ShiftState:', e); }
     }
@@ -1926,142 +1988,11 @@
     // ============================================================
     // STUDIO PLAN
     // ============================================================
-    function renderStudioPlan() {
-        if (!data.appointments) return;
-        const todayStr = todayKey();
-
-        const todaysAppts = data.appointments.filter(a => {
-            const d = parseDate(a['Appointment Date']);
-            if (!d) return false;
-            const status = (a['Status'] || '').toLowerCase();
-            return formatKey(d) === todayStr && (status === 'open' || status === 'confirmed');
-        });
-
-        const sections = [];
-
-        const newClients = todaysAppts.filter(a => a['First Visit'] === 'Yes');
-        if (newClients.length > 0) {
-            sections.push({
-                id: 'newClients', title: 'New Clients Today', icon: '👋',
-                items: [...new Map(newClients.map(a => [a['Guest Code'], a])).values()].map(a => ({
-                    id: `new_${a['Guest Code']}`,
-                    main: a['Guest Name'],
-                    detail: `${formatTime(a['Start Time'])} with ${a['Cerologist']} — ${a['Service Name']}`,
-                    tags: ['New Client']
-                }))
-            });
-        }
-
-        const coMembers = todaysAppts.filter(a => hasActiveMembership(a['Guest Code']));
-        if (coMembers.length > 0) {
-            sections.push({
-                id: 'coMembers', title: 'Club Orange Members', icon: '🧡',
-                items: [...new Map(coMembers.map(a => [a['Guest Code'], a])).values()].map(a => ({
-                    id: `co_${a['Guest Code']}`,
-                    main: a['Guest Name'],
-                    detail: `${formatTime(a['Start Time'])} — ${a['Service Name']}`,
-                    tags: ['Member']
-                }))
-            });
-        }
-
-        const visitCounts = {};
-        data.appointments.forEach(a => {
-            if ((a['Status']||'').toLowerCase() === 'closed') {
-                visitCounts[a['Guest Code']] = (visitCounts[a['Guest Code']] || 0) + 1;
-            }
-        });
-        const coTargets = todaysAppts.filter(a => visitCounts[a['Guest Code']] >= 2 && !hasActiveMembership(a['Guest Code']));
-        if (coTargets.length > 0) {
-            sections.push({
-                id: 'coTargets', title: 'Club Orange Targets', icon: '🎯',
-                items: [...new Map(coTargets.map(a => [a['Guest Code'], a])).values()].map(a => ({
-                    id: `target_${a['Guest Code']}`,
-                    main: a['Guest Name'],
-                    detail: `${visitCounts[a['Guest Code']]} prior visits — Great candidate!`,
-                    tags: [`${visitCounts[a['Guest Code']]} Visits`]
-                }))
-            });
-        }
-
-        const container = document.getElementById('studioPlanSections');
-        if (sections.length === 0) {
-            container.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--silver);">No studio plan items generated for today.</div>`;
-            return;
-        }
-
-        container.innerHTML = sections.map(sec => `
-            <div class="studio-section">
-                <div class="section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
-                    <div class="section-title">
-                        <span class="dot"></span>${sec.icon} ${sec.title}
-                        <span class="section-count">${sec.items.length}</span>
-                    </div>
-                </div>
-                <div class="section-body">
-                    ${sec.items.map(item => `
-                        <div class="task-item">
-                            <div class="task-content">
-                                <div class="task-main">${item.main}</div>
-                                <div class="task-detail">${item.detail}</div>
-                                <div class="task-meta">${item.tags.map(t => `<span class="task-tag">${t}</span>`).join('')}</div>
-                            </div>
-                        </div>`).join('')}
-                </div>
-            </div>`).join('');
-    }
 
     // ============================================================
     // REPORTS
     // ============================================================
-    function updateReports() {
-        if (!data.appointments) return;
-        const todayStr = todayKey();
-        const todayAppts = data.appointments.filter(a => {
-            const d = parseDate(a['Appointment Date']);
-            return d && formatKey(d) === todayStr && (a['Status']||'').toLowerCase() !== 'cancelled';
-        });
 
-        const uniqueGuests = [...new Set(todayAppts.map(a => a['Guest Code']))];
-        let totalCompleted = 0, totalRebooks = 0, totalCO = 0;
-
-        uniqueGuests.forEach(gc => {
-            const st = appointmentStates[gc] || {};
-            if (st.completed) totalCompleted++;
-            if (st.rebooked) totalRebooks++;
-            if (st.clubOrange) totalCO++;
-        });
-
-        document.getElementById('rptAppts').textContent = uniqueGuests.length;
-        document.getElementById('rptCompleted').textContent = totalCompleted;
-        document.getElementById('rptRebooks').textContent = totalRebooks;
-        document.getElementById('rptCO').textContent = totalCO;
-
-        // Team activity (all cerologists today)
-        const byCerologist = {};
-        todayAppts.forEach(a => {
-            const c = a['Cerologist'] || 'Unknown';
-            if (!byCerologist[c]) byCerologist[c] = { total: 0, names: [] };
-            if (!byCerologist[c].names.includes(a['Guest Code'])) {
-                byCerologist[c].names.push(a['Guest Code']);
-                byCerologist[c].total++;
-            }
-        });
-
-        document.getElementById('teamActivity').innerHTML = Object.entries(byCerologist).map(([name, d]) =>
-            `<div style="display:flex;justify-content:space-between;padding:0.75rem;background:var(--smoke);border-radius:8px;margin-bottom:0.5rem;">
-                <span>${name}</span>
-                <span style="color:var(--orange-primary);font-weight:600;">${d.total} clients</span>
-            </div>`).join('') || '<div style="color:var(--silver);padding:0.75rem;">No team data for today</div>';
-    }
-
-    async function sendManagerReport() {
-        if (!serverOnline) { showToast('Cannot send — offline', 'error'); return; }
-        try {
-            await appsScriptPost({ type: 'managerReport', cerologistId: currentUser?.id, date: todayKey(), states: appointmentStates });
-            showToast('Report sent to manager', 'success');
-        } catch(e) { showToast('Send failed', 'error'); }
-    }
 
     // ============================================================
     // RECAP MODAL
@@ -2072,10 +2003,13 @@
             const n = getGuestName(gc);
             if (st.rebooked) rebooks.push(n);
             if (st.clubOrange) co.push(n);
-            if (st.productSelected) retail.push({ name: n, product: st.productSelected });
-            if (st.addonSelected) addons.push({ name: n, addon: st.addonSelected });
+            // Multi-select arrays
+            (st.productsSelected || (st.productSelected ? [st.productSelected] : [])).filter(v => v).forEach(p => retail.push({ name: n, product: p }));
+            (st.addonsSelected   || (st.addonSelected   ? [st.addonSelected]   : [])).filter(v => v).forEach(a => addons.push({ name: n, addon: a }));
             if (st.notes) notes.push({ name: n, note: st.notes });
         });
+
+        const rgaSummary = [1,2,3].map(n => rgaState[n]?.activity).filter(Boolean);
 
         document.getElementById('recapContent').innerHTML = `
             <div class="recap-section">
@@ -2096,11 +2030,15 @@
             </div>
             <div class="recap-section">
                 <div class="recap-title">🎯 Revenue Activities</div>
-                ${selectedRGAs.length ? `<ul class="recap-list">${selectedRGAs.map(i=>`<li class="recap-item"><span class="recap-item-name">${RGA_OPTIONS[i]}</span></li>`).join('')}</ul>` : '<div class="recap-empty">None selected</div>'}
+                ${rgaSummary.length ? `<ul class="recap-list">${[1,2,3].filter(n=>rgaState[n]?.activity).map(n=>`<li class="recap-item"><span class="recap-item-name">${rgaState[n].activity}</span>${rgaState[n].notes ? `<span class="recap-item-detail">${rgaState[n].notes}</span>` : ''}</li>`).join('')}</ul>` : '<div class="recap-empty">None selected</div>'}
             </div>
             ${notes.length ? `<div class="recap-section">
                 <div class="recap-title">📝 Notes</div>
                 <ul class="recap-list">${notes.map(n=>`<li class="recap-item" style="flex-direction:column;align-items:flex-start;"><span class="recap-item-name">${n.name}</span><span class="recap-item-detail" style="margin-top:0.25rem;">${n.note}</span></li>`).join('')}</ul>
+            </div>` : ''}
+            ${shiftNotes ? `<div class="recap-section">
+                <div class="recap-title">📋 Shift Notes</div>
+                <div class="recap-item" style="font-size:0.9rem;">${shiftNotes}</div>
             </div>` : ''}`;
 
         document.getElementById('recapModal').classList.add('visible');
@@ -2117,10 +2055,14 @@
             const n = getGuestName(gc);
             if (st.rebooked) rebooks.push(n);
             if (st.clubOrange) co.push(n);
-            if (st.productSelected) retail.push(`${n}: ${st.productSelected}`);
-            if (st.addonSelected) addons.push(`${n}: ${st.addonSelected}`);
+            (st.productsSelected || (st.productSelected ? [st.productSelected] : [])).filter(v => v).forEach(p => retail.push(`${n}: ${p}`));
+            (st.addonsSelected   || (st.addonSelected   ? [st.addonSelected]   : [])).filter(v => v).forEach(a => addons.push(`${n}: ${a}`));
             if (st.notes) notesArr.push(`${n}: ${st.notes}`);
         });
+
+        const rgaSummary = [1,2,3].filter(n => rgaState[n]?.activity)
+            .map(n => rgaState[n].notes ? `${rgaState[n].activity}: ${rgaState[n].notes}` : rgaState[n].activity);
+        if (shiftNotes) notesArr.push(`Shift Notes: ${shiftNotes}`);
 
         const payload = {
             type: 'recap',
@@ -2130,7 +2072,7 @@
             rebooks, clubOrangeSignups: co,
             retailSold: retail, addOnsSold: addons,
             notes: notesArr,
-            rgas: selectedRGAs.map(i => RGA_OPTIONS[i]),
+            rgas: rgaSummary,
             timestamp: new Date().toISOString()
         };
 
@@ -2169,7 +2111,8 @@
             localStorage.setItem(`wtc_cl_states_${dk}`, JSON.stringify(checklistStates));
             localStorage.setItem(`wtc_cash_${dk}`, JSON.stringify(cashDrawerValues));
             localStorage.setItem(`wtc_followup_${dk}`, JSON.stringify(followUpNotes));
-            localStorage.setItem(`wtc_rga_${dk}`, JSON.stringify(selectedRGAs));
+            localStorage.setItem(`wtc_rga_${dk}`, JSON.stringify(rgaState));
+            localStorage.setItem(`wtc_shiftnotes_${dk}`, shiftNotes);
         } catch(e) { console.warn('localStorage save failed:', e); }
     }
 
@@ -2180,8 +2123,8 @@
             const c = localStorage.getItem(`wtc_cl_states_${dk}`); if (c) checklistStates = JSON.parse(c);
             const ca = localStorage.getItem(`wtc_cash_${dk}`); if (ca) cashDrawerValues = JSON.parse(ca);
             const f = localStorage.getItem(`wtc_followup_${dk}`); if (f) followUpNotes = JSON.parse(f);
-            const r = localStorage.getItem(`wtc_rga_${dk}`); if (r) selectedRGAs = JSON.parse(r);
-            // Also try cached appointment data
+            const r = localStorage.getItem(`wtc_rga_${dk}`); if (r) rgaState = JSON.parse(r);
+            const sn = localStorage.getItem(`wtc_shiftnotes_${dk}`); if (sn) shiftNotes = sn;
             const appts = localStorage.getItem('wtc_appts_cache');
             if (appts && !data.appointments) data.appointments = JSON.parse(appts);
         } catch(e) { console.warn('localStorage load failed:', e); }
@@ -2264,20 +2207,33 @@
         return 'Waxing Service';
     }
 
-    function getSuggestedAddons(serviceType) {
-        if (!data.addons) return [{ name: 'Hydrating Hand Mask', cost: 10 }, { name: 'Eye Gel', cost: 5 }, { name: 'Calming Body Mask', cost: 10 }];
-        return data.addons.filter(a => {
-            const types = (a['Service Type']||'').split(',').map(t => t.trim());
-            return types.includes(serviceType) || types.includes('Waxing Service');
-        }).map(a => ({ name: a['Add Ons'], cost: parseFloat((a['Cost']||'').replace('$','')) || 0 })).slice(0, 5);
+    function getAllAddons() {
+        if (!data.addons || data.addons.length === 0) {
+            return [{ name: 'Hydrating Hand Mask', cost: 10 }, { name: 'Eye Gel', cost: 5 }, { name: 'Calming Body Mask', cost: 10 }];
+        }
+        return data.addons.map(a => ({
+            name: a['Add Ons'] || a['AddOn'] || '',
+            cost: parseFloat((a['Cost'] || '').replace('$', '')) || 0
+        })).filter(a => a.name);
     }
 
-    function getSuggestedProducts(serviceType) {
-        if (!data.retail) return [{ name: 'FUR Silk Scrub', cost: 55 }, { name: 'PFB Vanish', cost: 22 }, { name: 'Spongelle Buffer', cost: 14 }];
-        return data.retail.filter(r => {
-            const types = (r['Service Type']||'').split(',').map(t => t.trim());
-            return types.includes(serviceType) || types.includes('Any');
-        }).map(r => ({ name: r['Retail Item'], cost: parseFloat((r['Retail Cost']||'').replace('$','')) || 0 })).slice(0, 5);
+    function getAllProducts() {
+        if (!data.retail || data.retail.length === 0) {
+            return [{ name: 'FUR Silk Scrub', cost: 55 }, { name: 'PFB Vanish', cost: 22 }, { name: 'Spongelle Buffer', cost: 14 }];
+        }
+        return data.retail.map(r => ({
+            name: r['Retail Item'] || '',
+            cost: parseFloat((r['Retail Cost'] || '').replace('$', '')) || 0
+        })).filter(r => r.name);
+    }
+
+    function loadRGAOptionsFromData() {
+        // Load RGA options from a dedicated sheet tab if available
+        if (data.rgas && data.rgas.length > 0) {
+            rgaOptions = data.rgas.map(r => r['Activity'] || r['RGA'] || r['Name'] || '').filter(Boolean);
+            if (rgaOptions.length === 0) rgaOptions = [...RGA_OPTIONS_FALLBACK];
+        }
+        renderRGA();
     }
 
     function getRebookDate(startTime) {
