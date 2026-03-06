@@ -959,14 +959,19 @@
     // CONFIGURATION
     // ============================================================
     const CONFIG = {
-        APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxB6VSwtkXlNWsZMzFaTx9KPkkvUPNrtlA9khZNfkvvZux6O2mR6jsTYRM0W2eTHgU7/exec',
+        // ── IMPORTANT ──────────────────────────────────────────────────────
+        // Set this to your Cloudflare Worker URL once deployed, e.g.:
+        //   'https://wtc-proxy.YOUR-SUBDOMAIN.workers.dev'
+        // The Worker proxies all requests to Apps Script with proper CORS
+        // headers, solving the iOS Safari cross-origin block permanently.
+        // Until the Worker is set up, the fallback URL is used (desktop only).
+        APPS_SCRIPT_URL: 'https://wtc-proxy.ccano-c46.workers.dev/',
         API_KEY: 'wtc2024shawneehills',
         // Slack webhooks live in Apps Script only — not stored in client HTML
         STUDIO_NAME: 'Waxing the City - Shawnee Hills (W661)',
         TRAINING_START_DATE: '2025-01-01',
-        SAVE_DEBOUNCE_MS: 2000  // 2 seconds after last change before syncing to sheet
+        SAVE_DEBOUNCE_MS: 2000
     };
-
     // ============================================================
     // STATE
     // ============================================================
@@ -1146,20 +1151,7 @@
         errorEl.classList.remove('visible');
 
         try {
-            const url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`;
-            const resp = await fetch(url, { method: 'GET', redirect: 'follow', credentials: 'omit', cache: 'no-store' });
-            const text = await resp.text();
-
-            let json;
-            try {
-                json = JSON.parse(text);
-            } catch(parseErr) {
-                errorEl.textContent = 'Server returned unexpected data. Check your deployment URL.';
-                errorEl.classList.add('visible');
-                loadingEl.classList.remove('visible');
-                loadEmployeesFromCache();
-                return;
-            }
+            const json = await apiGet('getData');
 
             if (json.employees && json.employees.length > 0) {
                 teamMembers = json.employees.map(e => ({
@@ -1207,9 +1199,7 @@
     }
 
     async function loadEmployeesFromServer() {
-        // Kept for refreshData() compatibility — initLogin now handles initial load directly
-        const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
-        const json = await resp.json();
+        const json = await apiGet('getData');
         if (json.employees && json.employees.length > 0) {
             teamMembers = json.employees.map(e => ({
                 id: e.id || (e.Name || '').toLowerCase().replace(/\s+/g, '_'),
@@ -1398,11 +1388,7 @@
     // ============================================================
     async function checkHealth() {
         try {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 6000);
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=health`, { redirect: 'follow', credentials: 'omit', cache: 'no-store', signal: controller.signal });
-            clearTimeout(timer);
-            const json = await resp.json();
+            const json = await apiGet('health');
             if (json.status === 'ok') {
                 setServerOnline(true);
                 return true;
@@ -1431,8 +1417,7 @@
         const online = await checkHealth();
         if (!online) { updateSyncLabel('error'); showToast('Server unavailable — using cached data', 'error'); return; }
         try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getData`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
-            const json = await resp.json();
+            const json = await apiGet('getData');
             if (json.appointments) { data.appointments = json.appointments; localStorage.setItem('wtc_appts_cache', JSON.stringify(json.appointments)); }
             if (json.salesAccrual) data.salesAccrual = json.salesAccrual;
             if (json.retail) data.retail = json.retail;
@@ -1747,8 +1732,7 @@
 
     async function loadShiftStateFromServer() {
         try {
-            const resp = await fetch(`${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=getShiftState&date=${todayKey()}&cerologistId=${currentUser.id}`, { redirect: 'follow', credentials: 'omit', cache: 'no-store' });
-            const json = await resp.json();
+            const json = await apiGet('getShiftState', { date: todayKey(), cerologistId: currentUser.id });
             if (json.success && json.states) {
                 appointmentStates = json.states;
                 if (json.rgas) {
@@ -2087,20 +2071,25 @@
     }
 
     // ============================================================
-    // APPS SCRIPT API
+    // APPS SCRIPT COMMUNICATIONS LAYER
     // ============================================================
+    // All requests go through the Cloudflare Worker (CONFIG.APPS_SCRIPT_URL).
+    // The Worker adds proper CORS headers and handles the Apps Script redirect
+    // chain server-side, so iOS Safari never sees a cross-origin request.
+
+    async function apiGet(action, params = {}) {
+        let url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}&action=${action}`;
+        Object.entries(params).forEach(([k, v]) => { url += `&${k}=${encodeURIComponent(v)}`; });
+        const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return await resp.json();
+    }
+
     async function appsScriptPost(payload) {
-        // IMPORTANT: Content-Type must be 'text/plain' — NOT 'application/json'.
-        // Using application/json triggers a CORS preflight (OPTIONS) request that
-        // Apps Script cannot respond to, which causes iOS Safari/WebKit to block
-        // the call entirely. text/plain is a "simple request" — no preflight needed.
-        // Apps Script reads postData.contents as a string regardless of content-type.
         const url = `${CONFIG.APPS_SCRIPT_URL}?key=${CONFIG.API_KEY}`;
         const resp = await fetch(url, {
             method: 'POST',
-            redirect: 'follow',
-            credentials: 'omit',
-            headers: { 'Content-Type': 'text/plain' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...payload, key: CONFIG.API_KEY })
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
