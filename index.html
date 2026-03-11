@@ -1,13 +1,16 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WTC Daily">
     <title>WTC Daily Operations | OH-Shawnee Hills</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --orange-primary: #FF6B35;
+            --orange: #FF6B35;
             --orange-dark: #E5522A;
             --charcoal: #1E1E24;
             --slate: #2D2D36;
@@ -18,1161 +21,1987 @@
             --warning: #FBBF24;
             --danger: #F87171;
             --blue: #60A5FA;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:'DM Sans',sans-serif; background:var(--charcoal); color:var(--white); min-height:100vh; line-height:1.5; }
 
-        /* ── LOGIN ── */
-        .login-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:1.5rem; }
-        .login-card { background:var(--slate); border-radius:20px; padding:2.5rem; width:100%; max-width:380px; text-align:center; }
-        .login-logo { width:72px; height:72px; background:var(--orange-primary); border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; margin:0 auto 1.25rem; }
-        .login-title { font-size:1.4rem; font-weight:700; margin-bottom:0.35rem; }
-        .login-sub { color:var(--silver); font-size:0.9rem; margin-bottom:1.75rem; }
-        .form-select, .form-input { width:100%; padding:.9rem 1rem; background:var(--smoke); border:2px solid transparent; border-radius:12px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:1rem; transition:border-color .2s; margin-bottom:1rem; }
-        .form-select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; background-color:var(--smoke); }
-        .form-select option { background:var(--slate); }
-        .form-input { text-align:center; letter-spacing:.4em; font-size:1.4rem; font-family:'Space Mono',monospace; cursor:text; }
-        .form-select:focus, .form-input:focus { outline:none; border-color:var(--orange-primary); }
-        .pin-step { display:none; animation:fadeIn .25s ease; }
-        .pin-step.visible { display:block; }
-        .back-link { font-size:.85rem; color:var(--silver); cursor:pointer; text-decoration:underline; display:inline-block; margin-bottom:1rem; }
-        .pin-who { font-size:.9rem; color:var(--silver); margin-bottom:.75rem; }
-        .pin-who strong { color:var(--orange-primary); }
-        .login-err { background:rgba(248,113,113,.15); border:1px solid var(--danger); border-radius:10px; padding:.7rem 1rem; font-size:.88rem; color:var(--danger); margin-bottom:1rem; display:none; }
-        .login-err.show { display:block; }
-        .btn-login { width:100%; padding:.95rem; background:var(--orange-primary); border:none; border-radius:12px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600; cursor:pointer; transition:background .2s; }
-        .btn-login:hover { background:var(--orange-dark); }
-        .btn-login:disabled { background:var(--smoke); cursor:not-allowed; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* ── HEADER ── */
-        .header { background:linear-gradient(135deg,var(--slate),var(--charcoal)); border-bottom:2px solid var(--orange-primary); padding:1rem 1.25rem; position:sticky; top:0; z-index:100; }
-        .header-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
-        .logo-row { display:flex; align-items:center; gap:.7rem; }
-        .logo-sq { width:40px; height:40px; background:var(--orange-primary); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; flex-shrink:0; }
-        .brand-name { font-weight:700; font-size:.95rem; }
-        .brand-date { font-size:.72rem; color:var(--silver); font-family:'Space Mono',monospace; }
-        .right-row { display:flex; align-items:center; gap:.6rem; }
-        .sync-dot { width:9px; height:9px; border-radius:50%; background:var(--silver); flex-shrink:0; transition:background .4s; }
-        .sync-dot.online { background:var(--success); box-shadow:0 0 5px var(--success); }
-        .sync-dot.syncing { background:var(--warning); animation:pulse .9s infinite; }
-        .sync-dot.error { background:var(--danger); }
-        @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
-        .sync-lbl { font-size:.7rem; color:var(--silver); font-family:'Space Mono',monospace; }
-        .user-chip { background:var(--smoke); border-radius:20px; padding:.3rem .75rem; font-size:.82rem; font-weight:600; cursor:pointer; border:1px solid transparent; transition:border-color .2s; }
-        .user-chip:hover { border-color:var(--orange-primary); }
-        .tab-nav { display:flex; gap:.5rem; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:.15rem; }
-        .tab-btn { padding:.65rem 1.1rem; border:none; background:var(--smoke); color:var(--silver); font-family:'DM Sans',sans-serif; font-weight:600; font-size:.88rem; border-radius:9px; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:.4rem; transition:all .2s; }
-        .tab-btn.active { background:var(--orange-primary); color:var(--white); }
-        .tab-badge { background:rgba(255,255,255,.22); padding:.12rem .45rem; border-radius:20px; font-size:.72rem; }
-
-        /* ── MAIN ── */
-        .main { padding:1.1rem; max-width:900px; margin:0 auto; padding-bottom:90px; }
-        .tab-pane { display:none; }
-        .tab-pane.active { display:block; animation:fadeIn .25s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-        /* ── ALERTS ── */
-        .alert-bar { border-radius:12px; padding:.75rem 1rem; margin-bottom:1rem; display:none; align-items:center; gap:.75rem; font-size:.9rem; }
-        .alert-bar.show { display:flex; }
-        .alert-bar.offline { background:rgba(248,113,113,.12); border:1px solid var(--danger); }
-        .alert-bar.info { background:rgba(96,165,250,.12); border:1px solid var(--blue); color:var(--blue); }
-
-        /* ── DATA SOURCE BAR ── */
-        .ds-bar { background:var(--slate); border-radius:11px; padding:.65rem 1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; font-size:.84rem; }
-        .ds-info { color:var(--silver); }
-        .ds-actions { display:flex; gap:.4rem; }
-        .btn-tiny { padding:.35rem .7rem; border:1px solid var(--smoke); background:transparent; border-radius:7px; color:var(--silver); font-family:'DM Sans',sans-serif; font-size:.75rem; cursor:pointer; transition:all .2s; }
-        .btn-tiny:hover { border-color:var(--orange-primary); color:var(--white); }
-
-        /* ── UPLOAD ── */
-        .upload-panel { background:var(--slate); border-radius:14px; padding:1.25rem; margin-bottom:1rem; border:2px dashed var(--smoke); display:none; }
-        .upload-panel.open { display:block; }
-        .upload-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:.65rem; margin-top:.75rem; }
-        .upload-item label { font-size:.72rem; color:var(--silver); display:block; margin-bottom:.35rem; }
-        .upload-item input[type=file] { display:none; }
-        .file-btn { width:100%; padding:.65rem; background:var(--smoke); border:1px solid transparent; border-radius:8px; color:var(--silver); font-family:'DM Sans',sans-serif; font-size:.82rem; cursor:pointer; text-align:center; transition:all .2s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .file-btn:hover { border-color:var(--orange-primary); color:var(--white); }
-        .file-btn.loaded { background:rgba(52,211,153,.15); border-color:var(--success); color:var(--success); }
-
-        /* ── TRAINING BANNER ── */
-        .training-banner { background:linear-gradient(135deg,#FF6B35,#E5522A); border-radius:14px; padding:1.1rem 1.25rem; margin-bottom:1.25rem; position:relative; overflow:hidden; }
-        .training-banner::before { content:''; position:absolute; top:-40%; right:-15%; width:180px; height:180px; background:rgba(255,255,255,.08); border-radius:50%; pointer-events:none; }
-        .t-day { font-size:.72rem; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:.1em; opacity:.9; margin-bottom:.35rem; }
-        .t-title { font-size:1.05rem; font-weight:700; margin-bottom:.4rem; }
-        .t-body { font-size:.88rem; opacity:.95; line-height:1.6; }
-
-        /* ── EARNINGS ── */
-        .earnings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:.75rem; margin-bottom:1.25rem; }
-        .earn-box { background:var(--slate); border-radius:12px; padding:.9rem; text-align:center; }
-        .earn-label { font-size:.68rem; color:var(--silver); text-transform:uppercase; letter-spacing:.04em; margin-bottom:.2rem; }
-        .earn-val { font-size:1.2rem; font-weight:700; }
-        .earn-val.hi { color:var(--orange-primary); }
-        .earn-val.ok { color:var(--success); }
-        .earn-meta { font-size:.68rem; color:var(--silver); margin-top:.15rem; }
-
-        /* ── APPOINTMENT CARDS ── */
-        .appt-list { display:flex; flex-direction:column; gap:.9rem; }
-        .appt-card { background:var(--slate); border-radius:14px; overflow:hidden; }
-        .appt-card.done { opacity:.7; }
-        .card-head { background:var(--smoke); padding:.9rem 1.1rem; display:flex; justify-content:space-between; align-items:center; }
-        .appt-card.done .card-head { background:rgba(52,211,153,.2); }
-        .head-left { display:flex; align-items:center; gap:.65rem; flex-wrap:wrap; }
-        .appt-time { font-weight:700; color:var(--orange-primary); font-size:.98rem; }
-        .appt-name { font-weight:600; }
-        .badge { padding:.18rem .45rem; border-radius:6px; font-size:.68rem; font-weight:600; }
-        .badge.new { background:var(--orange-primary); }
-        .badge.co { background:var(--success); color:var(--charcoal); }
-        .badge.ret { background:var(--blue); color:var(--charcoal); }
-        .done-btn { width:30px; height:30px; border-radius:50%; border:2px solid var(--silver); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
-        .done-btn:hover { border-color:var(--success); }
-        .done-btn.on { background:var(--success); border-color:var(--success); }
-        .done-btn.on::after { content:'✓'; color:var(--white); font-weight:700; font-size:.8rem; }
-        .card-body { padding:1.1rem; }
-        .history-line { font-size:.84rem; color:var(--silver); padding:.65rem 0; border-bottom:1px solid var(--smoke); line-height:1.5; }
-        .svc-row { display:flex; justify-content:space-between; align-items:center; padding:.65rem 0; border-bottom:1px solid var(--smoke); }
-        .svc-row:last-of-type { border-bottom:none; }
-        .svc-name { font-weight:500; }
-        .svc-price { color:var(--success); font-weight:600; }
-        .action-block { margin-top:.9rem; padding-top:.9rem; border-top:1px solid var(--smoke); }
-        .action-lbl { font-size:.72rem; color:var(--silver); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.65rem; display:flex; align-items:center; gap:.4rem; }
-        .action-lbl::before { content:''; width:3px; height:11px; background:var(--orange-primary); border-radius:2px; }
-        .prod-sel { width:100%; padding:.65rem .9rem; background:var(--smoke); border:2px solid transparent; border-radius:9px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .75rem center; background-color:var(--smoke); margin-bottom:.4rem; transition:border-color .2s; }
-        .prod-sel:focus { outline:none; border-color:var(--orange-primary); }
-        .prod-sel.picked { border-color:var(--success); background-color:rgba(52,211,153,.1); }
-        .prod-sel option { background:var(--slate); }
-        .cb-grid { display:grid; grid-template-columns:1fr 1fr; gap:.65rem; margin-top:.9rem; }
-        .cb-item { display:flex; align-items:center; gap:.65rem; padding:.7rem .9rem; background:var(--smoke); border-radius:9px; cursor:pointer; transition:background .2s; }
-        .cb-item:hover { background:var(--charcoal); }
-        .cb-item.on { background:rgba(52,211,153,.14); }
-        .cb-box { width:22px; height:22px; border:2px solid var(--silver); border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; }
-        .cb-item.on .cb-box { background:var(--success); border-color:var(--success); }
-        .cb-item.on .cb-box::after { content:'✓'; color:var(--white); font-weight:700; font-size:.8rem; }
-        .cb-label { font-size:.88rem; font-weight:500; }
-        .rebook-row { background:var(--charcoal); border-radius:9px; padding:.8rem 1rem; margin-top:.9rem; font-size:.85rem; }
-        .rebook-date { font-weight:600; color:var(--blue); }
-        .notes-area { width:100%; padding:.7rem .9rem; background:var(--smoke); border:2px solid transparent; border-radius:9px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; resize:vertical; min-height:55px; margin-top:.9rem; transition:border-color .2s; }
-        .notes-area:focus { outline:none; border-color:var(--orange-primary); }
-        .notes-area::placeholder { color:var(--silver); }
-
-        /* ── RGA ── */
-        .rga-card { background:var(--slate); border-radius:14px; padding:1.1rem; margin-bottom:1.1rem; }
-        .rga-card-title { font-weight:700; font-size:.95rem; margin-bottom:.9rem; }
-        .rga-row { border-bottom:1px solid var(--smoke); padding-bottom:.9rem; margin-bottom:.9rem; }
-        .rga-row:last-child { border-bottom:none; padding-bottom:0; margin-bottom:0; }
-        .rga-row-hd { display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem; }
-        .rga-num { width:24px; height:24px; border-radius:50%; background:var(--orange-primary); font-size:.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .rga-sel { width:100%; padding:.65rem .9rem; background:var(--smoke); border:2px solid transparent; border-radius:9px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .75rem center; background-color:var(--smoke); margin-bottom:.4rem; transition:border-color .2s; }
-        .rga-sel:focus { outline:none; border-color:var(--orange-primary); }
-        .rga-sel.on { border-color:var(--success); background-color:rgba(52,211,153,.08); }
-        .rga-sel option { background:var(--slate); }
-        .rga-notes { width:100%; padding:.6rem .9rem; background:var(--smoke); border:2px solid transparent; border-radius:9px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.85rem; resize:vertical; min-height:46px; transition:border-color .2s; }
-        .rga-notes:focus { outline:none; border-color:var(--orange-primary); }
-        .rga-notes::placeholder { color:var(--silver); }
-        .shift-notes-card { background:var(--slate); border-radius:14px; padding:1.1rem; margin-bottom:1.1rem; }
-
-        /* ── CHECKLISTS ── */
-        .cl-picker { display:grid; grid-template-columns:repeat(2,1fr); gap:.75rem; margin-bottom:1.25rem; }
-        .cl-pick-btn { padding:.9rem; background:var(--slate); border:2px solid transparent; border-radius:13px; cursor:pointer; text-align:center; transition:all .2s; }
-        .cl-pick-btn:hover { border-color:var(--smoke); }
-        .cl-pick-btn.active { border-color:var(--orange-primary); background:rgba(255,107,53,.1); }
-        .cl-pick-icon { font-size:1.4rem; margin-bottom:.35rem; }
-        .cl-pick-name { font-weight:600; font-size:.9rem; }
-        .cl-pick-prog { font-size:.72rem; color:var(--silver); margin-top:.2rem; }
-        .cl-section { background:var(--slate); border-radius:13px; margin-bottom:.75rem; overflow:hidden; }
-        .cl-sec-head { background:var(--smoke); padding:.8rem 1.1rem; font-weight:600; font-size:.9rem; display:flex; align-items:center; gap:.5rem; }
-        .cl-sec-body { padding:.85rem; }
-        .cl-item { display:flex; align-items:center; gap:.8rem; padding:.8rem .9rem; background:var(--smoke); border-radius:9px; margin-bottom:.45rem; cursor:pointer; transition:background .2s; }
-        .cl-item:last-child { margin-bottom:0; }
-        .cl-item:hover { background:var(--charcoal); }
-        .cl-item.done { background:rgba(52,211,153,.12); opacity:.85; }
-        .cl-circle { width:24px; height:24px; border-radius:50%; border:2px solid var(--silver); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; }
-        .cl-item.done .cl-circle { background:var(--success); border-color:var(--success); }
-        .cl-item.done .cl-circle::after { content:'✓'; color:var(--white); font-weight:700; font-size:.72rem; }
-        .cl-text { flex:1; font-size:.88rem; }
-        .cl-item.done .cl-text { text-decoration:line-through; color:var(--silver); }
-        .cash-card { background:var(--slate); border-radius:13px; padding:1.1rem; margin-bottom:.75rem; }
-        .cash-title { font-weight:600; margin-bottom:.9rem; }
-        .cash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.65rem; }
-        .cash-row { display:flex; flex-direction:column; gap:.3rem; }
-        .cash-lbl { font-size:.72rem; color:var(--silver); }
-        .cash-inp { padding:.55rem .75rem; background:var(--smoke); border:2px solid transparent; border-radius:8px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.9rem; transition:border-color .2s; }
-        .cash-inp:focus { outline:none; border-color:var(--orange-primary); }
-        .cash-total-row { margin-top:.9rem; background:rgba(255,107,53,.12); border:1px solid var(--orange-primary); border-radius:10px; padding:.9rem 1rem; display:flex; justify-content:space-between; align-items:center; }
-        .cash-total-val { font-size:1.2rem; font-weight:700; color:var(--orange-primary); }
-        .fu-card { background:var(--slate); border-radius:13px; padding:1.1rem; margin-bottom:.75rem; }
-        .fu-title { font-weight:600; margin-bottom:.75rem; }
-        .fu-input { width:100%; padding:.75rem 1rem; background:var(--smoke); border:2px solid transparent; border-radius:9px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; min-height:75px; resize:vertical; transition:border-color .2s; }
-        .fu-input:focus { outline:none; border-color:var(--orange-primary); }
-        .fu-input::placeholder { color:var(--silver); }
-        .cl-submit-row { margin-top:1.25rem; }
-
-        /* ── BUTTONS ── */
-        .btn { padding:.82rem 1.4rem; border:none; border-radius:11px; font-family:'DM Sans',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:.45rem; transition:all .2s; }
-        .btn-primary { background:var(--orange-primary); color:var(--white); }
-        .btn-primary:hover { background:var(--orange-dark); transform:translateY(-1px); }
-        .btn-success { background:var(--success); color:var(--charcoal); }
-        .btn-success:hover { filter:brightness(1.08); }
-        .btn-outline { background:transparent; border:2px solid var(--smoke); color:var(--white); }
-        .btn-outline:hover { border-color:var(--orange-primary); background:rgba(255,107,53,.08); }
-        .btn-block { width:100%; }
-        .btn:disabled { opacity:.45; cursor:not-allowed; transform:none !important; }
-
-        /* ── FOOTER ── */
-        .footer { position:fixed; bottom:0; left:0; right:0; background:var(--slate); border-top:1px solid var(--smoke); padding:.9rem 1.25rem; display:flex; gap:.9rem; z-index:50; }
-        .footer .btn { flex:1; }
-
-        /* ── TOAST ── */
-        .toast { position:fixed; bottom:85px; left:50%; transform:translateX(-50%); background:var(--charcoal); border:1px solid var(--smoke); padding:.85rem 1.4rem; border-radius:11px; display:flex; align-items:center; gap:.65rem; z-index:200; opacity:0; visibility:hidden; transition:all .3s; white-space:nowrap; max-width:90vw; }
-        .toast.show { opacity:1; visibility:visible; }
-        .toast.success { border-color:var(--success); }
-        .toast.error { border-color:var(--danger); }
-
-        /* ── MODAL ── */
-        .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:300; padding:1rem; opacity:0; visibility:hidden; transition:all .3s; }
-        .modal-bg.show { opacity:1; visibility:visible; }
-        .modal { background:var(--slate); border-radius:18px; width:100%; max-width:480px; max-height:88vh; overflow-y:auto; transform:scale(.92); transition:all .3s; }
-        .modal-bg.show .modal { transform:scale(1); }
-        .modal-head { padding:1.35rem 1.5rem; border-bottom:1px solid var(--smoke); display:flex; justify-content:space-between; align-items:center; }
-        .modal-title { font-size:1.15rem; font-weight:700; }
-        .modal-x { width:33px; height:33px; border-radius:50%; border:none; background:var(--smoke); color:var(--silver); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-        .modal-x:hover { background:var(--charcoal); color:var(--white); }
-        .modal-body { padding:1.35rem 1.5rem; }
-        .modal-foot { padding:.9rem 1.5rem; border-top:1px solid var(--smoke); display:flex; gap:.65rem; }
-
-        /* ── RECAP ── */
-        .recap-sec { margin-bottom:1.35rem; }
-        .recap-lbl { font-size:.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.65rem; }
-        .recap-row { padding:.65rem .9rem; background:var(--smoke); border-radius:8px; margin-bottom:.4rem; display:flex; justify-content:space-between; align-items:center; }
-        .recap-name { font-weight:500; font-size:.9rem; }
-        .recap-detail { color:var(--silver); font-size:.82rem; }
-        .recap-empty { color:var(--silver); font-style:italic; font-size:.88rem; padding:.4rem .9rem; }
-
-        @media(max-width:600px) {
-            .earnings-grid { grid-template-columns:repeat(2,1fr); }
-            .cb-grid { grid-template-columns:1fr; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--charcoal);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* ===== LOADING SCREEN ===== */
+        #loadingScreen {
+            position: fixed; inset: 0; background: var(--charcoal);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; gap: 1.5rem;
+        }
+        .loading-logo {
+            width: 80px; height: 80px; background: var(--orange); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.75rem;
+        }
+        .loading-text { color: var(--silver); font-size: 0.9rem; }
+        .spinner {
+            width: 36px; height: 36px; border: 3px solid var(--smoke);
+            border-top-color: var(--orange); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== LOGIN ===== */
+        #loginScreen {
+            display: none; min-height: 100vh;
+            align-items: center; justify-content: center; padding: 1.5rem;
+            flex-direction: column; gap: 1rem;
+        }
+        .login-card {
+            background: var(--slate); border-radius: 20px; padding: 2.5rem;
+            width: 100%; max-width: 380px; text-align: center;
+        }
+        .login-logo {
+            width: 72px; height: 72px; background: var(--orange); border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.5rem; margin: 0 auto 1.25rem;
+        }
+        .login-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.35rem; }
+        .login-sub { color: var(--silver); font-size: 0.9rem; margin-bottom: 1.75rem; }
+        .form-field { margin-bottom: 1rem; }
+        .form-select, .form-input {
+            width: 100%; padding: 0.9rem 1rem; background: var(--smoke);
+            border: 2px solid transparent; border-radius: 12px; color: var(--white);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: border-color 0.2s;
+            appearance: none;
+        }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        .form-select option, .form-input { background: var(--slate); }
+        .form-select:focus, .form-input:focus { outline: none; border-color: var(--orange); }
+
+        /* PIN pad */
+        .pin-display {
+            display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 1.25rem;
+        }
+        .pin-dot {
+            width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--silver);
+            transition: all 0.2s;
+        }
+        .pin-dot.filled { background: var(--orange); border-color: var(--orange); }
+        .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
+        .pin-btn {
+            padding: 1rem; background: var(--smoke); border: none; border-radius: 12px;
+            color: var(--white); font-size: 1.25rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pin-btn:active { background: var(--orange); transform: scale(0.96); }
+        .pin-btn.delete { color: var(--danger); }
+
+        .btn-primary {
+            width: 100%; padding: 0.9rem; background: var(--orange); border: none;
+            border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif;
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary:hover { background: var(--orange-dark); }
+        .btn-primary:disabled { background: var(--smoke); color: var(--silver); cursor: not-allowed; }
+        .btn-outline {
+            padding: 0.9rem 1.5rem; background: transparent; border: 2px solid var(--smoke);
+            border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--orange); }
+        .btn-success {
+            padding: 0.9rem 1.5rem; background: var(--success); border: none;
+            border-radius: 12px; color: var(--charcoal); font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-success:hover { filter: brightness(1.1); }
+
+        .settings-link {
+            color: var(--silver); font-size: 0.8rem; text-decoration: none;
+            cursor: pointer; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .settings-link:hover { color: var(--orange); }
+
+        /* ===== HEADER ===== */
+        #mainApp { display: none; }
+        .header {
+            background: linear-gradient(135deg, var(--slate), var(--charcoal));
+            border-bottom: 2px solid var(--orange);
+            padding: 0.875rem 1.25rem;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-top {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 0.875rem;
+        }
+        .logo-row { display: flex; align-items: center; gap: 0.625rem; }
+        .logo-box {
+            width: 38px; height: 38px; background: var(--orange); border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.95rem; flex-shrink: 0;
+        }
+        .brand-name { font-weight: 700; font-size: 0.95rem; }
+        .brand-date { font-size: 0.7rem; color: var(--silver); font-family: 'Space Mono', monospace; }
+        .header-right { display: flex; align-items: center; gap: 0.625rem; }
+        .sync-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+            transition: background 0.3s;
+        }
+        .sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
+        .sync-dot.offline { background: var(--danger); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .avatar {
+            width: 34px; height: 34px; background: var(--smoke); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; cursor: pointer;
+            border: 2px solid transparent; transition: border-color 0.2s;
+        }
+        .avatar:hover { border-color: var(--orange); }
+        .icon-btn {
+            width: 34px; height: 34px; background: var(--smoke); border: none;
+            border-radius: 8px; color: var(--silver); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; transition: all 0.2s;
+        }
+        .icon-btn:hover { background: var(--charcoal); color: var(--white); }
+
+        /* Tab nav */
+        .tab-nav {
+            display: flex; gap: 0.4rem;
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; padding-bottom: 2px;
+        }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            padding: 0.6rem 1.1rem; border: none; background: var(--smoke);
+            color: var(--silver); font-family: 'DM Sans', sans-serif;
+            font-weight: 600; font-size: 0.85rem; border-radius: 9px;
+            cursor: pointer; white-space: nowrap; transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .tab-btn:hover { background: var(--slate); color: var(--white); }
+        .tab-btn.active { background: var(--orange); color: var(--white); }
+        .tab-badge {
+            background: rgba(255,255,255,0.25); padding: 0.1rem 0.45rem;
+            border-radius: 20px; font-size: 0.72rem;
+        }
+
+        /* ===== MAIN ===== */
+        .main { padding: 1.125rem; max-width: 1200px; margin: 0 auto; }
+        .main.has-footer { padding-bottom: calc(80px + var(--safe-bottom)); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeUp 0.25s ease; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== TRAINING BANNER ===== */
+        .training-banner {
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            border-radius: 14px; padding: 1.125rem 1.25rem;
+            margin-bottom: 1.25rem; position: relative; overflow: hidden;
+        }
+        .training-banner::before {
+            content: ''; position: absolute; top: -40%; right: -15%;
+            width: 180px; height: 180px; background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+        .training-day { font-size: 0.7rem; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: 0.3rem; }
+        .training-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+        .training-body { font-size: 0.85rem; opacity: 0.9; line-height: 1.55; }
+
+        /* ===== EARNINGS CARD ===== */
+        .earnings-card {
+            background: var(--slate); border-radius: 14px; padding: 1rem;
+            margin-bottom: 1.25rem; display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 0.75rem;
+        }
+        @media (max-width: 480px) { .earnings-card { grid-template-columns: repeat(2, 1fr); } }
+        .earnings-item { background: var(--smoke); border-radius: 10px; padding: 0.75rem; text-align: center; }
+        .earnings-label { font-size: 0.65rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .earnings-value { font-size: 1.2rem; font-weight: 700; }
+        .earnings-value.orange { color: var(--orange); }
+        .earnings-value.green { color: var(--success); }
+        .earnings-meta { font-size: 0.65rem; color: var(--silver); margin-top: 0.15rem; }
+
+        /* ===== APPOINTMENT CARDS ===== */
+        .appt-list { display: flex; flex-direction: column; gap: 0.875rem; }
+        .appt-card { background: var(--slate); border-radius: 14px; overflow: hidden; transition: opacity 0.2s; }
+        .appt-card.done { opacity: 0.65; }
+        .appt-card.done .card-head { background: rgba(52,211,153,0.25); }
+
+        .card-head {
+            background: var(--smoke); padding: 0.875rem 1.125rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .client-left { display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap; }
+        .appt-time { font-weight: 700; color: var(--orange); font-size: 0.95rem; }
+        .client-name { font-weight: 600; font-size: 0.95rem; }
+        .badge {
+            padding: 0.15rem 0.5rem; border-radius: 5px;
+            font-size: 0.68rem; font-weight: 700;
+        }
+        .badge-new { background: var(--orange); }
+        .badge-co { background: var(--success); color: var(--charcoal); }
+        .badge-ret { background: var(--blue); }
+
+        .done-btn {
+            width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+            border: 2px solid var(--silver); background: transparent;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .done-btn:hover { border-color: var(--success); }
+        .done-btn.checked { background: var(--success); border-color: var(--success); }
+        .done-btn.checked::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.8rem; }
+
+        .card-body { padding: 1.125rem; }
+        .history-row {
+            font-size: 0.82rem; color: var(--silver); padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem; border-bottom: 1px solid var(--smoke); line-height: 1.45;
+        }
+        .svc-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; border-bottom: 1px solid var(--smoke);
+        }
+        .svc-row:last-child { border-bottom: none; }
+        .svc-name { font-weight: 500; font-size: 0.9rem; }
+        .svc-price { color: var(--success); font-weight: 600; font-size: 0.9rem; }
+
+        .action-block { margin-top: 0.875rem; padding-top: 0.875rem; border-top: 1px solid var(--smoke); }
+        .action-label {
+            font-size: 0.68rem; color: var(--silver); text-transform: uppercase;
+            letter-spacing: 0.06em; margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .action-label::before { content: ''; width: 3px; height: 10px; background: var(--orange); border-radius: 2px; }
+
+        .pill-select {
+            width: 100%; padding: 0.65rem 0.875rem; background: var(--smoke);
+            border: 2px solid transparent; border-radius: 9px; color: var(--white);
+            font-family: 'DM Sans', sans-serif; font-size: 0.875rem; cursor: pointer;
+            transition: all 0.2s; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.75rem center;
+            padding-right: 2.25rem;
+        }
+        .pill-select:focus { outline: none; border-color: var(--orange); }
+        .pill-select option { background: var(--slate); }
+        .pill-select.has-value { border-color: var(--success); background-color: rgba(52,211,153,0.08); }
+
+        .checks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-top: 0.875rem; }
+        .check-tile {
+            display: flex; align-items: center; gap: 0.625rem;
+            padding: 0.7rem 0.875rem; background: var(--smoke);
+            border-radius: 9px; cursor: pointer; transition: all 0.2s;
+        }
+        .check-tile:hover { background: var(--charcoal); }
+        .check-tile.checked { background: rgba(52,211,153,0.12); }
+        .check-box {
+            width: 22px; height: 22px; border: 2px solid var(--silver); border-radius: 5px;
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .check-tile.checked .check-box { background: var(--success); border-color: var(--success); }
+        .check-tile.checked .check-box::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.8rem; }
+        .check-label { font-size: 0.875rem; font-weight: 500; }
+
+        .rebook-hint {
+            margin-top: 0.75rem; padding: 0.6rem 0.875rem; background: var(--charcoal);
+            border-radius: 9px; font-size: 0.82rem;
+        }
+        .rebook-hint span { color: var(--blue); font-weight: 600; }
+
+        .notes-area {
+            width: 100%; margin-top: 0.75rem; padding: 0.7rem 0.875rem;
+            background: var(--smoke); border: 2px solid transparent; border-radius: 9px;
+            color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+            resize: none; min-height: 60px; transition: border-color 0.2s;
+        }
+        .notes-area:focus { outline: none; border-color: var(--orange); }
+        .notes-area::placeholder { color: var(--silver); }
+
+        /* ===== STUDIO PLAN ===== */
+        .studio-section { background: var(--slate); border-radius: 14px; margin-bottom: 1rem; overflow: hidden; }
+        .section-head {
+            background: var(--smoke); padding: 0.875rem 1.125rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .section-head:hover { background: var(--charcoal); }
+        .section-title-row { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+        .dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
+        .section-count { background: var(--orange); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .section-prog { display: flex; align-items: center; gap: 0.4rem; }
+        .prog-text { font-size: 0.75rem; color: var(--silver); }
+        .prog-bar { width: 52px; height: 5px; background: var(--charcoal); border-radius: 3px; overflow: hidden; }
+        .prog-fill { height: 100%; background: var(--success); border-radius: 3px; transition: width 0.3s; }
+        .section-body { padding: 0.875rem; }
+        .section-body.collapsed { display: none; }
+
+        .task-item {
+            display: flex; align-items: flex-start; gap: 0.875rem;
+            padding: 0.875rem; background: var(--smoke); border-radius: 10px;
+            margin-bottom: 0.625rem; transition: all 0.2s;
+        }
+        .task-item:last-child { margin-bottom: 0; }
+        .task-item.done { opacity: 0.65; background: rgba(52,211,153,0.08); }
+        .task-check {
+            width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--silver);
+            background: transparent; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; margin-top: 0.1rem;
+        }
+        .task-check:hover { border-color: var(--success); }
+        .task-item.done .task-check { background: var(--success); border-color: var(--success); }
+        .task-item.done .task-check::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.75rem; }
+        .task-content { flex: 1; min-width: 0; }
+        .task-main { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
+        .task-detail { font-size: 0.8rem; color: var(--silver); line-height: 1.4; margin-bottom: 0.5rem; }
+        .task-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .task-tag { padding: 0.15rem 0.45rem; background: var(--charcoal); border-radius: 5px; font-size: 0.72rem; color: var(--silver); }
+        .by-select {
+            padding: 0.25rem 0.6rem; background: var(--charcoal); border: 1px solid var(--smoke);
+            border-radius: 5px; color: var(--white); font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem; cursor: pointer;
+        }
+        .by-select option { background: var(--slate); }
+
+        /* ===== CHECKLISTS ===== */
+        .checklist-card { background: var(--slate); border-radius: 14px; margin-bottom: 1.25rem; overflow: hidden; }
+        .checklist-head {
+            padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;
+            background: var(--smoke);
+        }
+        .checklist-icon { font-size: 1.25rem; }
+        .checklist-name { font-weight: 700; font-size: 1rem; flex: 1; }
+        .checklist-prog { font-size: 0.8rem; color: var(--silver); }
+        .checklist-body { padding: 1rem; }
+        .cl-section { margin-bottom: 1rem; }
+        .cl-section:last-child { margin-bottom: 0; }
+        .cl-section-title { font-size: 0.72rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+        .cl-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 0.875rem; background: var(--smoke); border-radius: 9px;
+            margin-bottom: 0.4rem; cursor: pointer; transition: all 0.2s;
+        }
+        .cl-item:last-child { margin-bottom: 0; }
+        .cl-item.checked { background: rgba(52,211,153,0.1); }
+        .cl-check {
+            width: 20px; height: 20px; border: 2px solid var(--silver); border-radius: 4px;
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .cl-item.checked .cl-check { background: var(--success); border-color: var(--success); }
+        .cl-item.checked .cl-check::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.72rem; }
+        .cl-text { font-size: 0.875rem; font-weight: 500; }
+        .cl-item.checked .cl-text { text-decoration: line-through; color: var(--silver); }
+
+        .cl-footer { padding: 0 1rem 1rem; }
+        .cl-cash-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.875rem; }
+        .cl-cash-label { font-size: 0.85rem; color: var(--silver); white-space: nowrap; }
+        .cash-input {
+            flex: 1; padding: 0.6rem 0.875rem; background: var(--smoke);
+            border: 2px solid transparent; border-radius: 9px; color: var(--white);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+        }
+        .cash-input:focus { outline: none; border-color: var(--orange); }
+        .followup-area {
+            width: 100%; padding: 0.7rem 0.875rem; background: var(--smoke);
+            border: 2px solid transparent; border-radius: 9px; color: var(--white);
+            font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+            resize: none; min-height: 70px; margin-bottom: 0.875rem;
+        }
+        .followup-area:focus { outline: none; border-color: var(--orange); }
+        .followup-area::placeholder { color: var(--silver); }
+
+        /* ===== REPORTS ===== */
+        .report-card { background: var(--slate); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; }
+        .report-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.875rem; }
+        .stat-box { background: var(--smoke); border-radius: 11px; padding: 0.875rem; text-align: center; }
+        .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--orange); }
+        .stat-val.green { color: var(--success); }
+        .stat-val.blue { color: var(--blue); }
+        .stat-val.warn { color: var(--warning); }
+        .stat-label { font-size: 0.72rem; color: var(--silver); margin-top: 0.2rem; }
+
+        .highlight-list { list-style: none; }
+        .highlight-item {
+            padding: 0.7rem 0.875rem; background: var(--smoke); border-radius: 9px;
+            margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.625rem;
+        }
+        .h-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; flex-shrink: 0; }
+        .h-icon.green { background: rgba(52,211,153,0.15); }
+        .h-icon.orange { background: rgba(255,107,53,0.15); }
+        .h-icon.blue { background: rgba(96,165,250,0.15); }
+        .h-icon.warn { background: rgba(251,191,36,0.15); }
+        .h-text { font-size: 0.875rem; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--slate); padding: 0.875rem 1.25rem;
+            padding-bottom: calc(0.875rem + var(--safe-bottom));
+            border-top: 1px solid var(--smoke);
+            display: flex; gap: 0.75rem; z-index: 50;
+        }
+        .footer .btn-outline { flex: 1; }
+        .footer .btn-success { flex: 1.5; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 300; padding: 1.25rem;
+            opacity: 0; visibility: hidden; transition: all 0.25s;
+        }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--slate); border-radius: 18px; width: 100%;
+            max-width: 480px; max-height: 85vh; overflow-y: auto;
+            transform: scale(0.92); transition: transform 0.25s;
+        }
+        .modal-overlay.open .modal { transform: scale(1); }
+        .modal-head {
+            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--smoke);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; background: var(--slate); z-index: 1;
+        }
+        .modal-title { font-size: 1.1rem; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 50%; border: none;
+            background: var(--smoke); color: var(--silver); font-size: 1.1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { color: var(--white); background: var(--charcoal); }
+        .modal-body { padding: 1.25rem 1.5rem; }
+        .modal-foot {
+            padding: 1rem 1.5rem; border-top: 1px solid var(--smoke);
+            display: flex; gap: 0.75rem;
+        }
+        .modal-foot .btn-outline { flex: 1; }
+        .modal-foot .btn-success { flex: 1.5; }
+
+        /* Settings fields */
+        .setting-row { margin-bottom: 1rem; }
+        .setting-label { font-size: 0.78rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; display: block; }
+
+        /* Recap sections */
+        .recap-section { margin-bottom: 1.25rem; }
+        .recap-section-title { font-size: 0.75rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .recap-item {
+            padding: 0.6rem 0.875rem; background: var(--smoke); border-radius: 8px;
+            margin-bottom: 0.35rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .recap-item-name { font-weight: 500; font-size: 0.875rem; }
+        .recap-item-detail { font-size: 0.8rem; color: var(--silver); }
+        .recap-empty { color: var(--silver); font-size: 0.875rem; font-style: italic; padding: 0.4rem 0; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: calc(80px + var(--safe-bottom) + 12px); left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--charcoal); border: 1px solid var(--smoke);
+            padding: 0.75rem 1.25rem; border-radius: 10px;
+            display: flex; align-items: center; gap: 0.625rem;
+            z-index: 400; opacity: 0; visibility: hidden;
+            transition: all 0.3s; white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .toast.show {
+            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+        }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast-msg { font-size: 0.875rem; font-weight: 500; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--silver); }
+        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty-state h3 { font-size: 1rem; color: var(--white); margin-bottom: 0.4rem; }
+        .empty-state p { font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN ═══════════ -->
-<div id="loginScreen" class="login-screen">
-    <div class="login-card">
-        <div class="login-logo">WTC</div>
-        <h1 class="login-title">Daily Operations</h1>
-        <p class="login-sub">Shawnee Hills · W661</p>
+<!-- ===== LOADING ===== -->
+<div id="loadingScreen">
+    <div class="loading-logo">WTC</div>
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingMsg">Loading...</div>
+</div>
 
-        <div id="step1">
-            <select class="form-select" id="nameSelect">
-                <option value="">Select your name...</option>
-            </select>
-            <button class="btn-login" id="nextBtn" disabled onclick="goToPin()">Continue →</button>
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <div class="modal-head">
+            <div class="modal-title">&#9881;&#65039; Settings</div>
+            <button class="modal-close" onclick="closeModal('settingsModal')">&#x2715;</button>
         </div>
-
-        <div class="pin-step" id="step2">
-            <span class="back-link" onclick="goToName()">← Back</span>
-            <p class="pin-who">Enter PIN, <strong id="pinName"></strong></p>
-            <input class="form-input" type="password" inputmode="numeric" maxlength="4" id="pinInput"
-                   placeholder="····" autocomplete="off" oninput="onPin(this)">
-            <div class="login-err" id="pinErr">Incorrect PIN. Try again.</div>
-            <button class="btn-login" id="pinBtn" disabled onclick="doLogin()">Sign In</button>
+        <div class="modal-body">
+            <div class="setting-row">
+                <label class="setting-label">Worker URL</label>
+                <input class="form-input" id="settingWorkerUrl" placeholder="https://wtc-proxy.ccano-c46.workers.dev" style="width:100%">
+            </div>
+            <div class="setting-row">
+                <label class="setting-label">API Key</label>
+                <input class="form-input" id="settingApiKey" placeholder="wtc2024shawneehills" type="password" style="width:100%">
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-outline" onclick="closeModal('settingsModal')">Cancel</button>
+            <button class="btn-success" onclick="saveSettings()">Save Settings</button>
         </div>
     </div>
 </div>
 
-<!-- ═══════════ MAIN APP ═══════════ -->
-<div id="app" style="display:none;">
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen" style="display:none; min-height:100vh; align-items:center; justify-content:center; padding:1.5rem; flex-direction:column; gap:0.875rem;">
+    <div class="login-card" id="loginStep1">
+        <div class="login-logo">WTC</div>
+        <h1 class="login-title">Daily Operations</h1>
+        <p class="login-sub">Shawnee Hills &#8212; W661</p>
+        <div class="form-field">
+            <select class="form-select" id="userSelect">
+                <option value="">Select your name...</option>
+            </select>
+        </div>
+        <button class="btn-primary" id="loginBtn" onclick="handleNameSelect()" disabled>Continue</button>
+    </div>
+
+    <!-- PIN step (shown only if employee has PIN) -->
+    <div class="login-card" id="loginStep2" style="display:none;">
+        <div class="login-logo">WTC</div>
+        <h1 class="login-title" id="pinGreeting">Enter PIN</h1>
+        <p class="login-sub">4-digit PIN to continue</p>
+        <div class="pin-display">
+            <div class="pin-dot" id="pd1"></div>
+            <div class="pin-dot" id="pd2"></div>
+            <div class="pin-dot" id="pd3"></div>
+            <div class="pin-dot" id="pd4"></div>
+        </div>
+        <div class="pin-pad">
+            <button class="pin-btn" onclick="pinPress('1')">1</button>
+            <button class="pin-btn" onclick="pinPress('2')">2</button>
+            <button class="pin-btn" onclick="pinPress('3')">3</button>
+            <button class="pin-btn" onclick="pinPress('4')">4</button>
+            <button class="pin-btn" onclick="pinPress('5')">5</button>
+            <button class="pin-btn" onclick="pinPress('6')">6</button>
+            <button class="pin-btn" onclick="pinPress('7')">7</button>
+            <button class="pin-btn" onclick="pinPress('8')">8</button>
+            <button class="pin-btn" onclick="pinPress('9')">9</button>
+            <button class="pin-btn" onclick="pinPress('back')">&#8592;</button>
+            <button class="pin-btn" onclick="pinPress('0')">0</button>
+            <button class="pin-btn delete" onclick="clearPin()">&#x2715;</button>
+        </div>
+        <button class="btn-outline" onclick="backToNameSelect()" style="width:100%; margin-top:0.25rem;">Back</button>
+    </div>
+
+    <span class="settings-link" onclick="openSettings()">&#9881;&#65039; Configure connection</span>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp">
     <header class="header">
         <div class="header-top">
             <div class="logo-row">
-                <div class="logo-sq">WTC</div>
+                <div class="logo-box">WTC</div>
                 <div>
                     <div class="brand-name">Daily Operations</div>
-                    <div class="brand-date" id="hdrDate"></div>
+                    <div class="brand-date" id="headerDate"></div>
                 </div>
             </div>
-            <div class="right-row">
-                <div class="sync-dot" id="syncDot"></div>
-                <span class="sync-lbl" id="syncLbl">--</span>
-                <div class="user-chip" id="userChip" onclick="signOut()"></div>
+            <div class="header-right">
+                <div class="sync-dot" id="syncDot" title="Sync status"></div>
+                <button class="icon-btn" onclick="openSettings()" title="Settings">&#9881;</button>
+                <div class="avatar" id="avatarBtn" onclick="confirmLogout()" title="Sign out"></div>
             </div>
         </div>
-        <div class="tab-nav">
-            <button class="tab-btn active" data-tab="myplan" onclick="switchTab('myplan')">
-                📋 My Plan <span class="tab-badge" id="apptBadge">0</span>
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="planTab" onclick="switchTab('planTab')">
+                &#128203; My Plan
+                <span class="tab-badge" id="apptBadge">0</span>
             </button>
-            <button class="tab-btn" data-tab="checklists" onclick="switchTab('checklists')">
-                ✅ Checklists
+            <button class="tab-btn" data-tab="studioTab" onclick="switchTab('studioTab')">
+                &#127970; Studio
             </button>
-        </div>
+            <button class="tab-btn" data-tab="checklistTab" onclick="switchTab('checklistTab')">
+                &#9989; Checklists
+            </button>
+            <button class="tab-btn" data-tab="reportsTab" onclick="switchTab('reportsTab')">
+                &#128202; Reports
+            </button>
+        </nav>
     </header>
 
-    <main class="main">
-        <div class="alert-bar offline" id="offlineBar">
-            <span>⚠️</span><span>Server unreachable — using local cache.</span>
-        </div>
+    <main class="main has-footer">
 
-        <div class="ds-bar" id="dsBar" style="display:none;">
-            <span class="ds-info" id="dsInfo">--</span>
-            <div class="ds-actions">
-                <button class="btn-tiny" onclick="doRefresh()">↻ Refresh</button>
-                <button class="btn-tiny" onclick="toggleUpload()">📁 CSV Upload</button>
-            </div>
-        </div>
-
-        <div class="upload-panel" id="uploadPanel">
-            <strong style="font-size:.9rem;">Manual CSV Upload</strong>
-            <div class="upload-grid">
-                <div class="upload-item"><label>Appointments</label>
-                    <button class="file-btn" id="apptFileBtn" onclick="document.getElementById('apptFile').click()">Select file...</button>
-                    <input type="file" id="apptFile" accept=".csv" onchange="loadCsv('appointments','apptFileBtn',this)"></div>
-                <div class="upload-item"><label>Sales Accrual</label>
-                    <button class="file-btn" id="saleFileBtn" onclick="document.getElementById('saleFile').click()">Select file...</button>
-                    <input type="file" id="saleFile" accept=".csv" onchange="loadCsv('salesAccrual','saleFileBtn',this)"></div>
-                <div class="upload-item"><label>Retail Inventory</label>
-                    <button class="file-btn" id="retailFileBtn" onclick="document.getElementById('retailFile').click()">Select file...</button>
-                    <input type="file" id="retailFile" accept=".csv" onchange="loadCsv('retail','retailFileBtn',this)"></div>
-                <div class="upload-item"><label>Add-Ons Catalog</label>
-                    <button class="file-btn" id="addonFileBtn" onclick="document.getElementById('addonFile').click()">Select file...</button>
-                    <input type="file" id="addonFile" accept=".csv" onchange="loadCsv('addons','addonFileBtn',this)"></div>
-                <div class="upload-item"><label>Memberships</label>
-                    <button class="file-btn" id="memFileBtn" onclick="document.getElementById('memFile').click()">Select file...</button>
-                    <input type="file" id="memFile" accept=".csv" onchange="loadCsv('memberships','memFileBtn',this)"></div>
-            </div>
-        </div>
-
-        <!-- MY PLAN TAB -->
-        <div id="myplanTab" class="tab-pane active">
+        <!-- ===== MY PLAN TAB ===== -->
+        <div id="planTab" class="tab-pane active">
             <div class="training-banner">
-                <div class="t-day" id="tDay"></div>
-                <div class="t-title" id="tTitle"></div>
-                <div class="t-body" id="tBody"></div>
+                <div class="training-day" id="trainDay"></div>
+                <div class="training-title" id="trainTitle"></div>
+                <div class="training-body" id="trainBody"></div>
             </div>
-
-            <div class="earnings-grid">
-                <div class="earn-box"><div class="earn-label">Scheduled</div><div class="earn-val" id="eScheduled">$0</div></div>
-                <div class="earn-box"><div class="earn-label">Potential</div><div class="earn-val hi" id="ePotential">$0</div><div class="earn-meta">w/ add-ons</div></div>
-                <div class="earn-box"><div class="earn-label">Svc Comm.</div><div class="earn-val" id="eSvcComm">$0</div><div class="earn-meta" id="eSvcMeta">5%</div></div>
-                <div class="earn-box"><div class="earn-label">Prod Comm.</div><div class="earn-val" id="eProdComm">$0</div><div class="earn-meta" id="eProdMeta">10%</div></div>
-                <div class="earn-box"><div class="earn-label">Est. Tips</div><div class="earn-val ok" id="eTips">$0</div><div class="earn-meta">~20%</div></div>
+            <div class="earnings-card">
+                <div class="earnings-item">
+                    <div class="earnings-label">Scheduled</div>
+                    <div class="earnings-value" id="earnScheduled">$0</div>
+                </div>
+                <div class="earnings-item">
+                    <div class="earnings-label">Potential</div>
+                    <div class="earnings-value orange" id="earnPotential">$0</div>
+                    <div class="earnings-meta">w/ upsells</div>
+                </div>
+                <div class="earnings-item">
+                    <div class="earnings-label">Commission</div>
+                    <div class="earnings-value" id="earnCommission">$0</div>
+                    <div class="earnings-meta" id="earnCommRate">5%</div>
+                </div>
+                <div class="earnings-item">
+                    <div class="earnings-label">Est. Tips</div>
+                    <div class="earnings-value green" id="earnTips">$0</div>
+                    <div class="earnings-meta">~20%</div>
+                </div>
             </div>
-
-            <div class="rga-card">
-                <div class="rga-card-title">🎯 Revenue Generating Activities</div>
-                <div id="rgaRows"></div>
-            </div>
-
-            <div class="shift-notes-card">
-                <div class="action-lbl" style="margin-bottom:.6rem;">📝 Shift Notes</div>
-                <textarea class="notes-area" id="shiftNotes" placeholder="Notes for today's shift..." oninput="onShiftNotes(this.value)"></textarea>
-            </div>
-
             <div class="appt-list" id="apptList">
-                <div style="text-align:center;padding:2.5rem;color:var(--silver);">
-                    <p style="font-size:1rem;margin-bottom:.4rem;">Loading your schedule…</p>
-                    <p style="font-size:.85rem;">Upload CSV files above if data doesn't appear.</p>
+                <div class="empty-state">
+                    <div class="empty-icon">&#128203;</div>
+                    <h3>Loading your schedule...</h3>
+                    <p>Connecting to Google Sheets</p>
                 </div>
             </div>
         </div>
 
-        <!-- CHECKLISTS TAB -->
-        <div id="checklistsTab" class="tab-pane">
+        <!-- ===== STUDIO TAB ===== -->
+        <div id="studioTab" class="tab-pane">
             <div class="training-banner">
-                <div class="t-day" id="tDayCl"></div>
-                <div class="t-title" id="tTitleCl"></div>
-                <div class="t-body" id="tBodyCl"></div>
+                <div class="training-day" id="studioTrainDay"></div>
+                <div class="training-title" id="studioTrainTitle"></div>
+                <div class="training-body" id="studioTrainBody"></div>
             </div>
-            <div class="cl-picker" id="clPicker"></div>
-            <div id="clBody"></div>
+            <div id="studioSections">
+                <div class="empty-state">
+                    <div class="empty-icon">&#127970;</div>
+                    <h3>Loading studio plan...</h3>
+                </div>
+            </div>
         </div>
+
+        <!-- ===== CHECKLISTS TAB ===== -->
+        <div id="checklistTab" class="tab-pane">
+            <div id="checklistsContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">&#9989;</div>
+                    <h3>Loading checklists...</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REPORTS TAB ===== -->
+        <div id="reportsTab" class="tab-pane">
+            <div class="report-card">
+                <div class="report-title">&#127775; Today at a Glance</div>
+                <div class="stats-grid" id="reportStats">
+                    <div class="stat-box"><div class="stat-val" id="rs-appts">0</div><div class="stat-label">Appts</div></div>
+                    <div class="stat-box"><div class="stat-val green" id="rs-new">0</div><div class="stat-label">New Clients</div></div>
+                    <div class="stat-box"><div class="stat-val blue" id="rs-co">0</div><div class="stat-label">CO Members</div></div>
+                    <div class="stat-box"><div class="stat-val warn" id="rs-targets">0</div><div class="stat-label">CO Targets</div></div>
+                    <div class="stat-box"><div class="stat-val" id="rs-rev">$0</div><div class="stat-label">Sched. Revenue</div></div>
+                    <div class="stat-box"><div class="stat-val green" id="rs-rebooks">0</div><div class="stat-label">Rebooks Today</div></div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-title">&#128100; Cerologist Breakdown</div>
+                <div id="cerologistBreakdown">
+                    <div class="empty-state" style="padding:1rem 0;"><p>Load data to see breakdown</p></div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-title">&#128161; Highlights &amp; Actions</div>
+                <ul class="highlight-list" id="highlights">
+                    <li class="highlight-item">
+                        <div class="h-icon blue">&#128197;</div>
+                        <div class="h-text">Load today&#39;s data to see highlights</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
     </main>
 
-    <div class="footer" id="footer">
-        <button class="btn btn-outline" onclick="saveNow()">💾 Save</button>
-        <button class="btn btn-success" onclick="openRecap()">📤 Send Recap</button>
+    <div class="footer" id="footerBar">
+        <button class="btn-outline" onclick="saveProgress()">&#128190; Save</button>
+        <button class="btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
     </div>
 </div>
 
-<!-- RECAP MODAL -->
-<div class="modal-bg" id="recapModal">
+<!-- ===== RECAP MODAL ===== -->
+<div class="modal-overlay" id="recapModal">
     <div class="modal">
-        <div class="modal-head"><div class="modal-title">Daily Recap</div><button class="modal-x" onclick="closeRecap()">×</button></div>
+        <div class="modal-head">
+            <div class="modal-title">Daily Recap</div>
+            <button class="modal-close" onclick="closeModal('recapModal')">&#x2715;</button>
+        </div>
         <div class="modal-body" id="recapBody"></div>
         <div class="modal-foot">
-            <button class="btn btn-outline" onclick="closeRecap()" style="flex:1;">Cancel</button>
-            <button class="btn btn-success" id="sendRecapBtn" onclick="sendRecap()" style="flex:1;">📤 Send to Slack</button>
+            <button class="btn-outline" onclick="closeModal('recapModal')">Cancel</button>
+            <button class="btn-success" onclick="submitRecap()">&#128140; Send to Slack</button>
         </div>
     </div>
 </div>
 
-<!-- CHECKLIST CONFIRM MODAL -->
-<div class="modal-bg" id="clModal">
-    <div class="modal">
-        <div class="modal-head"><div class="modal-title" id="clModalTitle">Submit Checklist</div><button class="modal-x" onclick="closeClModal()">×</button></div>
-        <div class="modal-body" id="clModalBody"></div>
-        <div class="modal-foot">
-            <button class="btn btn-outline" onclick="closeClModal()" style="flex:1;">Cancel</button>
-            <button class="btn btn-success" id="clSubmitBtn" onclick="submitChecklist()" style="flex:1;">✅ Submit</button>
-        </div>
-    </div>
+<div class="toast" id="toast">
+    <span id="toastMsg" class="toast-msg"></span>
 </div>
-
-<div class="toast" id="toast"><span id="toastIcon"></span><span id="toastMsg"></span></div>
 
 <script>
-// ================================================================
-//  CONFIG
-// ================================================================
-const CFG = {
-    WORKER_URL: 'https://wtc-proxy.ccano-c46.workers.dev/',
-    API_KEY:    'wtc2024shawneehills',
-    STUDIO:     'Waxing the City - Shawnee Hills (W661)',
-    TRAIN_START:'2025-01-01'
+// =============================================================================
+// API LAYER
+// ─────────────────────────────────────────────────────────────────────────────
+// This is the ONLY section that changes when migrating from Google Sheets
+// to Supabase. All other code calls API.fetch() and API.post() exclusively.
+//
+// SUPABASE MIGRATION CHECKLIST:
+//   1. Replace workerUrl() / apiKey() with supabaseUrl() / supabaseKey()
+//   2. Rewrite API.fetch() to query Supabase REST API with appropriate filters
+//   3. Rewrite API.post() to INSERT/UPDATE Supabase tables
+//      (Content-Type: application/json is SAFE to add back for Supabase)
+//   4. Map the response shape to match what getAllSheetData() returns today
+//   5. Everything else in this file stays unchanged
+// =============================================================================
+const API = {
+    workerUrl()  { return localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev'; },
+    apiKey()     { return localStorage.getItem('wtc_api_key')    || 'wtc2024shawneehills'; },
+
+    async fetch(params = {}) {
+        const url = new URL(this.workerUrl());
+        url.searchParams.set('key', this.apiKey());
+        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+        const resp = await fetch(url.toString(), { method: 'GET' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.json();
+    },
+
+    // ⚠️  iOS Safari CORS fix: do NOT set Content-Type header on POST.
+    // Omitting the header avoids the CORS preflight that iOS Safari fails on.
+    // The Cloudflare Worker handles CORS server-side. Body is still valid JSON.
+    // Remove this comment and add back headers:{} when migrating to Supabase.
+    async post(body) {
+        const url = new URL(this.workerUrl());
+        url.searchParams.set('key', this.apiKey());
+        const resp = await fetch(url.toString(), {
+            method: 'POST',
+            body: JSON.stringify({ ...body, key: this.apiKey() })
+            // NO headers — intentional iOS fix
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.json();
+    }
 };
 
-// ================================================================
-//  STATE
-// ================================================================
-let user    = null;
-let team    = [];
-let online  = false;
-let saving  = false;
-let saveT   = null;
+// =============================================================================
+// CONSTANTS
+// =============================================================================
+const STUDIO = 'Waxing the City - Shawnee Hills (W661)';
+const TRAINING_START = '2025-01-01';
 
-let D = { appointments:null, salesAccrual:null, retail:null, addons:null, memberships:null, checklists:null };
-let apptState  = {};   // { [guestCode]: { completed, rebooked, clubOrange, addons:[], products:[], notes } }
-let clState    = {};   // { [checklistId]: { [secIdx_itemIdx]: bool } }
-let cashState  = {};   // { [checklistId]: { billKey: amount } }
-let fuState    = {};   // { [checklistId]: string }
-let rgaState   = { 1:{a:'',n:''}, 2:{a:'',n:''}, 3:{a:'',n:''} };
-let shiftNotes = '';
-let activeCl   = null;
-let pendingClId= null;
+const FALLBACK_EMPLOYEES = [
+    { id: 'mackenzie', name: 'MacKenzie Ort',  initials: 'MO', role: 'cerologist', commissionRate: 0.05 },
+    { id: 'mary',      name: 'Mary Zangana',   initials: 'MZ', role: 'cerologist', commissionRate: 0.05 },
+    { id: 'moriah',    name: 'Moriah Jones',   initials: 'MJ', role: 'cerologist', commissionRate: 0.05 },
+    { id: 'chris',     name: 'Chris Cano',     initials: 'CC', role: 'manager',    commissionRate: 0.05 }
+];
 
-// ================================================================
-//  TRAINING
-// ================================================================
 const TRAINING = [
-    {t:"Day 1 — The First 30 Seconds Decide Everything", b:"Clients decide whether they trust you before you touch them. Focus on immediate eye contact, a genuine smile, and acknowledging each client the moment they walk in."},
-    {t:"Day 2 — Professional Appearance Is a Revenue Lever", b:"Your look communicates competence. Today, treat your uniform, hair, and name tag as part of the service."},
-    {t:"Day 3 — The Handshake Transfers Control & Comfort", b:"A confident handshake and warm introduction signal safety and professionalism. Today, focus on delivering that handshake consistently."},
-    {t:"Day 4 — Walk With the Client, Don't Make Them Chase You", b:"Today, walk with your client at their pace, use light conversation, and point out the restroom as you go."},
-    {t:"Day 5 — Guide Like a Concierge, Not 'Just' a Waxer", b:"Today, clearly guide them: show the client caddy, explain where to place clothes, how to use wipes, and where the trash is."},
-    {t:"Day 6 — Consultation Is Listening, Not a Checklist", b:"Today, ask open-ended questions and let your client talk. Focus on truly understanding their story."},
-    {t:"Day 7 — Past, Present, Products = Your Sales Blueprint", b:"Ask about what they did before, what they are doing now, and what products they use on that area."},
-    {t:"Day 8 — Work While You Listen to Build Authority", b:"Today, prep the skin while you listen—observe hair growth, density, and skin response at the same time."},
-    {t:"Day 9 — Repeat Back to Remove Hidden Fear", b:"Today, practice repeating back what you heard: 'So what I'm hearing is…' This simple step makes clients feel safe."},
-    {t:"Day 10 — The Lifestyle Question Changes the Plan", b:"Ask every client: 'Is this something you're doing occasionally, or as part of your routine?'"},
-    {t:"Day 11 — Educate Only After Anxiety Drops", b:"Today, wait until after the first strip is removed to share key education. Once you see their body relax, that is your moment."},
-    {t:"Day 12 — Use the First Pull to Reassure and Lead", b:"After the first pull, immediately tell them what you're seeing: how the hair is coming out, what's normal for their skin."},
-    {t:"Day 13 — Master the Professional Hat and Personal Hat", b:"Today, consciously switch hats: share focused education (professional hat), then connect on something personal."},
-    {t:"Day 14 — Teach the Waxing Lifestyle, Not Just a Service", b:"Today, explain exfoliation and aftercare as part of the waxing lifestyle: preventing ingrowns, keeping skin smooth."},
-    {t:"Day 15 — Introduce Club Orange at the Right Moment", b:"Today, wait until you have built trust—after they've experienced your skill and care—then introduce membership."},
-    {t:"Day 16 — Recap Belongs in the Room, Not at the Front Desk", b:"Today, make sure you recap in the room: when to come back, what to do at home, and what you'll be grabbing up front."},
-    {t:"Day 17 — Rebooking Is an Assumption, Not an Awkward Question", b:"Today, confidently assume the rebook: 'Four weeks would be perfect—does this same time work for you?'"},
-    {t:"Day 18 — Pre-Sell Retail Before Checkout", b:"Today, make sure you've already connected the dots in the room: 'Based on your skin and routine, I'd recommend this scrub.'"},
-    {t:"Day 19 — Present Club Orange as a Clear Comparison", b:"Today, present Club Orange with a simple comparison: 'If we do today without membership it's $X; if we add Club Orange it's $Y.'"},
-    {t:"Day 20 — End with a Warm, Confident Goodbye", b:"Today, finish with eye contact, a genuine thank you, and an offer of support."},
-    {t:"Day 21 — Manage Your Book Like It's Your Business", b:"Today, look at your day and ask: where can I safely shrink service times based on client history and consistency?"},
-    {t:"Day 22 — Add Enhancements That Don't Add Time", b:"Today, look for chances to add quick enhancements that fit into your existing service time—eye gels, targeted serums."},
-    {t:"Day 23 — Ask for Referrals with Confidence and Care", b:"Today, when you feel that strong connection, say: 'If you have friends who'd love this experience, I'd be honored to take care of them.'"},
-    {t:"Day 24 — Follow Up to Turn One Visit into Many", b:"Today, make sure every new client gets a quick, caring check-in: 'How are you feeling after your wax?'"},
-    {t:"Day 25 — Treat New Clients Like VIP Projects", b:"Today, be extra intentional with anyone marked as new: double down on greet and guide, consult more deeply."},
-    {t:"Day 26 — Read Body Language Like Another Data Point", b:"Today, notice when shoulders tense, hands grip, or eyes close. Use that as feedback: pause education, reassure, or slow your pace."},
-    {t:"Day 27 — Remember Personal Details to Deepen Loyalty", b:"Today, review client notes before they walk in and be ready to reference something small: a trip they mentioned, a kid's sport."},
-    {t:"Day 28 — Consistency Beats Talent Every Time", b:"Today, focus on running the full service experience intentionally: greet & guide, consult, educate & prescribe, recap, and close."},
-    {t:"Day 29 — Audit Yourself Like a Coach Would", b:"Today, choose one strength and one opportunity from your service experience. Name it, own it, and choose one micro-action to improve."},
-    {t:"Day 30 — Reset the Recipe and Start Strong Again", b:"Today, treat your full day like a reset: execute every step intentionally, as if every client is your first client."}
+    { title: "Day 1 — The First 30 Seconds Decide Everything", body: "Clients decide whether they trust you before you touch them. Focus today on immediate eye contact, a genuine smile, and acknowledging each client the moment they walk in." },
+    { title: "Day 2 — Professional Appearance Is a Revenue Lever", body: "Your look communicates competence. Today, treat your uniform, hair, and name tag as part of the service." },
+    { title: "Day 3 — The Handshake Transfers Control & Comfort", body: "A confident handshake and warm introduction signal safety and professionalism. Today, focus on delivering that handshake consistently." },
+    { title: "Day 4 — Walk With the Client, Don't Make Them Chase You", body: "Today, walk with your client at their pace, use light conversation, and point out the restroom as you go." },
+    { title: "Day 5 — Guide Like a Concierge, Not 'Just' a Waxer", body: "Today, clearly guide them: show the client caddy, explain where to place clothes, how to use wipes, and where the trash is." },
+    { title: "Day 6 — Consultation Is Listening, Not a Checklist", body: "Today, ask open-ended questions and let your client talk. Focus on truly understanding their story." },
+    { title: "Day 7 — Past, Present, Products = Your Sales Blueprint", body: "Ask about what they did before, what they are doing now, and what products they use on that area." },
+    { title: "Day 8 — Work While You Listen to Build Authority", body: "Today, prep the skin while you listen — observe hair growth, density, and skin response at the same time." },
+    { title: "Day 9 — Repeat Back to Remove Hidden Fear", body: "Today, practice repeating back what you heard: 'So what I'm hearing is...' This simple step makes clients feel safe." },
+    { title: "Day 10 — The Lifestyle Question Changes the Plan", body: "Ask every client: 'Is this something you're doing occasionally, or as part of your routine?'" },
+    { title: "Day 11 — Educate Only After Anxiety Drops", body: "Today, wait until after the first strip is removed to share key education. Once you see their body relax, that is your moment." },
+    { title: "Day 12 — Use the First Pull to Reassure and Lead", body: "After the first pull, immediately tell them what you're seeing: how the hair is coming out, what's normal for their skin." },
+    { title: "Day 13 — Master the Professional Hat and Personal Hat", body: "Today, consciously switch hats: share focused education (professional hat), then connect on something personal." },
+    { title: "Day 14 — Teach the Waxing Lifestyle, Not Just a Service", body: "Today, explain exfoliation and aftercare as part of the waxing lifestyle: preventing ingrowns, keeping skin smooth." },
+    { title: "Day 15 — Introduce Club Orange at the Right Moment", body: "Today, wait until you have built trust — after they've experienced your skill and care — then introduce membership." },
+    { title: "Day 16 — Recap Belongs in the Room, Not at the Front Desk", body: "Today, make sure you recap in the room: when to come back, what to do at home, and what you'll be grabbing up front." },
+    { title: "Day 17 — Rebooking Is an Assumption, Not an Awkward Question", body: "Today, confidently assume the rebook: 'Four weeks would be perfect — does this same time work for you?'" },
+    { title: "Day 18 — Pre-Sell Retail Before Checkout", body: "Today, make sure you've already connected the dots in the room: 'Based on your skin and routine, I'd recommend this scrub.'" },
+    { title: "Day 19 — Present Club Orange as a Clear Comparison", body: "Today, present Club Orange with a simple comparison: 'If we do today without membership it's $X; if we add Club Orange it's $Y.'" },
+    { title: "Day 20 — End with a Warm, Confident Goodbye", body: "Today, finish with eye contact, a genuine thank you, and an offer of support." },
+    { title: "Day 21 — Manage Your Book Like It's Your Business", body: "Today, look at your day and ask: where can I safely shrink service times based on client history and consistency?" },
+    { title: "Day 22 — Add Enhancements That Don't Add Time", body: "Today, look for chances to add quick enhancements that fit into your existing service time — eye gels, targeted serums." },
+    { title: "Day 23 — Ask for Referrals with Confidence and Care", body: "Today, when you feel that strong connection, say: 'If you have friends who'd love this experience, I'd be honored to take care of them.'" },
+    { title: "Day 24 — Follow Up to Turn One Visit into Many", body: "Today, make sure every new client gets a quick, caring check-in: 'How are you feeling after your wax?'" },
+    { title: "Day 25 — Treat New Clients Like VIP Projects", body: "Today, be extra intentional with anyone marked as new: double down on greet and guide, consult more deeply." },
+    { title: "Day 26 — Read Body Language Like Another Data Point", body: "Today, notice when shoulders tense, hands grip, or eyes close. Use that as feedback: pause education, reassure, or slow your pace." },
+    { title: "Day 27 — Remember Personal Details to Deepen Loyalty", body: "Today, review client notes before they walk in and be ready to reference something small: a trip they mentioned, a kid's sport." },
+    { title: "Day 28 — Consistency Beats Talent Every Time", body: "Today, focus on running the full service experience intentionally: greet & guide, consult, educate & prescribe, recap, and close." },
+    { title: "Day 29 — Audit Yourself Like a Coach Would", body: "Today, choose one strength and one opportunity from your service experience. Name it, own it, and choose one micro-action to improve." },
+    { title: "Day 30 — Reset the Recipe and Start Strong Again", body: "Today, treat your full day like a reset: execute every step intentionally, as if every client is your first client." }
 ];
 
-const CHECKLISTS_DEFAULT = [
-    {id:'opening_a', name:'Opening A', icon:'🌅', hasCash:false, hasFU:false, sections:[
-        {name:'Studio Setup', icon:'🏠', items:['Unlock front door and turn on lights','Check room temperatures','Restock wax and supplies in all rooms','Ensure wax pots are on and heating','Check music and volume levels']},
-        {name:'Client Readiness', icon:'👋', items:["Review today's full appointment schedule",'Pull client history notes for all guests','Set out new client intake forms','Confirm room assignments per cerologist']}
-    ]},
-    {id:'opening_b', name:'Opening B', icon:'💰', hasCash:true, hasFU:false, sections:[
-        {name:'Cash & POS', icon:'🧾', items:['Count opening cash drawer','Log opening balance in register','Confirm POS system is online','Review any pending payments or invoices']}
-    ]},
-    {id:'closing_a', name:'Closing A', icon:'🌙', hasCash:false, hasFU:true, sections:[
-        {name:'Client Follow-Ups', icon:'📱', items:['Log follow-up texts needed for today','Confirm all rebooks are in system','Update client notes in Zenoti']},
-        {name:'Room Closedown', icon:'🧹', items:['Clean and strip all wax rooms','Turn off all wax pots','Restock rooms for tomorrow','Start/check laundry']}
-    ]},
-    {id:'closing_b', name:'Closing B', icon:'🔐', hasCash:true, hasFU:true, sections:[
-        {name:'End of Day', icon:'✅', items:['Final cash drawer count and log','Close out all open invoices','Lock all rooms and treatment areas','Set alarm and complete final walk-through']}
-    ]}
-];
+// =============================================================================
+// STATE
+// =============================================================================
+let currentUser   = null;
+let appData       = { appointments: [], salesAccrual: [], memberships: [], retail: [], addons: [], employees: [], checklists: [] };
+let apptStates    = {};  // { [guestCode]: { completed, rebooked, clubOrange, addonSelected, productSelected, notes } }
+let studioStates  = {};  // { [itemId]: { completed, completedBy } }
+let clStates      = {};  // { [checklistId]: { [itemIndex]: checked, cashTotal, followUp } }
+let rgaItems      = [];
+let pinBuffer     = '';
+let pendingUserId = null;
+let syncTimer     = null;
 
-const RGA_OPTIONS = [
-    'High Rebook %','Club Orange Sign Up','Text Messages','Business Drop Ins',
-    'Attending Event','Social Post','Story Post','Thank You Card',
-    'Client Referral','Business Referral','Got a Review','Other'
-];
-
-// ================================================================
-//  INIT
-// ================================================================
+// =============================================================================
+// INIT
+// =============================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    setDateHeader();
-    setTraining();
-    loadLocal();
-    initTeam();
+    setLoadingMsg('Starting up...');
+    setHeaderDate();
+    setTrainingMessage();
+
+    // Wire up name select enable/disable
+    document.getElementById('userSelect').addEventListener('change', function() {
+        document.getElementById('loginBtn').disabled = !this.value;
+    });
+
+    // Check for returning session
+    const savedUserId = localStorage.getItem('wtc_user');
+    const savedDate   = localStorage.getItem('wtc_login_date');
+    const today       = todayKey();
+
+    if (savedUserId && savedDate === today) {
+        // Restore session without PIN
+        setLoadingMsg('Restoring session...');
+        bootstrapUser(savedUserId, false);
+    } else {
+        // First visit — show login
+        setLoadingMsg('Loading team...');
+        loadEmployeesForLogin();
+    }
 });
 
-function setDateHeader() {
-    document.getElementById('hdrDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-}
-
-function setTraining() {
-    const idx = (((Math.floor((Date.now() - new Date(CFG.TRAIN_START)) / 86400000)) % 30) + 30) % 30;
-    const tr  = TRAINING[idx];
-    const day = `Day ${idx+1} of 30`;
-    ['tDay','tDayCl'].forEach(id => setText(id, day));
-    ['tTitle','tTitleCl'].forEach(id => setText(id, tr.t));
-    ['tBody','tBodyCl'].forEach(id => setText(id, tr.b));
-}
-
-function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
-
-function initTeam() {
-    // Load cached employees first so select is populated instantly
-    const cached = localStorage.getItem('wtc_team_cache');
-    if (cached) {
-        try { team = JSON.parse(cached); } catch(e) {}
-    }
-    if (!team.length) team = defaultTeam();
-    populateSelect();
-
-    // Try server in background
-    apiGet('getData').then(json => {
-        if (json.employees?.length) {
-            team = json.employees.map(normalizeEmployee);
-            localStorage.setItem('wtc_team_cache', JSON.stringify(team));
-            populateSelect();
-        }
-        ingestServerData(json);
-        setOnline(true);
-    }).catch(() => setOnline(false));
-}
-
-function defaultTeam() {
-    return [
-        {id:'mackenzie_ort', name:'MacKenzie Ort', initials:'MO', role:'cerologist', pin:'', svc:0.05, prod:0.10},
-        {id:'mary_zangana',  name:'Mary Zangana',  initials:'MZ', role:'cerologist', pin:'', svc:0.05, prod:0.10},
-        {id:'moriah_jones',  name:'Moriah Jones',  initials:'MJ', role:'cerologist', pin:'', svc:0.05, prod:0.10},
-        {id:'cali_mclamara', name:'Cali Mclamara', initials:'CM', role:'cerologist', pin:'', svc:0.05, prod:0.10},
-        {id:'chris_cano',    name:'Chris Cano',    initials:'CC', role:'manager',    pin:'', svc:0.05, prod:0.10}
-    ];
-}
-
-function normalizeEmployee(e) {
-    const name = e.Name || e.name || '';
-    return {
-        id:       e.id || name.toLowerCase().replace(/\s+/g,'_'),
-        name:     name,
-        initials: name.split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase(),
-        role:     (e.Role||e.role||'cerologist').toLowerCase(),
-        pin:      String(e.PIN||e.pin||''),
-        svc:      parseFloat(e.ServiceCommission||0.05),
-        prod:     parseFloat(e.ProductCommission||0.10)
-    };
-}
-
-function ingestServerData(json) {
-    if (json.appointments) { D.appointments=json.appointments; localStorage.setItem('wtc_appts_cache',JSON.stringify(json.appointments)); }
-    if (json.salesAccrual) D.salesAccrual=json.salesAccrual;
-    if (json.retail)       D.retail=json.retail;
-    if (json.addons)       D.addons=json.addons;
-    if (json.memberships)  D.memberships=json.memberships;
-    if (json.checklists)   D.checklists=json.checklists;
-}
-
-function populateSelect() {
-    const sel = document.getElementById('nameSelect');
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">Select your name...</option>';
-    team.forEach(m => {
-        const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o);
-    });
-    if (cur) sel.value = cur;
-    sel.onchange = () => { document.getElementById('nextBtn').disabled = !sel.value; };
-    document.getElementById('nextBtn').disabled = !sel.value;
-}
-
-// ================================================================
-//  LOGIN
-// ================================================================
-function goToPin() {
-    const id = document.getElementById('nameSelect').value;
-    const m  = team.find(t=>t.id===id);
-    if (!m) return;
-    if (!m.pin || m.pin==='0' || m.pin==='') { user=m; completeLogin(); return; }
-    document.getElementById('pinName').textContent = m.name.split(' ')[0];
-    document.getElementById('step1').style.display = 'none';
-    document.getElementById('step2').classList.add('visible');
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinBtn').disabled = true;
-    document.getElementById('pinErr').classList.remove('show');
-    setTimeout(()=>document.getElementById('pinInput').focus(), 100);
-}
-
-function goToName() {
-    document.getElementById('step2').classList.remove('visible');
-    document.getElementById('step1').style.display = 'block';
-    document.getElementById('pinErr').classList.remove('show');
-}
-
-function onPin(el) {
-    document.getElementById('pinErr').classList.remove('show');
-    document.getElementById('pinBtn').disabled = el.value.length < 4;
-    if (el.value.length===4) doLogin();
-}
-
-async function doLogin() {
-    const id  = document.getElementById('nameSelect').value;
-    const pin = document.getElementById('pinInput').value;
-    const m   = team.find(t=>t.id===id);
-    const btn = document.getElementById('pinBtn');
-    btn.disabled=true; btn.textContent='Verifying…';
-
-    let ok = false;
-    if (online) {
-        try {
-            const r = await serverPost({type:'verifyPin', employeeId:id, pin});
-            ok = r.success === true;
-        } catch(e) { ok = m && m.pin===pin; }
-    } else {
-        ok = m && m.pin===pin;
-    }
-
-    btn.textContent='Sign In';
-    if (ok) {
-        user = m;
-        localStorage.setItem('wtc_uid', id);
-        localStorage.setItem('wtc_sess_exp', String(Date.now()+8*3600000));
-        completeLogin();
-    } else {
-        btn.disabled=false;
-        document.getElementById('pinErr').classList.add('show');
-        document.getElementById('pinInput').value='';
-    }
-}
-
-async function completeLogin() {
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('userChip').textContent = user.initials;
-    document.getElementById('dsBar').style.display='flex';
-    document.getElementById('dsInfo').textContent = online ? '📡 Live — Google Sheets' : '⚠️ Cached data';
-
-    if (online) await loadShiftState();
-
-    renderRGA();
-    renderAppts();
-    renderChecklists();
-
-    const sn=document.getElementById('shiftNotes');
-    if (sn&&shiftNotes) sn.value=shiftNotes;
-    setSyncLabel('saved');
-}
-
-function signOut() {
-    if (!confirm('Sign out?')) return;
-    user=null;
-    localStorage.removeItem('wtc_sess_exp');
-    document.getElementById('app').style.display='none';
-    document.getElementById('loginScreen').style.display='flex';
-    document.getElementById('step2').classList.remove('visible');
-    document.getElementById('step1').style.display='block';
-}
-
-// ================================================================
-//  NETWORK  —  THE iOS FIX IS HERE
-//
-//  serverPost() does NOT set Content-Type: application/json.
-//  That header triggers a CORS preflight (OPTIONS) request on iOS
-//  Safari before every single POST. Desktop Chrome caches preflights
-//  so you never see the failure there. iOS Safari does NOT cache them,
-//  so every POST was silently blocked on iPad.
-//
-//  Without that header, the request is a "simple request" — no
-//  preflight needed, no CORS block. The body is still JSON and
-//  Apps Script's e.postData.contents still parses it perfectly.
-// ================================================================
-async function apiGet(action, params={}) {
-    let url = `${CFG.WORKER_URL}?key=${CFG.API_KEY}&action=${action}`;
-    Object.entries(params).forEach(([k,v]) => { url += `&${k}=${encodeURIComponent(v)}`; });
-    const r = await fetch(url, {method:'GET', cache:'no-store'});
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-}
-
-async function serverPost(payload) {
-    const r = await fetch(`${CFG.WORKER_URL}?key=${CFG.API_KEY}`, {
-        method: 'POST',
-        // ← NO Content-Type header — this is what fixes iOS Safari
-        body: JSON.stringify({...payload, key: CFG.API_KEY})
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-}
-
-// ================================================================
-//  ONLINE STATE
-// ================================================================
-function setOnline(val) {
-    online = val;
-    const dot = document.getElementById('syncDot');
-    if (dot) dot.className = 'sync-dot ' + (val?'online':'error');
-    const bar = document.getElementById('offlineBar');
-    if (bar) bar.classList.toggle('show', !val);
-}
-
-function setSyncLabel(state) {
-    const dot=document.getElementById('syncDot'), lbl=document.getElementById('syncLbl');
-    if (!lbl) return;
-    if (state==='syncing') { lbl.textContent='Saving…'; if(dot) dot.className='sync-dot syncing'; }
-    else if (state==='saved') { lbl.textContent=`Saved ${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}`; if(dot) dot.className='sync-dot '+(online?'online':'error'); }
-    else if (state==='error') { lbl.textContent='Sync failed'; if(dot) dot.className='sync-dot error'; }
-}
-
-// ================================================================
-//  DATA REFRESH
-// ================================================================
-async function doRefresh() {
-    setSyncLabel('syncing');
+async function loadEmployeesForLogin() {
+    let employees = FALLBACK_EMPLOYEES;
     try {
-        const json = await apiGet('getData');
-        ingestServerData(json);
-        setOnline(true);
-        document.getElementById('dsInfo').textContent='📡 Live — Google Sheets';
-        renderAppts(); renderChecklists();
-        setSyncLabel('saved');
-        toast('Data refreshed ✓','success');
+        const data = await API.fetch();
+        if (data.employees && data.employees.length > 0) {
+            employees = parseEmployees(data.employees);
+            // Cache full data for use after login
+            cacheAppData(data);
+        }
     } catch(e) {
-        setSyncLabel('error');
-        toast('Refresh failed','error');
+        console.warn('Could not load employees from Sheets, using fallback:', e);
+    }
+    populateUserSelect(employees);
+    showScreen('login');
+}
+
+function parseEmployees(rows) {
+    return rows.map(r => ({
+        id:             (r.id || r.ID || r.EmployeeID || '').toLowerCase().trim(),
+        name:           r.name || r.Name || r.EmployeeName || '',
+        initials:       r.initials || r.Initials || makeInitials(r.name || r.Name || ''),
+        role:           (r.role || r.Role || 'cerologist').toLowerCase(),
+        commissionRate: parseFloat(r.ServiceCommission || r.CommissionRate || 0.05) || 0.05,
+        hasPin:         !!(r.pin || r.PIN)
+    })).filter(e => e.id && e.name);
+}
+
+function makeInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+}
+
+function populateUserSelect(employees) {
+    const sel = document.getElementById('userSelect');
+    sel.innerHTML = '<option value="">Select your name...</option>';
+    employees.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.name;
+        sel.appendChild(opt);
+    });
+    // Store employees in appData for later
+    if (!appData.employees || appData.employees.length === 0) {
+        appData.employees = employees;
     }
 }
 
-function toggleUpload() { document.getElementById('uploadPanel').classList.toggle('open'); }
+// =============================================================================
+// LOGIN FLOW
+// =============================================================================
+function handleNameSelect() {
+    const userId = document.getElementById('userSelect').value;
+    if (!userId) return;
 
-function loadCsv(key, btnId, input) {
-    const file = input.files[0]; if(!file) return;
-    const btn  = document.getElementById(btnId);
-    btn.textContent='Loading…';
-    const r = new FileReader();
-    r.onload = e => {
-        try {
-            D[key] = parseCSV(e.target.result);
-            btn.textContent = '✓ '+file.name.substring(0,14)+'…';
-            btn.classList.add('loaded');
-            if (D.appointments) renderAppts();
-            toast('CSV loaded','success');
-        } catch(err) { btn.textContent='Error — retry'; }
-    };
-    r.readAsText(file);
+    const employees = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
+    const emp = employees.find(e => e.id === userId) || FALLBACK_EMPLOYEES.find(e => e.id === userId);
+    if (!emp) return;
+
+    pendingUserId = userId;
+
+    if (emp.hasPin) {
+        document.getElementById('pinGreeting').textContent = 'Hi ' + emp.name.split(' ')[0] + '!';
+        document.getElementById('loginStep1').style.display = 'none';
+        document.getElementById('loginStep2').style.display = 'block';
+        clearPin();
+    } else {
+        bootstrapUser(userId, true);
+    }
 }
 
-function parseCSV(text) {
-    const lines=text.trim().split('\n'); const headers=csvLine(lines[0]);
-    return lines.slice(1).filter(l=>l.trim()).map(l=>{ const v=csvLine(l); const row={}; headers.forEach((h,i)=>row[h.trim()]=v[i]?.trim()||''); return row; });
-}
-function csvLine(line) {
-    const r=[]; let cur=''; let q=false;
-    for(const c of line){ if(c==='"'){q=!q;}else if(c===','&&!q){r.push(cur);cur='';}else cur+=c; }
-    r.push(cur); return r;
-}
-
-// ================================================================
-//  TAB SWITCHING
-// ================================================================
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-    document.getElementById(tab+'Tab').classList.add('active');
+function pinPress(val) {
+    if (val === 'back') {
+        pinBuffer = pinBuffer.slice(0, -1);
+    } else {
+        if (pinBuffer.length >= 4) return;
+        pinBuffer += val;
+    }
+    updatePinDisplay();
+    if (pinBuffer.length === 4) verifyPin();
 }
 
-// ================================================================
-//  RENDER APPOINTMENTS
-// ================================================================
-function renderAppts() {
-    if (!D.appointments || !user) return;
-    const todayStr = dayKey(new Date());
+function clearPin() {
+    pinBuffer = '';
+    updatePinDisplay();
+}
 
-    const todayRaw = D.appointments.filter(a => {
-        const d=parseDate(a['Appointment Date']);
-        if (!d) return false;
-        return dayKey(d)===todayStr
-            && a['Cerologist']?.trim().toLowerCase()===user.name.trim().toLowerCase()
-            && ['open','confirmed'].includes((a['Status']||'').toLowerCase());
-    });
+function updatePinDisplay() {
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById('pd' + i).classList.toggle('filled', i <= pinBuffer.length);
+    }
+}
 
-    // Group by guest
-    const byGuest = {};
-    todayRaw.forEach(a => {
-        const gc=a['Guest Code'];
-        if (!byGuest[gc]) byGuest[gc]={gc,name:a['Guest Name'],time:a['Start Time'],services:[],firstVisit:a['First Visit']==='Yes',inv:a['Invoice No']};
-        byGuest[gc].services.push({name:a['Service Name'], price:svcPrice(a['Invoice No'],gc,a['Service Name'])});
-        const ct=pTime(byGuest[gc].time), nt=pTime(a['Start Time']);
-        if (nt&&ct&&nt<ct) byGuest[gc].time=a['Start Time'];
-    });
+async function verifyPin() {
+    try {
+        const result = await API.post({ type: 'verifyPin', employeeId: pendingUserId, pin: pinBuffer });
+        if (result.success) {
+            bootstrapUser(pendingUserId, true);
+        } else {
+            showToast('Incorrect PIN — try again', 'error');
+            clearPin();
+        }
+    } catch(e) {
+        // If can't reach server, allow login anyway (offline mode)
+        showToast('Offline — PIN skipped', 'error');
+        bootstrapUser(pendingUserId, true);
+    }
+}
 
-    const appts=Object.values(byGuest).sort((a,b)=>pTime(a.time)-pTime(b.time));
-    document.getElementById('apptBadge').textContent=appts.length;
+function backToNameSelect() {
+    document.getElementById('loginStep1').style.display = 'block';
+    document.getElementById('loginStep2').style.display = 'none';
+    clearPin();
+    pendingUserId = null;
+}
 
-    let svcRev=0; appts.forEach(a=>a.services.forEach(s=>svcRev+=s.price));
-    const addRev=appts.length*10, retRev=appts.length*40, potRev=svcRev+addRev+retRev;
-    const sc=user.svc||0.05, pc=user.prod||0.10;
+async function bootstrapUser(userId, saveSession) {
+    const employees = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
+    const emp = employees.find(e => e.id === userId)
+             || FALLBACK_EMPLOYEES.find(e => e.id === userId);
+    if (!emp) { showScreen('login'); return; }
 
-    document.getElementById('eScheduled').textContent=fmt(svcRev);
-    document.getElementById('ePotential').textContent=fmt(potRev);
-    document.getElementById('eSvcComm').textContent=fmt(svcRev*sc);
-    document.getElementById('eSvcMeta').textContent=`${Math.round(sc*100)}% of services`;
-    document.getElementById('eProdComm').textContent=fmt((addRev+retRev)*pc);
-    document.getElementById('eProdMeta').textContent=`${Math.round(pc*100)}% of retail`;
-    document.getElementById('eTips').textContent=fmt(svcRev*0.20);
+    currentUser = emp;
 
-    const addOpts=getAllAddons().map(a=>`<option value="${esc(a.name)}">${esc(a.name)} (${fmt(a.cost)})</option>`).join('');
-    const prodOpts=getAllProducts().map(p=>`<option value="${esc(p.name)}">${esc(p.name)} (${fmt(p.cost)})</option>`).join('');
+    if (saveSession) {
+        localStorage.setItem('wtc_user', userId);
+        localStorage.setItem('wtc_login_date', todayKey());
+    }
 
-    const container=document.getElementById('apptList');
-    if (!appts.length) {
-        container.innerHTML=`<div style="text-align:center;padding:2.5rem;color:var(--silver);"><p>No appointments today 🎉</p></div>`;
+    // Show app shell immediately
+    document.getElementById('avatarBtn').textContent = emp.initials;
+    showScreen('app');
+
+    // Load state from localStorage first (instant)
+    loadLocalStates();
+
+    // Then load data from Sheets
+    await loadAppData();
+}
+
+function confirmLogout() {
+    if (confirm('Sign out?')) logout();
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('wtc_user');
+    localStorage.removeItem('wtc_login_date');
+    apptStates = {}; studioStates = {}; clStates = {}; rgaItems = [];
+    showScreen('login');
+    document.getElementById('userSelect').value = '';
+    document.getElementById('loginBtn').disabled = true;
+    document.getElementById('loginStep1').style.display = 'block';
+    document.getElementById('loginStep2').style.display = 'none';
+}
+
+// =============================================================================
+// DATA LOADING
+// =============================================================================
+async function loadAppData() {
+    setSyncStatus('syncing');
+    setLoadingMsg('Loading today\'s data...');
+
+    try {
+        // Try to get from cache first for instant render
+        const cached = loadCachedData();
+        if (cached) {
+            appData = cached;
+            renderAll();
+        }
+
+        // Always fetch fresh data
+        const fresh = await API.fetch();
+        if (fresh.error) throw new Error(fresh.error);
+
+        appData = {
+            appointments: fresh.appointments || [],
+            salesAccrual:  fresh.salesAccrual  || [],
+            memberships:   fresh.memberships   || [],
+            retail:        fresh.retail        || [],
+            addons:        fresh.addons        || [],
+            employees:     parseEmployees(fresh.employees || []),
+            checklists:    fresh.checklists    || []
+        };
+
+        cacheAppData(appData);
+        renderAll();
+
+        // Load ShiftState from Sheets
+        await loadRemoteShiftState();
+
+        setSyncStatus('synced');
+        showToast('Data loaded ✓', 'success');
+
+    } catch(e) {
+        setSyncStatus('offline');
+        console.error('Data load failed:', e);
+        if (!appData.appointments.length) {
+            showToast('Offline — using cached data', 'error');
+        } else {
+            showToast('Using cached data', 'error');
+        }
+        renderAll();
+    }
+}
+
+function cacheAppData(data) {
+    try { localStorage.setItem('wtc_data_' + todayKey(), JSON.stringify(data)); } catch(e) {}
+}
+
+function loadCachedData() {
+    try {
+        const raw = localStorage.getItem('wtc_data_' + todayKey());
+        return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
+}
+
+// =============================================================================
+// RENDER ALL
+// =============================================================================
+function renderAll() {
+    renderPlanYourDay();
+    renderStudio();
+    renderChecklists();
+    renderReports();
+}
+
+// =============================================================================
+// PLAN YOUR DAY
+// =============================================================================
+function renderPlanYourDay() {
+    if (!currentUser) return;
+
+    const todayAppts = getTodayAppts(currentUser.name);
+    document.getElementById('apptBadge').textContent = todayAppts.length;
+
+    // Earnings
+    let scheduled = 0;
+    todayAppts.forEach(a => { scheduled += a.totalPrice; });
+    const avgAddon   = 8;
+    const avgRetail  = 35;
+    const potential  = scheduled + (todayAppts.length * avgAddon) + (todayAppts.length * avgRetail);
+    const commRate   = currentUser.commissionRate || 0.05;
+    const commission = potential * commRate;
+    const tips       = scheduled * 0.20;
+
+    document.getElementById('earnScheduled').textContent   = fmt(scheduled);
+    document.getElementById('earnPotential').textContent   = fmt(potential);
+    document.getElementById('earnCommission').textContent  = fmt(commission);
+    document.getElementById('earnTips').textContent        = fmt(tips);
+    document.getElementById('earnCommRate').textContent    = Math.round(commRate * 100) + '%';
+
+    const container = document.getElementById('apptList');
+
+    if (todayAppts.length === 0) {
+        container.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">&#128197;</div>
+            <h3>No appointments today</h3>
+            <p>Enjoy your day, ${currentUser.name.split(' ')[0]}!</p>
+        </div>`;
         return;
     }
 
-    container.innerHTML=appts.map(appt=>{
-        const st=apptState[appt.gc]||{};
-        const ct=clientType(appt);
-        const history=clientHistory(appt.gc);
-        const rb=rebookDate(appt.time);
-        const addons=st.addons||[''];
-        const products=st.products||[''];
-
-        return `<div class="appt-card ${st.completed?'done':''}" id="card_${appt.gc}">
-            <div class="card-head">
-                <div class="head-left">
-                    <span class="appt-time">${fmtTime(appt.time)}</span>
-                    <span class="appt-name">${esc(appt.name)}</span>
-                    <span class="badge ${ct.cls}">${ct.label}</span>
-                </div>
-                <button class="done-btn ${st.completed?'on':''}" onclick="toggleDone('${appt.gc}')"></button>
-            </div>
-            <div class="card-body">
-                ${history?`<div class="history-line">📜 ${esc(history)}</div>`:''}
-                ${appt.services.map(s=>`<div class="svc-row"><span class="svc-name">${esc(s.name)}</span><span class="svc-price">${fmt(s.price)}</span></div>`).join('')}
-
-                <div class="action-block">
-                    <div class="action-lbl">Add-On Opportunity</div>
-                    ${addons.map((v,i)=>`<div style="display:flex;gap:.4rem;margin-bottom:.35rem;">
-                        <select class="prod-sel ${v?'picked':''}" onchange="setMulti('${appt.gc}','addons',${i},this.value)">
-                            <option value="">Select add-on…</option>${addOpts}
-                        </select>
-                        ${addons.length>1?`<button onclick="removeMulti('${appt.gc}','addons',${i})" style="background:var(--smoke);border:none;border-radius:8px;padding:0 .7rem;color:var(--silver);cursor:pointer;font-size:1rem;">×</button>`:''}
-                    </div>`).join('')}
-                    <button onclick="addMulti('${appt.gc}','addons')" style="background:none;border:1px dashed var(--silver);border-radius:8px;padding:.4rem .8rem;color:var(--silver);font-size:.8rem;cursor:pointer;width:100%;margin-top:.1rem;">+ Add another</button>
-                </div>
-
-                <div class="action-block">
-                    <div class="action-lbl">Product Suggestion</div>
-                    ${products.map((v,i)=>`<div style="display:flex;gap:.4rem;margin-bottom:.35rem;">
-                        <select class="prod-sel ${v?'picked':''}" onchange="setMulti('${appt.gc}','products',${i},this.value)">
-                            <option value="">Select product…</option>${prodOpts}
-                        </select>
-                        ${products.length>1?`<button onclick="removeMulti('${appt.gc}','products',${i})" style="background:var(--smoke);border:none;border-radius:8px;padding:0 .7rem;color:var(--silver);cursor:pointer;font-size:1rem;">×</button>`:''}
-                    </div>`).join('')}
-                    <button onclick="addMulti('${appt.gc}','products')" style="background:none;border:1px dashed var(--silver);border-radius:8px;padding:.4rem .8rem;color:var(--silver);font-size:.8rem;cursor:pointer;width:100%;margin-top:.1rem;">+ Add another</button>
-                </div>
-
-                <div class="cb-grid">
-                    <div class="cb-item ${st.rebooked?'on':''}" onclick="toggleField('${appt.gc}','rebooked')"><div class="cb-box"></div><span class="cb-label">Rebooked</span></div>
-                    <div class="cb-item ${st.clubOrange?'on':''}" onclick="toggleField('${appt.gc}','clubOrange')"><div class="cb-box"></div><span class="cb-label">Club Orange</span></div>
-                </div>
-
-                <div class="rebook-row">Suggested rebook: <span class="rebook-date">${rb}</span></div>
-                <textarea class="notes-area" placeholder="Client notes…" oninput="setField('${appt.gc}','notes',this.value)">${esc(st.notes||'')}</textarea>
-            </div>
-        </div>`;
-    }).join('');
-
-    // Restore select values after render
-    appts.forEach(appt => {
-        const st=apptState[appt.gc]||{};
-        (st.addons||['']).forEach((v,i)=>{ const el=document.querySelector(`#card_${appt.gc} .action-block:nth-of-type(1) select:nth-of-type(${i+1})`); if(el&&v) el.value=v; });
-        (st.products||['']).forEach((v,i)=>{ const el=document.querySelector(`#card_${appt.gc} .action-block:nth-of-type(2) select:nth-of-type(${i+1})`); if(el&&v) el.value=v; });
-    });
+    container.innerHTML = todayAppts.map(appt => renderApptCard(appt)).join('');
 }
 
-// ================================================================
-//  APPOINTMENT STATE
-// ================================================================
-function toggleDone(gc)  { mut(gc,'completed',!g(gc,'completed')); rerender(); }
-function toggleField(gc,f){ mut(gc,f,!g(gc,f)); rerender(); }
-function setField(gc,f,v) { mut(gc,f,v||null); scheduleSave(); }
-function setMulti(gc,f,i,v){ const arr=[...((apptState[gc]||{})[f]||[''])]; arr[i]=v; mut(gc,f,arr); rerender(); }
-function addMulti(gc,f)   { const arr=[...((apptState[gc]||{})[f]||['']),''] ; mut(gc,f,arr); rerender(); }
-function removeMulti(gc,f,i){ const arr=[...((apptState[gc]||{})[f]||[''])]; arr.splice(i,1); if(!arr.length) arr.push(''); mut(gc,f,arr); rerender(); }
-function g(gc,f)          { return (apptState[gc]||{})[f]; }
-function mut(gc,f,v)      { if(!apptState[gc]) apptState[gc]={}; apptState[gc][f]=v; saveLocal(); scheduleSave(); }
-function rerender()       { renderAppts(); }
+function getTodayAppts(cerologist) {
+    const todayStr = todayKey();
+    const seen = {};
+    const grouped = {};
 
-// ================================================================
-//  RGA
-// ================================================================
-function renderRGA() {
-    const opts=RGA_OPTIONS.map(o=>`<option value="${o}">${o}</option>`).join('');
-    document.getElementById('rgaRows').innerHTML=[1,2,3].map(n=>{
-        const st=rgaState[n]||{a:'',n:''};
-        return `<div class="rga-row">
-            <div class="rga-row-hd"><div class="rga-num">${n}</div><span style="font-weight:600;font-size:.88rem;">Activity ${n}</span></div>
-            <select class="rga-sel ${st.a?'on':''}" id="rga_sel_${n}" onchange="rgaAct(${n},this.value)">
-                <option value="">Select activity…</option>${opts}
-            </select>
-            <textarea class="rga-notes" id="rga_note_${n}" placeholder="Notes…" oninput="rgaNotes(${n},this.value)">${st.n||''}</textarea>
-        </div>`;
-    }).join('');
-    [1,2,3].forEach(n=>{ const el=document.getElementById(`rga_sel_${n}`); if(el&&rgaState[n]?.a) el.value=rgaState[n].a; });
-}
-function rgaAct(n,v)  { rgaState[n].a=v; const el=document.getElementById(`rga_sel_${n}`); if(el) el.classList.toggle('on',!!v); saveLocal(); scheduleSave(); }
-function rgaNotes(n,v){ rgaState[n].n=v; saveLocal(); scheduleSave(); }
-function onShiftNotes(v){ shiftNotes=v; saveLocal(); scheduleSave(); }
+    appData.appointments.forEach(a => {
+        const dateStr = parseDateKey(a['Appointment Date']);
+        const status  = (a['Status'] || '').toLowerCase();
+        const cerol   = (a['Cerologist'] || '').toLowerCase().trim();
+        const target  = cerologist.toLowerCase().trim();
 
-// ================================================================
-//  CHECKLISTS
-// ================================================================
-function renderChecklists() {
-    const lists=D.checklists||CHECKLISTS_DEFAULT;
-    document.getElementById('clPicker').innerHTML=lists.map(cl=>{
-        const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
-        const done=Object.values(clState[cl.id]||{}).filter(Boolean).length;
-        const prog=done===0?'Not started':done===total?'✓ Complete':`${done}/${total} done`;
-        return `<div class="cl-pick-btn ${activeCl===cl.id?'active':''}" onclick="selectCl('${cl.id}')">
-            <div class="cl-pick-icon">${cl.icon||'📋'}</div>
-            <div class="cl-pick-name">${cl.name}</div>
-            <div class="cl-pick-prog">${prog}</div>
-        </div>`;
-    }).join('');
-    if (activeCl) renderClBody();
-    else document.getElementById('clBody').innerHTML='';
-}
+        if (dateStr !== todayStr) return;
+        if (status !== 'open' && status !== 'confirmed') return;
+        if (cerol !== target) return;
 
-function selectCl(id) { activeCl=id; renderChecklists(); }
-
-function renderClBody() {
-    const lists=D.checklists||CHECKLISTS_DEFAULT;
-    const cl=lists.find(c=>c.id===activeCl); if(!cl) return;
-    const states=clState[cl.id]||{};
-    let html='';
-
-    cl.sections.forEach((sec,si)=>{
-        html+=`<div class="cl-section"><div class="cl-sec-head">${sec.icon||''} ${sec.name}</div><div class="cl-sec-body">
-            ${sec.items.map((item,ii)=>{const k=`${si}_${ii}`;return`<div class="cl-item ${states[k]?'done':''}" onclick="toggleCl('${cl.id}','${k}')"><div class="cl-circle"></div><div class="cl-text">${esc(item)}</div></div>`;}).join('')}
-        </div></div>`;
-    });
-
-    if (cl.hasCash) {
-        const cv=cashState[cl.id]||{};
-        const bills=[['h100','$100 bills'],['h50','$50 bills'],['h20','$20 bills'],['h10','$10 bills'],['h5','$5 bills'],['h1','$1 bills'],['qtr','Quarters'],['oth','Other']];
-        html+=`<div class="cash-card"><div class="cash-title">💰 Cash Drawer Count</div><div class="cash-grid">
-            ${bills.map(([k,l])=>`<div class="cash-row"><div class="cash-lbl">${l}</div><input class="cash-inp" type="number" inputmode="decimal" placeholder="0" value="${cv[k]||''}" oninput="setCash('${cl.id}','${k}',this.value)"></div>`).join('')}
-        </div><div class="cash-total-row"><span style="font-weight:600;">Total Count</span><span class="cash-total-val" id="cashTot_${cl.id}">${fmt(calcCash(cv))}</span></div></div>`;
-    }
-    if (cl.hasFU) {
-        html+=`<div class="fu-card"><div class="fu-title">📱 Follow-Up Texts Needed</div><textarea class="fu-input" placeholder="List clients who need a follow-up text…" oninput="setFU('${cl.id}',this.value)">${fuState[cl.id]||''}</textarea></div>`;
-    }
-
-    const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
-    const done=Object.values(states).filter(Boolean).length;
-    const pct=total?Math.round(done/total*100):0;
-    html+=`<div class="cl-submit-row"><button class="btn ${pct===100?'btn-success':'btn-outline'} btn-block" onclick="openClModal('${cl.id}')">${pct===100?'✅ Submit Complete':'📤 Submit Partial'} Checklist</button></div>`;
-
-    document.getElementById('clBody').innerHTML=html;
-}
-
-function toggleCl(id,key){ if(!clState[id]) clState[id]={}; clState[id][key]=!clState[id][key]; saveLocal(); scheduleSave(); renderChecklists(); }
-function setCash(id,k,v)  { if(!cashState[id]) cashState[id]={}; cashState[id][k]=parseFloat(v)||0; const el=document.getElementById(`cashTot_${id}`); if(el) el.textContent=fmt(calcCash(cashState[id])); saveLocal(); scheduleSave(); }
-function setFU(id,v)      { fuState[id]=v; saveLocal(); scheduleSave(); }
-function calcCash(cv)     { const m={h100:100,h50:50,h20:20,h10:10,h5:5,h1:1,qtr:0.25,oth:1}; return Object.entries(cv).reduce((t,[k,v])=>t+(m[k]||0)*v,0); }
-
-function openClModal(id) {
-    const lists=D.checklists||CHECKLISTS_DEFAULT;
-    const cl=lists.find(c=>c.id===id); if(!cl) return;
-    const states=clState[id]||{};
-    const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
-    const done=Object.values(states).filter(Boolean).length;
-    document.getElementById('clModalTitle').textContent=`Submit: ${cl.name}`;
-    document.getElementById('clModalBody').innerHTML=`
-        <p style="color:var(--silver);font-size:.9rem;margin-bottom:1rem;">This will post to the Checklists Slack channel with your name and timestamp.</p>
-        <div style="background:var(--smoke);border-radius:10px;padding:1rem;font-size:.9rem;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;"><span>Checklist</span><strong>${cl.name}</strong></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;"><span>Completed by</span><strong>${user?.name||'--'}</strong></div>
-            <div style="display:flex;justify-content:space-between;${cl.hasCash?'margin-bottom:.5rem;':''}"><span>Tasks</span><strong>${done}/${total}</strong></div>
-            ${cl.hasCash?`<div style="display:flex;justify-content:space-between;"><span>Cash total</span><strong>${fmt(calcCash(cashState[id]||{}))}</strong></div>`:''}
-            ${cl.hasFU&&fuState[id]?`<div style="margin-top:.75rem;font-size:.83rem;color:var(--silver);border-top:1px solid var(--charcoal);padding-top:.65rem;">Follow-ups: ${esc(fuState[id])}</div>`:''}
-        </div>`;
-    document.getElementById('clModal').dataset.clid = id;
-    document.getElementById('clModal').classList.add('show');
-}
-function closeClModal() { document.getElementById('clModal').classList.remove('show'); }
-
-async function submitChecklist() {
-    const id=document.getElementById('clModal').dataset.clid;
-    const lists=D.checklists||CHECKLISTS_DEFAULT;
-    const cl=lists.find(c=>c.id===id);
-    const states=clState[id]||{};
-    const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
-    const done=Object.values(states).filter(Boolean).length;
-    const btn=document.getElementById('clSubmitBtn');
-    btn.textContent='Submitting…'; btn.disabled=true;
-    try {
-        await serverPost({
-            type:'checklist',
-            checklistId:id, checklistName:cl.name,
-            completedBy:user?.name, cerologistId:user?.id,
-            tasksCompleted:done, tasksTotal:total,
-            cashTotal:cl.hasCash?calcCash(cashState[id]||{}):null,
-            followUpNotes:cl.hasFU?(fuState[id]||''):null,
-            date:dayKey(new Date()), timestamp:new Date().toISOString()
-        });
-        closeClModal();
-        toast(`${cl.name} submitted ✓`,'success');
-    } catch(e) {
-        toast('Submission failed — saved locally','error');
-    }
-    btn.textContent='✅ Submit'; btn.disabled=false;
-}
-
-// ================================================================
-//  RECAP
-// ================================================================
-function openRecap() {
-    const rebooks=[], co=[], retail=[], addons=[], notes=[];
-    Object.entries(apptState).forEach(([gc,st])=>{
-        const n=guestName(gc);
-        if(st.rebooked) rebooks.push(n);
-        if(st.clubOrange) co.push(n);
-        (st.products||[]).filter(Boolean).forEach(p=>retail.push({n,p}));
-        (st.addons||[]).filter(Boolean).forEach(a=>addons.push({n,a}));
-        if(st.notes) notes.push({n, note:st.notes});
-    });
-    const rgas=[1,2,3].filter(i=>rgaState[i]?.a).map(i=>rgaState[i].n?`${rgaState[i].a}: ${rgaState[i].n}`:rgaState[i].a);
-    document.getElementById('recapBody').innerHTML=`
-        <div class="recap-sec"><div class="recap-lbl">✅ Rebooks (${rebooks.length})</div>${rebooks.length?rebooks.map(n=>`<div class="recap-row"><span class="recap-name">${esc(n)}</span></div>`).join(''):'<div class="recap-empty">None today</div>'}</div>
-        <div class="recap-sec"><div class="recap-lbl">🧡 Club Orange (${co.length})</div>${co.length?co.map(n=>`<div class="recap-row"><span class="recap-name">${esc(n)}</span></div>`).join(''):'<div class="recap-empty">None today</div>'}</div>
-        <div class="recap-sec"><div class="recap-lbl">🛍️ Retail Sold (${retail.length})</div>${retail.length?retail.map(r=>`<div class="recap-row"><span class="recap-name">${esc(r.n)}</span><span class="recap-detail">${esc(r.p)}</span></div>`).join(''):'<div class="recap-empty">None today</div>'}</div>
-        <div class="recap-sec"><div class="recap-lbl">✨ Add-Ons (${addons.length})</div>${addons.length?addons.map(a=>`<div class="recap-row"><span class="recap-name">${esc(a.n)}</span><span class="recap-detail">${esc(a.a)}</span></div>`).join(''):'<div class="recap-empty">None today</div>'}</div>
-        <div class="recap-sec"><div class="recap-lbl">🎯 Revenue Activities</div>${rgas.length?rgas.map(r=>`<div class="recap-row"><span class="recap-name">${esc(r)}</span></div>`).join(''):'<div class="recap-empty">None selected</div>'}</div>
-        ${notes.length?`<div class="recap-sec"><div class="recap-lbl">📝 Client Notes</div>${notes.map(r=>`<div class="recap-row" style="flex-direction:column;align-items:flex-start;"><span class="recap-name">${esc(r.n)}</span><span class="recap-detail" style="margin-top:.2rem;">${esc(r.note)}</span></div>`).join('')}</div>`:''}
-        ${shiftNotes?`<div class="recap-sec"><div class="recap-lbl">📋 Shift Notes</div><div class="recap-row"><span style="font-size:.88rem;">${esc(shiftNotes)}</span></div></div>`:''}`;
-    document.getElementById('recapModal').classList.add('show');
-}
-function closeRecap() { document.getElementById('recapModal').classList.remove('show'); }
-
-async function sendRecap() {
-    const btn=document.getElementById('sendRecapBtn');
-    btn.textContent='Sending…'; btn.disabled=true;
-    const rebooks=[], co=[], retailArr=[], addonsArr=[], notesArr=[];
-    Object.entries(apptState).forEach(([gc,st])=>{
-        const n=guestName(gc);
-        if(st.rebooked) rebooks.push(n);
-        if(st.clubOrange) co.push(n);
-        (st.products||[]).filter(Boolean).forEach(p=>retailArr.push(`${n}: ${p}`));
-        (st.addons||[]).filter(Boolean).forEach(a=>addonsArr.push(`${n}: ${a}`));
-        if(st.notes) notesArr.push(`${n}: ${st.notes}`);
-    });
-    const rgas=[1,2,3].filter(i=>rgaState[i]?.a).map(i=>rgaState[i].n?`${rgaState[i].a}: ${rgaState[i].n}`:rgaState[i].a);
-    if(shiftNotes) notesArr.push(`Shift Notes: ${shiftNotes}`);
-    try {
-        await serverPost({
-            type:'recap',
-            cerologist:user?.name, cerologistId:user?.id,
-            date:dayKey(new Date()),
-            rebooks, clubOrangeSignups:co,
-            retailSold:retailArr, addOnsSold:addonsArr,
-            notes:notesArr, rgas,
-            timestamp:new Date().toISOString()
-        });
-        closeRecap();
-        toast('Recap sent to Slack ✓','success');
-    } catch(e) {
-        toast('Send failed — progress saved locally','error');
-    }
-    btn.textContent='📤 Send to Slack'; btn.disabled=false;
-}
-
-// ================================================================
-//  SHIFT STATE SYNC
-// ================================================================
-async function loadShiftState() {
-    try {
-        const json=await apiGet('getShiftState',{date:dayKey(new Date()),cerologistId:user.id});
-        if (json.success&&json.states) {
-            apptState=json.states;
-            if (json.rgas) { if(Array.isArray(json.rgas)) json.rgas.forEach((v,i)=>{if(i<3) rgaState[i+1]=typeof v==='object'?v:{a:v,n:''};});  else rgaState=json.rgas; }
-            if (json.shiftNotes) shiftNotes=json.shiftNotes;
-            saveLocal();
+        const gc = a['Guest Code'];
+        if (!grouped[gc]) {
+            grouped[gc] = {
+                guestCode:    gc,
+                guestName:    a['Guest Name'],
+                startTime:    a['Start Time'],
+                isFirstVisit: (a['First Visit'] || '').toLowerCase() === 'yes',
+                invoiceNo:    a['Invoice No'],
+                services:     [],
+                totalPrice:   0
+            };
         }
+        const price = getSvcPrice(a['Invoice No'], gc, a['Service Name']);
+        grouped[gc].services.push({ name: a['Service Name'], price });
+        grouped[gc].totalPrice += price;
+
+        // Keep earliest start time
+        const t1 = parseTime(grouped[gc].startTime);
+        const t2 = parseTime(a['Start Time']);
+        if (t2 && t1 && t2 < t1) grouped[gc].startTime = a['Start Time'];
+    });
+
+    return Object.values(grouped).sort((a,b) => {
+        const ta = parseTime(a.startTime), tb = parseTime(b.startTime);
+        if (ta && tb) return ta - tb;
+        return 0;
+    });
+}
+
+function renderApptCard(appt) {
+    const st       = apptStates[appt.guestCode] || {};
+    const done     = !!st.completed;
+    const isCO     = hasMembership(appt.guestCode);
+    const history  = getHistory(appt.guestCode);
+    const svcType  = inferSvcType(appt.services[0]?.name);
+    const addons   = getAddons(svcType);
+    const products = getProducts(svcType);
+    const rebook   = rebookDate(appt.startTime);
+    const badge    = appt.isFirstVisit ? `<span class="badge badge-new">NEW</span>` :
+                     isCO              ? `<span class="badge badge-co">CO</span>` :
+                                         `<span class="badge badge-ret">RET</span>`;
+
+    return `<div class="appt-card ${done ? 'done' : ''}" id="card_${appt.guestCode}">
+        <div class="card-head">
+            <div class="client-left">
+                <span class="appt-time">${fmtTime(appt.startTime)}</span>
+                <span class="client-name">${appt.guestName}</span>
+                ${badge}
+            </div>
+            <button class="done-btn ${done ? 'checked' : ''}" id="doneBtn_${appt.guestCode}"
+                onclick="toggleDone('${appt.guestCode}')"></button>
+        </div>
+        <div class="card-body">
+            ${history ? `<div class="history-row">&#128196; ${history}</div>` : ''}
+
+            <div>${appt.services.map(s => `
+                <div class="svc-row">
+                    <span class="svc-name">${s.name}</span>
+                    <span class="svc-price">${fmt(s.price)}</span>
+                </div>`).join('')}
+            </div>
+
+            <div class="action-block">
+                <div class="action-label">Add-On Opportunity</div>
+                <select class="pill-select ${st.addonSelected ? 'has-value' : ''}"
+                        id="addon_${appt.guestCode}"
+                        onchange="updateAddon('${appt.guestCode}', this.value)">
+                    <option value="">Select add-on...</option>
+                    ${addons.map(a => `<option value="${a.name}" ${st.addonSelected===a.name?'selected':''}>
+                        ${a.name} (${fmt(a.cost)})</option>`).join('')}
+                </select>
+            </div>
+
+            <div class="action-block">
+                <div class="action-label">Retail Suggestion</div>
+                <select class="pill-select ${st.productSelected ? 'has-value' : ''}"
+                        id="product_${appt.guestCode}"
+                        onchange="updateProduct('${appt.guestCode}', this.value)">
+                    <option value="">Select product...</option>
+                    ${products.map(p => `<option value="${p.name}" ${st.productSelected===p.name?'selected':''}>
+                        ${p.name} (${fmt(p.cost)})</option>`).join('')}
+                </select>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-tile ${st.rebooked ? 'checked' : ''}" id="chk_rebooked_${appt.guestCode}"
+                     onclick="toggleCheck('${appt.guestCode}', 'rebooked')">
+                    <div class="check-box" id="chkbox_rebooked_${appt.guestCode}"></div>
+                    <span class="check-label">Rebooked</span>
+                </div>
+                <div class="check-tile ${st.clubOrange ? 'checked' : ''}" id="chk_clubOrange_${appt.guestCode}"
+                     onclick="toggleCheck('${appt.guestCode}', 'clubOrange')">
+                    <div class="check-box" id="chkbox_clubOrange_${appt.guestCode}"></div>
+                    <span class="check-label">Club Orange</span>
+                </div>
+            </div>
+
+            <div class="rebook-hint">Suggest rebook: <span>${rebook}</span></div>
+
+            <textarea class="notes-area" id="notes_${appt.guestCode}"
+                placeholder="Notes for ${appt.guestName}..."
+                onchange="updateNotes('${appt.guestCode}', this.value)">${st.notes || ''}</textarea>
+        </div>
+    </div>`;
+}
+
+// In-place DOM updates (no full re-render on state change)
+function toggleDone(gc) {
+    ensureApptState(gc);
+    apptStates[gc].completed = !apptStates[gc].completed;
+    const done = apptStates[gc].completed;
+    document.getElementById('card_' + gc)?.classList.toggle('done', done);
+    document.getElementById('doneBtn_' + gc)?.classList.toggle('checked', done);
+    scheduleSave();
+}
+
+function toggleCheck(gc, field) {
+    ensureApptState(gc);
+    apptStates[gc][field] = !apptStates[gc][field];
+    const checked = apptStates[gc][field];
+    document.getElementById('chk_' + field + '_' + gc)?.classList.toggle('checked', checked);
+    scheduleSave();
+}
+
+function updateAddon(gc, val) {
+    ensureApptState(gc);
+    apptStates[gc].addonSelected = val || null;
+    const el = document.getElementById('addon_' + gc);
+    if (el) el.classList.toggle('has-value', !!val);
+    scheduleSave();
+}
+
+function updateProduct(gc, val) {
+    ensureApptState(gc);
+    apptStates[gc].productSelected = val || null;
+    const el = document.getElementById('product_' + gc);
+    if (el) el.classList.toggle('has-value', !!val);
+    scheduleSave();
+}
+
+function updateNotes(gc, val) {
+    ensureApptState(gc);
+    apptStates[gc].notes = val;
+    scheduleSave();
+}
+
+function ensureApptState(gc) {
+    if (!apptStates[gc]) apptStates[gc] = {};
+}
+
+// =============================================================================
+// STUDIO PLAN
+// =============================================================================
+function renderStudio() {
+    const todayStr = todayKey();
+    const allToday = appData.appointments.filter(a => {
+        const d = parseDateKey(a['Appointment Date']);
+        const s = (a['Status'] || '').toLowerCase();
+        return d === todayStr && (s === 'open' || s === 'confirmed');
+    });
+
+    // Visit counts for CO targeting
+    const visitCounts = {};
+    appData.appointments.forEach(a => {
+        if ((a['Status'] || '').toLowerCase() === 'closed') {
+            visitCounts[a['Guest Code']] = (visitCounts[a['Guest Code']] || 0) + 1;
+        }
+    });
+
+    // Unique guests today
+    const uniqueGuests = {};
+    allToday.forEach(a => { uniqueGuests[a['Guest Code']] = a; });
+
+    const sections = [];
+
+    // New clients
+    const newGuests = Object.values(uniqueGuests).filter(a => (a['First Visit']||'').toLowerCase()==='yes');
+    if (newGuests.length) sections.push({
+        id: 'newClients', title: 'New Clients Today', icon: '&#128075;',
+        items: newGuests.map(a => ({
+            id: 'new_' + a['Guest Code'],
+            main: a['Guest Name'],
+            detail: fmtTime(a['Start Time']) + ' with ' + a['Cerologist'] + ' — ' + a['Service Name'],
+            tags: ['New Client', 'Full Greet & Guide']
+        }))
+    });
+
+    // CO Members
+    const coGuests = Object.values(uniqueGuests).filter(a => hasMembership(a['Guest Code']));
+    if (coGuests.length) sections.push({
+        id: 'coMembers', title: 'Club Orange Members', icon: '&#129505;',
+        items: coGuests.map(a => ({
+            id: 'co_' + a['Guest Code'],
+            main: a['Guest Name'],
+            detail: fmtTime(a['Start Time']) + ' — ' + a['Service Name'],
+            tags: ['CO Member', 'Thank for membership']
+        }))
+    });
+
+    // CO Targets (2+ visits, no active membership)
+    const targets = Object.values(uniqueGuests).filter(a =>
+        (visitCounts[a['Guest Code']] || 0) >= 2 && !hasMembership(a['Guest Code'])
+    );
+    if (targets.length) sections.push({
+        id: 'coTargets', title: 'Club Orange Targets', icon: '&#127919;',
+        items: targets.map(a => ({
+            id: 'tgt_' + a['Guest Code'],
+            main: a['Guest Name'],
+            detail: (visitCounts[a['Guest Code']] || 0) + ' prior visits — great candidate!',
+            tags: [(visitCounts[a['Guest Code']] || 0) + ' Visits', 'CO Pitch Today']
+        }))
+    });
+
+    const container = document.getElementById('studioSections');
+    if (!sections.length) {
+        container.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">&#127970;</div>
+            <h3>No studio plan items</h3>
+            <p>Check back once today's data loads</p>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = sections.map(sec => renderStudioSection(sec)).join('');
+}
+
+function renderStudioSection(sec) {
+    const done = sec.items.filter(i => studioStates[i.id]?.completed).length;
+    const pct  = sec.items.length ? Math.round(done / sec.items.length * 100) : 0;
+    const emp  = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
+
+    return `<div class="studio-section">
+        <div class="section-head" onclick="toggleSection('sbody_${sec.id}')">
+            <div class="section-title-row">
+                <span class="dot"></span>
+                <span>${sec.icon} ${sec.title}</span>
+                <span class="section-count">${sec.items.length}</span>
+            </div>
+            <div class="section-prog">
+                <span class="prog-text">${done}/${sec.items.length}</span>
+                <div class="prog-bar"><div class="prog-fill" id="pf_${sec.id}" style="width:${pct}%"></div></div>
+            </div>
+        </div>
+        <div class="section-body" id="sbody_${sec.id}">
+            ${sec.items.map(item => {
+                const ist = studioStates[item.id] || {};
+                return `<div class="task-item ${ist.completed ? 'done' : ''}" id="task_${item.id}">
+                    <button class="task-check" onclick="toggleTask('${item.id}', '${sec.id}')"></button>
+                    <div class="task-content">
+                        <div class="task-main">${item.main}</div>
+                        <div class="task-detail">${item.detail}</div>
+                        <div class="task-meta">
+                            ${item.tags.map(t => `<span class="task-tag">${t}</span>`).join('')}
+                            <select class="by-select" onchange="setTaskBy('${item.id}', this.value)">
+                                <option value="">By...</option>
+                                ${emp.map(e => `<option value="${e.id}" ${ist.completedBy===e.id?'selected':''}>${e.name.split(' ')[0]}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+}
+
+function toggleSection(bodyId) {
+    document.getElementById(bodyId)?.classList.toggle('collapsed');
+}
+
+function toggleTask(itemId, secId) {
+    if (!studioStates[itemId]) studioStates[itemId] = {};
+    studioStates[itemId].completed = !studioStates[itemId].completed;
+    if (studioStates[itemId].completed && currentUser) {
+        studioStates[itemId].completedBy = currentUser.id;
+    }
+    document.getElementById('task_' + itemId)?.classList.toggle('done', studioStates[itemId].completed);
+    scheduleSave();
+}
+
+function setTaskBy(itemId, val) {
+    if (!studioStates[itemId]) studioStates[itemId] = {};
+    studioStates[itemId].completedBy = val || null;
+    scheduleSave();
+}
+
+// =============================================================================
+// CHECKLISTS
+// =============================================================================
+function renderChecklists() {
+    const container = document.getElementById('checklistsContainer');
+    const lists = appData.checklists;
+
+    if (!lists || !lists.length) {
+        container.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">&#9989;</div>
+            <h3>No checklists found</h3>
+            <p>Add checklists to the Checklists tab in Google Sheets</p>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = lists.map(cl => renderChecklist(cl)).join('');
+}
+
+function renderChecklist(cl) {
+    if (!clStates[cl.id]) clStates[cl.id] = {};
+    const clSt = clStates[cl.id];
+
+    const allItems = cl.sections.flatMap(s => s.items);
+    const doneCount = allItems.filter((_,i) => clSt['item_' + cl.id + '_' + i]).length;
+
+    return `<div class="checklist-card">
+        <div class="checklist-head">
+            <span class="checklist-icon">${cl.icon || '&#9989;'}</span>
+            <span class="checklist-name">${cl.name}</span>
+            <span class="checklist-prog">${doneCount}/${allItems.length}</span>
+        </div>
+        <div class="checklist-body">
+            ${cl.sections.map((sec, si) => `
+                <div class="cl-section">
+                    ${cl.sections.length > 1 ? `<div class="cl-section-title">${sec.icon ? sec.icon + ' ' : ''}${sec.name}</div>` : ''}
+                    ${sec.items.map((item, ii) => {
+                        const globalIdx = cl.sections.slice(0, si).reduce((acc,s) => acc + s.items.length, 0) + ii;
+                        const key = 'item_' + cl.id + '_' + globalIdx;
+                        const checked = !!clSt[key];
+                        return `<div class="cl-item ${checked ? 'checked' : ''}" id="clitem_${cl.id}_${globalIdx}"
+                            onclick="toggleClItem('${cl.id}', ${globalIdx})">
+                            <div class="cl-check" id="clcheck_${cl.id}_${globalIdx}"></div>
+                            <span class="cl-text">${item}</span>
+                        </div>`;
+                    }).join('')}
+                </div>`).join('')}
+        </div>
+        <div class="cl-footer">
+            ${cl.hasCashCount ? `
+                <div class="cl-cash-row">
+                    <span class="cl-cash-label">&#128176; Cash Drawer:</span>
+                    <input class="cash-input" type="number" step="0.01" placeholder="0.00"
+                        id="cash_${cl.id}" value="${clSt.cashTotal || ''}"
+                        oninput="clStates['${cl.id}'].cashTotal=this.value; scheduleSave()">
+                </div>` : ''}
+            ${cl.hasFollowUp ? `
+                <textarea class="followup-area" placeholder="Follow-up texts needed..."
+                    id="followup_${cl.id}"
+                    oninput="clStates['${cl.id}'].followUp=this.value; scheduleSave()">${clSt.followUp || ''}</textarea>` : ''}
+            <button class="btn-success" style="width:100%" onclick="submitChecklist('${cl.id}')">
+                &#128228; Submit ${cl.name}
+            </button>
+        </div>
+    </div>`;
+}
+
+function toggleClItem(clId, idx) {
+    if (!clStates[clId]) clStates[clId] = {};
+    const key = 'item_' + clId + '_' + idx;
+    clStates[clId][key] = !clStates[clId][key];
+    const checked = clStates[clId][key];
+    document.getElementById('clitem_' + clId + '_' + idx)?.classList.toggle('checked', checked);
+    scheduleSave();
+}
+
+async function submitChecklist(clId) {
+    const cl   = appData.checklists.find(c => c.id === clId);
+    if (!cl) return;
+
+    const clSt     = clStates[clId] || {};
+    const allItems = cl.sections.flatMap(s => s.items);
+    const done     = allItems.filter((_,i) => clSt['item_' + clId + '_' + i]).length;
+
+    setSyncStatus('syncing');
+    try {
+        const result = await API.post({
+            type:           'checklist',
+            checklistName:  cl.name,
+            completedBy:    currentUser?.name || 'Unknown',
+            tasksCompleted: done,
+            tasksTotal:     allItems.length,
+            cashTotal:      clSt.cashTotal || null,
+            followUpNotes:  clSt.followUp || '',
+            date:           new Date().toLocaleDateString()
+        });
+        setSyncStatus('synced');
+        showToast(cl.name + ' submitted to Slack ✓', 'success');
+    } catch(e) {
+        setSyncStatus('offline');
+        showToast('Could not submit — check connection', 'error');
+    }
+}
+
+// =============================================================================
+// REPORTS
+// =============================================================================
+function renderReports() {
+    const todayStr = todayKey();
+    const allToday = appData.appointments.filter(a => {
+        const d = parseDateKey(a['Appointment Date']);
+        const s = (a['Status']||'').toLowerCase();
+        return d === todayStr && (s === 'open' || s === 'confirmed');
+    });
+
+    const uniqueToday = {};
+    allToday.forEach(a => { uniqueToday[a['Guest Code']] = a; });
+    const guests = Object.values(uniqueToday);
+
+    const newCount   = guests.filter(a => (a['First Visit']||'').toLowerCase()==='yes').length;
+    const coCount    = guests.filter(a => hasMembership(a['Guest Code'])).length;
+
+    const visitCounts = {};
+    appData.appointments.forEach(a => {
+        if ((a['Status']||'').toLowerCase()==='closed') {
+            visitCounts[a['Guest Code']] = (visitCounts[a['Guest Code']]||0) + 1;
+        }
+    });
+    const targets = guests.filter(a => (visitCounts[a['Guest Code']]||0) >= 2 && !hasMembership(a['Guest Code'])).length;
+
+    // Revenue from salesAccrual
+    const todaySales = appData.salesAccrual.filter(r => parseDateKey(r['Sale Date']) === todayStr);
+    const totalRev   = todaySales.reduce((sum,r) => sum + (parseFloat(r['Sales (Exc. Tax)'])||0), 0);
+
+    // Rebooks from apptStates
+    const rebooks = Object.values(apptStates).filter(s => s.rebooked).length;
+
+    document.getElementById('rs-appts').textContent   = guests.length;
+    document.getElementById('rs-new').textContent     = newCount;
+    document.getElementById('rs-co').textContent      = coCount;
+    document.getElementById('rs-targets').textContent = targets;
+    document.getElementById('rs-rev').textContent     = fmt(totalRev);
+    document.getElementById('rs-rebooks').textContent = rebooks;
+
+    // Cerologist breakdown
+    const byCarol = {};
+    allToday.forEach(a => {
+        const c = a['Cerologist'] || 'Unassigned';
+        if (!byCarol[c]) byCarol[c] = { appts: new Set(), newCount: 0, coCount: 0 };
+        byCarol[c].appts.add(a['Guest Code']);
+        if ((a['First Visit']||'').toLowerCase()==='yes') byCarol[c].newCount++;
+        if (hasMembership(a['Guest Code'])) byCarol[c].coCount++;
+    });
+
+    const bkEl = document.getElementById('cerologistBreakdown');
+    if (Object.keys(byCarol).length === 0) {
+        bkEl.innerHTML = `<div class="empty-state" style="padding:1rem 0;"><p>No data</p></div>`;
+    } else {
+        bkEl.innerHTML = Object.entries(byCarol).map(([name, d]) => `
+            <div class="highlight-item">
+                <div class="h-icon orange">&#128100;</div>
+                <div class="h-text">
+                    <strong>${name}</strong> — ${d.appts.size} appts
+                    ${d.newCount > 0 ? ` · <span style="color:var(--orange)">${d.newCount} new</span>` : ''}
+                    ${d.coCount > 0  ? ` · <span style="color:var(--success)">${d.coCount} CO</span>` : ''}
+                </div>
+            </div>`).join('');
+    }
+
+    // Highlights
+    const hl = [];
+    if (newCount > 0) hl.push({ icon: '&#128075;', cls: 'orange', text: `${newCount} new client${newCount>1?'s':''} today — full greet & guide protocol` });
+    if (targets > 0) hl.push({ icon: '&#127919;', cls: 'warn',   text: `${targets} CO target${targets>1?'s':''} scheduled — make the pitch today` });
+    if (coCount > 0)  hl.push({ icon: '&#129505;', cls: 'green',  text: `${coCount} CO member${coCount>1?'s':''} on the books — thank them by name` });
+    if (!hl.length)   hl.push({ icon: '&#128197;', cls: 'blue',   text: 'Check back after data loads' });
+
+    document.getElementById('highlights').innerHTML = hl.map(h => `
+        <li class="highlight-item">
+            <div class="h-icon ${h.cls}">${h.icon}</div>
+            <div class="h-text">${h.text}</div>
+        </li>`).join('');
+}
+
+// =============================================================================
+// SHIFT STATE SYNC
+// =============================================================================
+function loadLocalStates() {
+    const key = todayKey();
+    try {
+        const a = localStorage.getItem('wtc_appt_' + key);
+        const s = localStorage.getItem('wtc_studio_' + key);
+        const c = localStorage.getItem('wtc_cl_' + key);
+        const r = localStorage.getItem('wtc_rga_' + key);
+        if (a) apptStates   = JSON.parse(a);
+        if (s) studioStates = JSON.parse(s);
+        if (c) clStates     = JSON.parse(c);
+        if (r) rgaItems     = JSON.parse(r);
+    } catch(e) {}
+}
+
+async function loadRemoteShiftState() {
+    if (!currentUser) return;
+    try {
+        const result = await API.fetch({ action: 'getShiftState', date: todayKey(), cerologistId: currentUser.id });
+        if (result.success && result.states && Object.keys(result.states).length > 0) {
+            // Merge remote into local (remote wins on conflicts)
+            apptStates   = { ...apptStates,   ...result.states };
+            if (result.rgas) rgaItems = result.rgas;
+            saveLocalStates();
+            renderPlanYourDay();
+            renderReports();
+        }
+    } catch(e) { /* silent — will use localStorage */ }
+}
+
+function saveLocalStates() {
+    const key = todayKey();
+    try {
+        localStorage.setItem('wtc_appt_'   + key, JSON.stringify(apptStates));
+        localStorage.setItem('wtc_studio_' + key, JSON.stringify(studioStates));
+        localStorage.setItem('wtc_cl_'     + key, JSON.stringify(clStates));
+        localStorage.setItem('wtc_rga_'    + key, JSON.stringify(rgaItems));
     } catch(e) {}
 }
 
 function scheduleSave() {
-    clearTimeout(saveT);
-    setSyncLabel('syncing');
-    saveT=setTimeout(async()=>{
-        if (!online||!user) { setSyncLabel('error'); return; }
-        try {
-            const r=await serverPost({type:'saveShiftState',date:dayKey(new Date()),cerologistId:user.id,cerologistName:user.name,states:apptState,rgas:rgaState,shiftNotes,updatedAt:new Date().toISOString()});
-            if(r.success) setSyncLabel('saved'); else setSyncLabel('error');
-        } catch(e) { setSyncLabel('error'); }
-    }, 2000);
+    saveLocalStates();
+    // Debounce remote save 2s after last change
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(pushShiftState, 2000);
 }
 
-function saveLocal() {
-    const dk=dayKey(new Date());
+async function pushShiftState() {
+    if (!currentUser) return;
+    setSyncStatus('syncing');
     try {
-        localStorage.setItem(`wtc_appt_${dk}`,JSON.stringify(apptState));
-        localStorage.setItem(`wtc_cl_${dk}`,JSON.stringify(clState));
-        localStorage.setItem(`wtc_cash_${dk}`,JSON.stringify(cashState));
-        localStorage.setItem(`wtc_fu_${dk}`,JSON.stringify(fuState));
-        localStorage.setItem(`wtc_rga_${dk}`,JSON.stringify(rgaState));
-        localStorage.setItem(`wtc_sn_${dk}`,shiftNotes);
-    } catch(e) {}
+        await API.post({
+            type:           'saveShiftState',
+            date:           todayKey(),
+            cerologistId:   currentUser.id,
+            cerologistName: currentUser.name,
+            states:         apptStates,
+            rgas:           rgaItems,
+            shiftNotes:     '',
+            updatedAt:      new Date().toISOString()
+        });
+        setSyncStatus('synced');
+    } catch(e) {
+        setSyncStatus('offline');
+    }
 }
 
-function loadLocal() {
-    const dk=dayKey(new Date());
+async function saveProgress() {
+    saveLocalStates();
+    await pushShiftState();
+    showToast('Progress saved ✓', 'success');
+}
+
+// =============================================================================
+// RECAP MODAL
+// =============================================================================
+function openRecapModal() {
+    const rebooks    = [];
+    const coSignups  = [];
+    const retailSold = [];
+    const addOnsSold = [];
+    const notes      = [];
+
+    Object.entries(apptStates).forEach(([gc, st]) => {
+        const name = getGuestName(gc);
+        if (st.rebooked)        rebooks.push(name);
+        if (st.clubOrange)      coSignups.push(name);
+        if (st.productSelected) retailSold.push(name + ' — ' + st.productSelected);
+        if (st.addonSelected)   addOnsSold.push(name + ' — ' + st.addonSelected);
+        if (st.notes)           notes.push(name + ': ' + st.notes);
+    });
+
+    const section = (title, items, empty) => `
+        <div class="recap-section">
+            <div class="recap-section-title">${title} (${items.length})</div>
+            ${items.length ? items.map(i => `
+                <div class="recap-item"><span class="recap-item-name">${i}</span></div>`).join('')
+            : `<div class="recap-empty">${empty}</div>`}
+        </div>`;
+
+    document.getElementById('recapBody').innerHTML = `
+        ${section('&#9989; Rebooks',           rebooks,    'No rebooks recorded')}
+        ${section('&#129505; Club Orange',      coSignups,  'No CO signups today')}
+        ${section('&#128717; Retail Sold',      retailSold, 'No retail sold today')}
+        ${section('&#10024; Add-Ons',           addOnsSold, 'No add-ons today')}
+        ${notes.length ? section('&#128203; Notes', notes, '') : ''}`;
+
+    openModal('recapModal');
+}
+
+async function submitRecap() {
+    const rebooks    = [], coSignups = [], retailSold = [], addOnsSold = [], notes = [];
+    Object.entries(apptStates).forEach(([gc, st]) => {
+        const name = getGuestName(gc);
+        if (st.rebooked)        rebooks.push(name);
+        if (st.clubOrange)      coSignups.push(name);
+        if (st.productSelected) retailSold.push(name + ' — ' + st.productSelected);
+        if (st.addonSelected)   addOnsSold.push(name + ' — ' + st.addonSelected);
+        if (st.notes)           notes.push(name + ': ' + st.notes);
+    });
+
+    setSyncStatus('syncing');
     try {
-        const a=ls(`wtc_appt_${dk}`);  if(a) apptState=a;
-        const c=ls(`wtc_cl_${dk}`);    if(c) clState=c;
-        const ca=ls(`wtc_cash_${dk}`); if(ca) cashState=ca;
-        const f=ls(`wtc_fu_${dk}`);    if(f) fuState=f;
-        const r=ls(`wtc_rga_${dk}`);   if(r) rgaState=r;
-        const sn=localStorage.getItem(`wtc_sn_${dk}`); if(sn) shiftNotes=sn;
-        const ap=ls('wtc_appts_cache'); if(ap&&!D.appointments) D.appointments=ap;
-    } catch(e) {}
+        await API.post({
+            type:              'recap',
+            cerologist:        currentUser?.name || 'Unknown',
+            date:              new Date().toLocaleDateString(),
+            rebooks,
+            clubOrangeSignups: coSignups,
+            retailSold,
+            addOnsSold,
+            notes,
+            rgas:              rgaItems
+        });
+        setSyncStatus('synced');
+        closeModal('recapModal');
+        showToast('Recap sent to Slack ✓', 'success');
+    } catch(e) {
+        setSyncStatus('offline');
+        showToast('Could not send — check connection', 'error');
+    }
 }
 
-function ls(key) { const v=localStorage.getItem(key); return v?JSON.parse(v):null; }
-function saveNow() { saveLocal(); if(online) scheduleSave(); toast('Progress saved','success'); }
+// =============================================================================
+// SETTINGS
+// =============================================================================
+function openSettings() {
+    document.getElementById('settingWorkerUrl').value = localStorage.getItem('wtc_worker_url') || '';
+    document.getElementById('settingApiKey').value    = localStorage.getItem('wtc_api_key')    || '';
+    openModal('settingsModal');
+}
 
-// ================================================================
-//  HELPERS
-// ================================================================
-function fmt(v)    { return '$'+(v||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
-function esc(s)    { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function dayKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function parseDate(s){ if(!s) return null; const p=s.split('/'); if(p.length===3) return new Date(p[2],p[0]-1,p[1]); const d=new Date(s); return isNaN(d)?null:d; }
-function pTime(s)  { if(!s) return null; const d=new Date(s); return isNaN(d)?null:d; }
-function fmtTime(s){ const d=pTime(s); if(!d) return s||''; return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
-function svcPrice(inv,gc,svc){ if(!D.salesAccrual) return 0; const m=D.salesAccrual.find(r=>r['Invoice No']===inv&&r['Guest Code']===gc&&r['Item Name']===svc); return m?parseFloat(m['Sales (Exc. Tax)'])||0:0; }
-function clientType(appt){ if(appt.firstVisit) return{label:'New',cls:'new'}; if(isMember(appt.gc)) return{label:'CO',cls:'co'}; return{label:'✓',cls:'ret'}; }
-function isMember(gc){ if(!D.memberships) return false; const m=D.memberships.find(r=>(r['GuestCode']||r['Guest Code'])===gc); if(!m) return false; return (m['Recurrence Status']||m['Membership Status']||'').toLowerCase()==='active'; }
-function clientHistory(gc){ if(!D.appointments) return null; const today=new Date(); const past=D.appointments.filter(a=>a['Guest Code']===gc&&(a['Status']||'').toLowerCase()==='closed'&&parseDate(a['Appointment Date'])<today).sort((a,b)=>parseDate(b['Appointment Date'])-parseDate(a['Appointment Date'])); if(!past.length) return '✨ First Visit'; const last=past[0]; const d=parseDate(last['Appointment Date']); return `Last: ${last['Service Name']} on ${d?.toLocaleDateString('en-US',{month:'short',day:'numeric'})||'?'}`; }
-function rebookDate(t){ const d=pTime(t); if(!d) return '4 weeks out'; const rb=new Date(d); rb.setDate(rb.getDate()+28); return `${rb.toLocaleDateString('en-US',{month:'short',day:'numeric'})} (${rb.toLocaleDateString('en-US',{weekday:'long'})}) at ${d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}`; }
-function getAllAddons(){ if(!D.addons?.length) return [{name:'Hydrating Hand Mask',cost:10},{name:'Rejuvenating Eye Gel',cost:5},{name:'Calming Body Mask',cost:10}]; return D.addons.map(a=>({name:a['Add Ons']||'',cost:parseFloat((a['Cost']||'').replace('$',''))||0})).filter(a=>a.name); }
-function getAllProducts(){ if(!D.retail?.length) return [{name:'FUR Silk Scrub',cost:55},{name:'PFB Vanish',cost:22},{name:'Spongelle Buffer',cost:14}]; return D.retail.map(r=>({name:r['Retail Item']||'',cost:parseFloat((r['Retail Cost']||'').replace('$',''))||0})).filter(r=>r.name); }
-function guestName(gc){ if(!D.appointments) return gc; const a=D.appointments.find(a=>a['Guest Code']===gc); return a?a['Guest Name']:gc; }
-function toast(msg,type='success'){ const t=document.getElementById('toast'); document.getElementById('toastIcon').textContent=type==='success'?'✓':'⚠️'; document.getElementById('toastMsg').textContent=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),3500); }
+function saveSettings() {
+    const url = document.getElementById('settingWorkerUrl').value.trim();
+    const key = document.getElementById('settingApiKey').value.trim();
+    if (url) localStorage.setItem('wtc_worker_url', url);
+    if (key) localStorage.setItem('wtc_api_key',    key);
+    closeModal('settingsModal');
+    showToast('Settings saved', 'success');
+}
+
+// =============================================================================
+// TRAINING
+// =============================================================================
+function setTrainingMessage() {
+    const start = new Date(TRAINING_START);
+    const today = new Date();
+    const days  = Math.floor((today - start) / 86400000);
+    const idx   = ((days % 30) + 30) % 30;
+    const t     = TRAINING[idx];
+    const label = 'Day ' + (idx + 1) + ' of 30';
+
+    ['trainDay','studioTrainDay'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=label; });
+    ['trainTitle','studioTrainTitle'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=t.title; });
+    ['trainBody','studioTrainBody'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=t.body; });
+}
+
+function setHeaderDate() {
+    const el = document.getElementById('headerDate');
+    if (el) el.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+function hasMembership(gc) {
+    const m = appData.memberships.find(r => {
+        const code = r['GuestCode'] || r['Guest Code'] || '';
+        return code === gc;
+    });
+    if (!m) return false;
+    const status = (m['Recurrence Status'] || m['Membership Status'] || '').toLowerCase();
+    return status === 'active';
+}
+
+function getSvcPrice(invoiceNo, gc, svcName) {
+    const match = appData.salesAccrual.find(r =>
+        r['Invoice No'] === invoiceNo && r['Guest Code'] === gc && r['Item Name'] === svcName
+    );
+    return match ? parseFloat(match['Sales (Exc. Tax)']) || 0 : 0;
+}
+
+function getHistory(gc) {
+    const past = appData.appointments
+        .filter(a => a['Guest Code']===gc && (a['Status']||'').toLowerCase()==='closed')
+        .sort((a,b) => new Date(b['Appointment Date']) - new Date(a['Appointment Date']));
+    if (!past.length) return null;
+    const last = past[0];
+    const d    = new Date(last['Appointment Date']);
+    const ds   = isNaN(d) ? last['Appointment Date'] : d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return 'Last: ' + last['Service Name'] + ' on ' + ds + ' (' + past.length + ' total visits)';
+}
+
+function inferSvcType(name) {
+    if (!name) return 'Waxing Service';
+    const n = name.toLowerCase();
+    if (n.includes('brow'))    return 'Brow';
+    if (n.includes('brazilian')) return 'Brazilian';
+    if (n.includes('bikini'))  return 'Bikini';
+    if (n.includes('face') || n.includes('lip') || n.includes('chin')) return 'Face';
+    return 'Waxing Service';
+}
+
+function getAddons(svcType) {
+    if (!appData.addons.length) return [
+        { name: 'Hydrating Hand Mask', cost: 10 },
+        { name: 'Rejuvenating Eye Gel', cost: 5 },
+        { name: 'Calming Body Mask', cost: 10 }
+    ];
+    return appData.addons
+        .filter(a => {
+            const types = (a['Service Type']||'').split(',').map(t=>t.trim());
+            return types.includes(svcType) || types.includes('Waxing Service');
+        })
+        .sort((a,b) => (parseInt(a['Priority'])||99) - (parseInt(b['Priority'])||99))
+        .slice(0,5)
+        .map(a => ({ name: a['Add Ons'], cost: parseCost(a['Cost']) }));
+}
+
+function getProducts(svcType) {
+    if (!appData.retail.length) return [
+        { name: 'FUR Silk Scrub', cost: 55 },
+        { name: 'PFB Vanish', cost: 22 },
+        { name: 'Spongelle Buffer', cost: 14 }
+    ];
+    return appData.retail
+        .filter(r => {
+            const types = (r['Service Type']||'').split(',').map(t=>t.trim());
+            return types.includes(svcType) || types.includes('Any');
+        })
+        .sort((a,b) => (parseFloat(a['Priority ']||a['Priority'])||99) - (parseFloat(b['Priority ']||b['Priority'])||99))
+        .slice(0,5)
+        .map(r => ({ name: r['Retail Item'], cost: parseCost(r['Retail Cost']) }));
+}
+
+function rebookDate(startTime) {
+    const t = parseTime(startTime);
+    if (!t) return '4 weeks out';
+    const d = new Date(t); d.setDate(d.getDate() + 28);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',weekday:'long'}) + ' at ' +
+           t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+}
+
+function getGuestName(gc) {
+    const a = appData.appointments.find(r => r['Guest Code']===gc);
+    return a ? a['Guest Name'] : gc;
+}
+
+function parseCost(str) {
+    return parseFloat((str||'').toString().replace(/[^0-9.]/g,'')) || 0;
+}
+
+function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function parseDateKey(str) {
+    if (!str) return '';
+    // Handle M/D/YYYY
+    const parts = str.toString().split('/');
+    if (parts.length === 3) {
+        return parts[2] + '-' + String(parts[0]).padStart(2,'0') + '-' + String(parts[1]).padStart(2,'0');
+    }
+    // Handle YYYY-MM-DD
+    if (str.includes('-') && str.length >= 8) return str.substring(0,10);
+    // Try Date parse
+    const d = new Date(str);
+    return isNaN(d) ? '' : d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function parseTime(str) {
+    if (!str) return null;
+    const d = new Date(str);
+    return isNaN(d) ? null : d;
+}
+
+function fmtTime(str) {
+    const d = parseTime(str);
+    if (!d) return str || '';
+    return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+}
+
+function fmt(val) {
+    return '$' + (val||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+}
+
+// =============================================================================
+// UI UTILITIES
+// =============================================================================
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById(tabId)?.classList.add('active');
+    const footer = document.getElementById('footerBar');
+    if (footer) footer.style.display = tabId === 'reportsTab' ? 'none' : 'flex';
+}
+
+function showScreen(name) {
+    document.getElementById('loadingScreen').style.display = 'none';
+    const ls = document.getElementById('loginScreen');
+    const ma = document.getElementById('mainApp');
+    if (name === 'login') { ls.style.display = 'flex'; ma.style.display = 'none'; }
+    else                  { ls.style.display = 'none'; ma.style.display = 'block'; }
+}
+
+function setLoadingMsg(msg) {
+    const el = document.getElementById('loadingMsg');
+    if (el) el.textContent = msg;
+    if (msg) document.getElementById('loadingScreen').style.display = 'flex';
+}
+
+function setSyncStatus(status) {
+    const dot = document.getElementById('syncDot');
+    if (!dot) return;
+    dot.className = 'sync-dot';
+    if (status === 'syncing') dot.classList.add('syncing');
+    if (status === 'offline') dot.classList.add('offline');
+}
+
+function openModal(id)  { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    const text  = document.getElementById('toastMsg');
+    if (!toast || !text) return;
+    text.textContent = msg;
+    toast.className = 'toast show ' + type;
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.className = 'toast'; }, 3000);
+}
 </script>
 </body>
 </html>
