@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -56,16 +56,12 @@
 
         /* ===== LOGIN ===== */
         #loginScreen {
-            display: none;
             min-height: 100vh;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
             flex-direction: column;
             gap: 1rem;
-        }
-        #loginScreen.visible {
-            display: flex;
         }
         .login-card {
             background: var(--slate); border-radius: 20px; padding: 2.5rem;
@@ -543,7 +539,7 @@
 <body>
 
 <!-- ===== LOADING ===== -->
-<div id="loadingScreen">
+<div id="loadingScreen" style="display:none;">
     <div class="loading-logo">WTC</div>
     <div class="spinner"></div>
     <div class="loading-text" id="loadingMsg">Loading...</div>
@@ -558,11 +554,11 @@
         </div>
         <div class="modal-body">
             <div class="setting-row">
-                <label class="setting-label">Worker URL</label>
+                <label class="setting-label" for="settingWorkerUrl">Worker URL</label>
                 <input class="form-input" id="settingWorkerUrl" placeholder="https://wtc-proxy.ccano-c46.workers.dev" style="width:100%">
             </div>
             <div class="setting-row">
-                <label class="setting-label">API Key</label>
+                <label class="setting-label" for="settingApiKey">API Key</label>
                 <input class="form-input" id="settingApiKey" placeholder="wtc2024shawneehills" type="password" style="width:100%">
             </div>
         </div>
@@ -574,7 +570,7 @@
 </div>
 
 <!-- ===== LOGIN ===== -->
-<div id="loginScreen">
+<div id="loginScreen" style="display:none;">
     <div class="login-card" id="loginStep1">
         <div class="login-logo">WTC</div>
         <h1 class="login-title">Daily Operations</h1>
@@ -893,49 +889,46 @@ let syncTimer     = null;
 // =============================================================================
 // INIT
 // =============================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    setLoadingMsg('Starting up...');
+document.addEventListener('DOMContentLoaded', function() {
+    // Step 1 — synchronous setup (no network, no async)
     setHeaderDate();
     setTrainingMessage();
 
-    // Wire up name select enable/disable
+    // Step 2 — populate dropdown with fallback names RIGHT NOW, synchronously
+    populateUserSelect(FALLBACK_EMPLOYEES);
+
+    // Step 3 — wire up the login button enable/disable
     document.getElementById('userSelect').addEventListener('change', function() {
         document.getElementById('loginBtn').disabled = !this.value;
     });
 
-    // Check for returning session
-    const savedUserId = localStorage.getItem('wtc_user');
-    const savedDate   = localStorage.getItem('wtc_login_date');
-    const today       = todayKey();
+    // Step 4 — check for an existing session from today
+    var savedUser = localStorage.getItem('wtc_user');
+    var savedDate = localStorage.getItem('wtc_login_date');
 
-    if (savedUserId && savedDate === today) {
-        // Restore session without PIN
-        setLoadingMsg('Restoring session...');
-        bootstrapUser(savedUserId, false);
+    if (savedUser && savedDate === todayKey()) {
+        // Returning user — skip login, go straight to app
+        bootstrapUser(savedUser, false);
     } else {
-        // First visit — show login
-        setLoadingMsg('Loading team...');
-        loadEmployeesForLogin();
+        // New session — show login immediately (names already in dropdown)
+        showScreen('login');
+        // Background: try to fetch live employee list and update dropdown
+        fetchLiveEmployeesBackground();
     }
 });
 
-async function loadEmployeesForLogin() {
-    // Show fallback names immediately — do NOT wait for API
-    populateUserSelect(FALLBACK_EMPLOYEES);
-    showScreen('login');
-
-    // Fetch live employee list in background and update dropdown if successful
-    try {
-        const data = await API.fetch();
-        if (data.employees && data.employees.length > 0) {
-            const live = parseEmployees(data.employees);
+function fetchLiveEmployeesBackground() {
+    // Runs AFTER login screen is visible — failure is silent
+    API.fetch().then(function(data) {
+        if (data && data.employees && data.employees.length > 0) {
+            var live = parseEmployees(data.employees);
             populateUserSelect(live);
-            cacheAppData(data); // cache full payload for post-login use
+            cacheAppData(data);
         }
-    } catch(e) {
-        // Silently stay with fallback — login is already visible and working
-        console.warn('Could not fetch live employees:', e.message);
-    }
+    }).catch(function(e) {
+        // Silently stay with fallback names — login already showing and working
+        console.warn('Background employee fetch failed:', e.message);
+    });
 }
 
 function parseEmployees(rows) {
@@ -1989,15 +1982,16 @@ function switchTab(tabId) {
 }
 
 function showScreen(name) {
-    document.getElementById('loadingScreen').style.display = 'none';
-    const ls = document.getElementById('loginScreen');
-    const ma = document.getElementById('mainApp');
+    var loading = document.getElementById('loadingScreen');
+    var login   = document.getElementById('loginScreen');
+    var app     = document.getElementById('mainApp');
+    loading.style.display = 'none';
     if (name === 'login') {
-        ls.classList.add('visible');
-        ma.style.display = 'none';
+        login.style.display = 'flex';
+        app.style.display   = 'none';
     } else {
-        ls.classList.remove('visible');
-        ma.style.display = 'block';
+        login.style.display = 'none';
+        app.style.display   = 'block';
     }
 }
 
