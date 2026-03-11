@@ -791,9 +791,19 @@ const API = {
         const url = new URL(this.workerUrl());
         url.searchParams.set('key', this.apiKey());
         Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
-        const resp = await fetch(url.toString(), { method: 'GET' });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        return resp.json();
+        // 12-second timeout — if Worker or Apps Script doesn't respond, fail fast
+        // so the app never hangs on the loading screen indefinitely.
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
+        try {
+            const resp = await fetch(url.toString(), { method: 'GET', signal: controller.signal });
+            clearTimeout(timer);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            return resp.json();
+        } catch(e) {
+            clearTimeout(timer);
+            throw e;
+        }
     },
 
     // ⚠️  iOS Safari CORS fix: do NOT set Content-Type header on POST.
@@ -1060,7 +1070,6 @@ function logout() {
 // =============================================================================
 async function loadAppData() {
     setSyncStatus('syncing');
-    setLoadingMsg('Loading today\'s data...');
 
     try {
         // Try to get from cache first for instant render
@@ -1977,9 +1986,10 @@ function showScreen(name) {
 }
 
 function setLoadingMsg(msg) {
+    // Only updates text — does NOT force loading screen visible.
+    // Loading screen visibility is controlled exclusively by showScreen().
     const el = document.getElementById('loadingMsg');
     if (el) el.textContent = msg;
-    if (msg) document.getElementById('loadingScreen').style.display = 'flex';
 }
 
 function setSyncStatus(status) {
