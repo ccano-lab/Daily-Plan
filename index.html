@@ -56,9 +56,16 @@
 
         /* ===== LOGIN ===== */
         #loginScreen {
-            display: none; min-height: 100vh;
-            align-items: center; justify-content: center; padding: 1.5rem;
-            flex-direction: column; gap: 1rem;
+            display: none;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        #loginScreen.visible {
+            display: flex;
         }
         .login-card {
             background: var(--slate); border-radius: 20px; padding: 2.5rem;
@@ -567,12 +574,13 @@
 </div>
 
 <!-- ===== LOGIN ===== -->
-<div id="loginScreen" style="display:none; min-height:100vh; align-items:center; justify-content:center; padding:1.5rem; flex-direction:column; gap:0.875rem;">
+<div id="loginScreen">
     <div class="login-card" id="loginStep1">
         <div class="login-logo">WTC</div>
         <h1 class="login-title">Daily Operations</h1>
         <p class="login-sub">Shawnee Hills &#8212; W661</p>
         <div class="form-field">
+            <label for="userSelect" style="display:none">Select team member</label>
             <select class="form-select" id="userSelect">
                 <option value="">Select your name...</option>
             </select>
@@ -912,19 +920,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadEmployeesForLogin() {
-    let employees = FALLBACK_EMPLOYEES;
+    // Show fallback names immediately — do NOT wait for API
+    populateUserSelect(FALLBACK_EMPLOYEES);
+    showScreen('login');
+
+    // Fetch live employee list in background and update dropdown if successful
     try {
         const data = await API.fetch();
         if (data.employees && data.employees.length > 0) {
-            employees = parseEmployees(data.employees);
-            // Cache full data for use after login
-            cacheAppData(data);
+            const live = parseEmployees(data.employees);
+            populateUserSelect(live);
+            cacheAppData(data); // cache full payload for post-login use
         }
     } catch(e) {
-        console.warn('Could not load employees from Sheets, using fallback:', e);
+        // Silently stay with fallback — login is already visible and working
+        console.warn('Could not fetch live employees:', e.message);
     }
-    populateUserSelect(employees);
-    showScreen('login');
 }
 
 function parseEmployees(rows) {
@@ -1981,8 +1992,13 @@ function showScreen(name) {
     document.getElementById('loadingScreen').style.display = 'none';
     const ls = document.getElementById('loginScreen');
     const ma = document.getElementById('mainApp');
-    if (name === 'login') { ls.style.display = 'flex'; ma.style.display = 'none'; }
-    else                  { ls.style.display = 'none'; ma.style.display = 'block'; }
+    if (name === 'login') {
+        ls.classList.add('visible');
+        ma.style.display = 'none';
+    } else {
+        ls.classList.remove('visible');
+        ma.style.display = 'block';
+    }
 }
 
 function setLoadingMsg(msg) {
