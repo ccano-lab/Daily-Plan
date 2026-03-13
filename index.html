@@ -888,6 +888,12 @@ function renderAppointments() {
     const todayStr = todayISO();
     const userName = currentUser.Name;
  
+    // Diagnostic: log first 3 appointments to console
+    console.log('TODAY:', todayStr, '| USER:', userName);
+    data.appointments.slice(0, 3).forEach(a => {
+        console.log('APPT:', a['Appointment Date'], '| CERO:', a['Cerologist'], '| STATUS:', a['Status']);
+    });
+ 
     const todaysAppts = data.appointments.filter(a => {
         const apptDate = toISO(a['Appointment Date']);
         const status = (a['Status'] || '').toLowerCase();
@@ -1311,7 +1317,7 @@ async function sendRecap() {
     };
  
     try {
-        const resp = await fetch(CONFIG.WORKER_URL, {
+        const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
             method: 'POST',
             body: JSON.stringify(payload)
         });
@@ -1796,7 +1802,7 @@ async function submitChecklist() {
     };
  
     try {
-        const resp = await fetch(CONFIG.WORKER_URL, {
+        const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
             method: 'POST',
             body: JSON.stringify(payload)
         });
