@@ -1814,6 +1814,7 @@ async function submitChecklist() {
     btn.innerHTML = '&#128228; Submit to Slack';
 }
  
+function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');
     const icon = document.getElementById('toastIcon');
     document.getElementById('toastMessage').textContent = msg;
@@ -1858,3 +1859,4 @@ function saveSettings() {
  
 </body>
 </html>
+ 
