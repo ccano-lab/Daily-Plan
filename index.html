@@ -1,3 +1,6 @@
+
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -900,6 +903,10 @@ function renderAppointments() {
         console.log('All status values in data:', statuses);
         const dateFormats = data.appointments.slice(0,5).map(a => a['Appointment Date']);
         console.log('Sample dates:', dateFormats);
+    }
+    // Log actual field names from first appointment
+    if (data.appointments.length > 0) {
+        console.log('ACTUAL FIELD NAMES:', Object.keys(data.appointments[0]).join(' | '));
     }
  
     const todaysAppts = data.appointments.filter(a => {
