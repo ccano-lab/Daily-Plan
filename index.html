@@ -5,2023 +5,1855 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="WTC Daily">
+    <meta name="apple-mobile-web-app-title" content="WTC Ops">
     <title>WTC Daily Operations | OH-Shawnee Hills</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --orange: #FF6B35;
+            --orange-primary: #FF6B35;
+            --orange-light: #FF8F5C;
             --orange-dark: #E5522A;
             --charcoal: #1E1E24;
             --slate: #2D2D36;
             --smoke: #3D3D47;
             --silver: #9EA3AE;
+            --cream: #FFF8F5;
             --white: #FFFFFF;
             --success: #34D399;
             --warning: #FBBF24;
             --danger: #F87171;
             --blue: #60A5FA;
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--charcoal);
-            color: var(--white);
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ===== LOADING SCREEN ===== */
-        #loadingScreen {
-            position: fixed; inset: 0; background: var(--charcoal);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 1000; gap: 1.5rem;
-        }
-        .loading-logo {
-            width: 80px; height: 80px; background: var(--orange); border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 1.75rem;
-        }
-        .loading-text { color: var(--silver); font-size: 0.9rem; }
-        .spinner {
-            width: 36px; height: 36px; border: 3px solid var(--smoke);
-            border-top-color: var(--orange); border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ===== LOGIN ===== */
-        #loginScreen {
-            min-height: 100vh;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .login-card {
-            background: var(--slate); border-radius: 20px; padding: 2.5rem;
-            width: 100%; max-width: 380px; text-align: center;
-        }
-        .login-logo {
-            width: 72px; height: 72px; background: var(--orange); border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 1.5rem; margin: 0 auto 1.25rem;
-        }
-        .login-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.35rem; }
-        .login-sub { color: var(--silver); font-size: 0.9rem; margin-bottom: 1.75rem; }
-        .form-field { margin-bottom: 1rem; }
-        .form-select, .form-input {
-            width: 100%; padding: 0.9rem 1rem; background: var(--smoke);
-            border: 2px solid transparent; border-radius: 12px; color: var(--white);
-            font-family: 'DM Sans', sans-serif; font-size: 1rem; transition: border-color 0.2s;
-            appearance: none;
-        }
-        .form-select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 1rem center;
-            padding-right: 2.5rem;
-        }
-        .form-select option, .form-input { background: var(--slate); }
-        .form-select:focus, .form-input:focus { outline: none; border-color: var(--orange); }
-
-        /* PIN pad */
-        .pin-display {
-            display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 1.25rem;
-        }
-        .pin-dot {
-            width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--silver);
-            transition: all 0.2s;
-        }
-        .pin-dot.filled { background: var(--orange); border-color: var(--orange); }
-        .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
-        .pin-btn {
-            padding: 1rem; background: var(--smoke); border: none; border-radius: 12px;
-            color: var(--white); font-size: 1.25rem; font-weight: 600;
-            font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .pin-btn:active { background: var(--orange); transform: scale(0.96); }
-        .pin-btn.delete { color: var(--danger); }
-
-        .btn-primary {
-            width: 100%; padding: 0.9rem; background: var(--orange); border: none;
-            border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif;
-            font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-primary:hover { background: var(--orange-dark); }
-        .btn-primary:disabled { background: var(--smoke); color: var(--silver); cursor: not-allowed; }
-        .btn-outline {
-            padding: 0.9rem 1.5rem; background: transparent; border: 2px solid var(--smoke);
-            border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-outline:hover { border-color: var(--orange); }
-        .btn-success {
-            padding: 0.9rem 1.5rem; background: var(--success); border: none;
-            border-radius: 12px; color: var(--charcoal); font-family: 'DM Sans', sans-serif;
-            font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-success:hover { filter: brightness(1.1); }
-
-        .settings-link {
-            color: var(--silver); font-size: 0.8rem; text-decoration: none;
-            cursor: pointer; display: flex; align-items: center; gap: 0.4rem;
-        }
-        .settings-link:hover { color: var(--orange); }
-
-        /* ===== HEADER ===== */
-        #mainApp { display: none; }
-        .header {
-            background: linear-gradient(135deg, var(--slate), var(--charcoal));
-            border-bottom: 2px solid var(--orange);
-            padding: 0.875rem 1.25rem;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .header-top {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 0.875rem;
-        }
-        .logo-row { display: flex; align-items: center; gap: 0.625rem; }
-        .logo-box {
-            width: 38px; height: 38px; background: var(--orange); border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.95rem; flex-shrink: 0;
-        }
-        .brand-name { font-weight: 700; font-size: 0.95rem; }
-        .brand-date { font-size: 0.7rem; color: var(--silver); font-family: 'Space Mono', monospace; }
-        .header-right { display: flex; align-items: center; gap: 0.625rem; }
-        .sync-dot {
-            width: 8px; height: 8px; border-radius: 50%; background: var(--success);
-            transition: background 0.3s;
-        }
-        .sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
-        .sync-dot.offline { background: var(--danger); }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .avatar {
-            width: 34px; height: 34px; background: var(--smoke); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.8rem; cursor: pointer;
-            border: 2px solid transparent; transition: border-color 0.2s;
-        }
-        .avatar:hover { border-color: var(--orange); }
-        .icon-btn {
-            width: 34px; height: 34px; background: var(--smoke); border: none;
-            border-radius: 8px; color: var(--silver); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; transition: all 0.2s;
-        }
-        .icon-btn:hover { background: var(--charcoal); color: var(--white); }
-
-        /* Tab nav */
-        .tab-nav {
-            display: flex; gap: 0.4rem;
-            overflow-x: auto; -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; padding-bottom: 2px;
-        }
-        .tab-nav::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            padding: 0.6rem 1.1rem; border: none; background: var(--smoke);
-            color: var(--silver); font-family: 'DM Sans', sans-serif;
-            font-weight: 600; font-size: 0.85rem; border-radius: 9px;
-            cursor: pointer; white-space: nowrap; transition: all 0.2s;
-            display: flex; align-items: center; gap: 0.4rem;
-        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--charcoal); color: var(--white); min-height: 100vh; line-height: 1.5; }
+ 
+        /* HEADER */
+        .header { background: linear-gradient(135deg, var(--slate) 0%, var(--charcoal) 100%); border-bottom: 2px solid var(--orange-primary); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .logo-section { display: flex; align-items: center; gap: 0.75rem; }
+        .logo { width: 44px; height: 44px; background: var(--orange-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+        .brand-name { font-weight: 700; font-size: 1rem; }
+        .brand-date { font-size: 0.75rem; color: var(--silver); font-family: 'Space Mono', monospace; }
+        .user-section { display: flex; align-items: center; gap: 0.75rem; }
+        .user-avatar { width: 36px; height: 36px; background: var(--smoke); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .user-avatar:hover { border-color: var(--orange-primary); }
+        .tab-nav { display: flex; gap: 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.25rem; }
+        .tab-btn { padding: 0.75rem 1.25rem; border: none; background: var(--smoke); color: var(--silver); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem; }
         .tab-btn:hover { background: var(--slate); color: var(--white); }
-        .tab-btn.active { background: var(--orange); color: var(--white); }
-        .tab-badge {
-            background: rgba(255,255,255,0.25); padding: 0.1rem 0.45rem;
-            border-radius: 20px; font-size: 0.72rem;
-        }
-
-        /* ===== MAIN ===== */
-        .main { padding: 1.125rem; max-width: 1200px; margin: 0 auto; }
-        .main.has-footer { padding-bottom: calc(80px + var(--safe-bottom)); }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; animation: fadeUp 0.25s ease; }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== TRAINING BANNER ===== */
-        .training-banner {
-            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
-            border-radius: 14px; padding: 1.125rem 1.25rem;
-            margin-bottom: 1.25rem; position: relative; overflow: hidden;
-        }
-        .training-banner::before {
-            content: ''; position: absolute; top: -40%; right: -15%;
-            width: 180px; height: 180px; background: rgba(255,255,255,0.08);
-            border-radius: 50%;
-        }
-        .training-day { font-size: 0.7rem; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: 0.3rem; }
-        .training-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
-        .training-body { font-size: 0.85rem; opacity: 0.9; line-height: 1.55; }
-
-        /* ===== EARNINGS CARD ===== */
-        .earnings-card {
-            background: var(--slate); border-radius: 14px; padding: 1rem;
-            margin-bottom: 1.25rem; display: grid;
-            grid-template-columns: repeat(4, 1fr); gap: 0.75rem;
-        }
-        @media (max-width: 480px) { .earnings-card { grid-template-columns: repeat(2, 1fr); } }
-        .earnings-item { background: var(--smoke); border-radius: 10px; padding: 0.75rem; text-align: center; }
-        .earnings-label { font-size: 0.65rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
-        .earnings-value { font-size: 1.2rem; font-weight: 700; }
-        .earnings-value.orange { color: var(--orange); }
-        .earnings-value.green { color: var(--success); }
-        .earnings-meta { font-size: 0.65rem; color: var(--silver); margin-top: 0.15rem; }
-
-        /* ===== APPOINTMENT CARDS ===== */
-        .appt-list { display: flex; flex-direction: column; gap: 0.875rem; }
-        .appt-card { background: var(--slate); border-radius: 14px; overflow: hidden; transition: opacity 0.2s; }
-        .appt-card.done { opacity: 0.65; }
-        .appt-card.done .card-head { background: rgba(52,211,153,0.25); }
-
-        .card-head {
-            background: var(--smoke); padding: 0.875rem 1.125rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .client-left { display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap; }
-        .appt-time { font-weight: 700; color: var(--orange); font-size: 0.95rem; }
-        .client-name { font-weight: 600; font-size: 0.95rem; }
-        .badge {
-            padding: 0.15rem 0.5rem; border-radius: 5px;
-            font-size: 0.68rem; font-weight: 700;
-        }
-        .badge-new { background: var(--orange); }
-        .badge-co { background: var(--success); color: var(--charcoal); }
-        .badge-ret { background: var(--blue); }
-
-        .done-btn {
-            width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-            border: 2px solid var(--silver); background: transparent;
-            cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .done-btn:hover { border-color: var(--success); }
-        .done-btn.checked { background: var(--success); border-color: var(--success); }
-        .done-btn.checked::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.8rem; }
-
-        .card-body { padding: 1.125rem; }
-        .history-row {
-            font-size: 0.82rem; color: var(--silver); padding-bottom: 0.75rem;
-            margin-bottom: 0.75rem; border-bottom: 1px solid var(--smoke); line-height: 1.45;
-        }
-        .svc-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.6rem 0; border-bottom: 1px solid var(--smoke);
-        }
-        .svc-row:last-child { border-bottom: none; }
-        .svc-name { font-weight: 500; font-size: 0.9rem; }
-        .svc-price { color: var(--success); font-weight: 600; font-size: 0.9rem; }
-
-        .action-block { margin-top: 0.875rem; padding-top: 0.875rem; border-top: 1px solid var(--smoke); }
-        .action-label {
-            font-size: 0.68rem; color: var(--silver); text-transform: uppercase;
-            letter-spacing: 0.06em; margin-bottom: 0.5rem;
-            display: flex; align-items: center; gap: 0.4rem;
-        }
-        .action-label::before { content: ''; width: 3px; height: 10px; background: var(--orange); border-radius: 2px; }
-
-        .pill-select {
-            width: 100%; padding: 0.65rem 0.875rem; background: var(--smoke);
-            border: 2px solid transparent; border-radius: 9px; color: var(--white);
-            font-family: 'DM Sans', sans-serif; font-size: 0.875rem; cursor: pointer;
-            transition: all 0.2s; appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 0.75rem center;
-            padding-right: 2.25rem;
-        }
-        .pill-select:focus { outline: none; border-color: var(--orange); }
-        .pill-select option { background: var(--slate); }
-        .pill-select.has-value { border-color: var(--success); background-color: rgba(52,211,153,0.08); }
-
-        .checks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-top: 0.875rem; }
-        .check-tile {
-            display: flex; align-items: center; gap: 0.625rem;
-            padding: 0.7rem 0.875rem; background: var(--smoke);
-            border-radius: 9px; cursor: pointer; transition: all 0.2s;
-        }
-        .check-tile:hover { background: var(--charcoal); }
-        .check-tile.checked { background: rgba(52,211,153,0.12); }
-        .check-box {
-            width: 22px; height: 22px; border: 2px solid var(--silver); border-radius: 5px;
-            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .check-tile.checked .check-box { background: var(--success); border-color: var(--success); }
-        .check-tile.checked .check-box::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.8rem; }
-        .check-label { font-size: 0.875rem; font-weight: 500; }
-
-        .rebook-hint {
-            margin-top: 0.75rem; padding: 0.6rem 0.875rem; background: var(--charcoal);
-            border-radius: 9px; font-size: 0.82rem;
-        }
-        .rebook-hint span { color: var(--blue); font-weight: 600; }
-
-        .notes-area {
-            width: 100%; margin-top: 0.75rem; padding: 0.7rem 0.875rem;
-            background: var(--smoke); border: 2px solid transparent; border-radius: 9px;
-            color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
-            resize: none; min-height: 60px; transition: border-color 0.2s;
-        }
-        .notes-area:focus { outline: none; border-color: var(--orange); }
-        .notes-area::placeholder { color: var(--silver); }
-
-        /* ===== STUDIO PLAN ===== */
-        .studio-section { background: var(--slate); border-radius: 14px; margin-bottom: 1rem; overflow: hidden; }
-        .section-head {
-            background: var(--smoke); padding: 0.875rem 1.125rem;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; user-select: none;
-        }
-        .section-head:hover { background: var(--charcoal); }
-        .section-title-row { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem; }
-        .dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
-        .section-count { background: var(--orange); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-        .section-prog { display: flex; align-items: center; gap: 0.4rem; }
-        .prog-text { font-size: 0.75rem; color: var(--silver); }
-        .prog-bar { width: 52px; height: 5px; background: var(--charcoal); border-radius: 3px; overflow: hidden; }
-        .prog-fill { height: 100%; background: var(--success); border-radius: 3px; transition: width 0.3s; }
-        .section-body { padding: 0.875rem; }
+        .tab-btn.active { background: var(--orange-primary); color: var(--white); }
+        .tab-badge { background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.75rem; }
+ 
+        /* MAIN */
+        .main { padding: 1.25rem; max-width: 1400px; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .has-footer { padding-bottom: 110px; }
+ 
+        /* LOGIN */
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; background: var(--charcoal); }
+        .login-card { background: var(--slate); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 400px; text-align: center; }
+        .login-logo { width: 80px; height: 80px; background: var(--orange-primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.75rem; margin: 0 auto 1.5rem; }
+        .login-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .login-subtitle { color: var(--silver); margin-bottom: 2rem; font-size: 0.9rem; }
+        .login-select { width: 100%; padding: 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+        .login-select:focus { outline: none; border-color: var(--orange-primary); }
+        .login-select option { background: var(--slate); }
+        .pin-row { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; justify-content: center; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--silver); background: transparent; transition: all 0.2s; }
+        .pin-dot.filled { background: var(--orange-primary); border-color: var(--orange-primary); }
+        .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .pin-key { padding: 1rem; background: var(--smoke); border: none; border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1.25rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .pin-key:hover { background: var(--charcoal); }
+        .pin-key:active { transform: scale(0.95); background: var(--orange-primary); }
+        .pin-key.clear { font-size: 0.85rem; color: var(--silver); }
+        .pin-key.wide { grid-column: span 2; }
+        .login-btn { width: 100%; padding: 1rem; background: var(--orange-primary); border: none; border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .login-btn:hover { background: var(--orange-dark); }
+        .login-btn:disabled { background: var(--smoke); color: var(--silver); cursor: not-allowed; }
+        .login-loading { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--silver); font-size: 0.9rem; margin-bottom: 1rem; }
+ 
+        /* LOADING OVERLAY */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(30,30,36,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; gap: 1rem; }
+        .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--smoke); border-top-color: var(--orange-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: var(--silver); font-size: 0.9rem; }
+ 
+        /* TRAINING BANNER */
+        .training-banner { background: linear-gradient(135deg, #FF6B35 0%, #E5522A 100%); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+        .training-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .training-day { font-size: 0.75rem; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; margin-bottom: 0.5rem; }
+        .training-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .training-body { font-size: 0.9rem; opacity: 0.95; line-height: 1.6; }
+ 
+        /* EARNINGS */
+        .earnings-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; }
+        .earnings-item { text-align: center; padding: 0.75rem; background: var(--smoke); border-radius: 12px; }
+        .earnings-label { font-size: 0.7rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+        .earnings-value { font-size: 1.35rem; font-weight: 700; }
+        .earnings-value.highlight { color: var(--orange-primary); }
+        .earnings-value.success { color: var(--success); }
+        .earnings-meta { font-size: 0.7rem; color: var(--silver); margin-top: 0.25rem; }
+ 
+        /* RGA SECTION */
+        .rga-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .rga-card-title { font-weight: 700; font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .rga-item { background: var(--smoke); border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; }
+        .rga-label { font-size: 0.75rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .rga-select { width: 100%; padding: 0.75rem; background: var(--charcoal); border: 2px solid transparent; border-radius: 8px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; margin-bottom: 0.5rem; transition: all 0.2s; }
+        .rga-select:focus { outline: none; border-color: var(--orange-primary); }
+        .rga-select.selected { border-color: var(--success); }
+        .rga-select option { background: var(--slate); }
+        .rga-note { width: 100%; padding: 0.5rem 0.75rem; background: var(--charcoal); border: 2px solid transparent; border-radius: 8px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; resize: none; min-height: 48px; transition: all 0.2s; }
+        .rga-note:focus { outline: none; border-color: var(--orange-primary); }
+        .rga-note::placeholder { color: var(--silver); }
+ 
+        /* APPOINTMENT CARDS */
+        .appointments-list { display: flex; flex-direction: column; gap: 1rem; }
+        .appointment-card { background: var(--slate); border-radius: 16px; overflow: hidden; transition: all 0.2s; }
+        .appointment-card.completed { opacity: 0.75; }
+        .card-header { background: var(--smoke); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+        .appointment-card.completed .card-header { background: rgba(52, 211, 153, 0.2); }
+        .client-info { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .client-time { font-weight: 700; font-size: 1rem; color: var(--orange-primary); }
+        .client-name { font-weight: 600; font-size: 1rem; }
+        .client-badge { padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
+        .client-badge.new { background: var(--orange-primary); }
+        .client-badge.co { background: var(--success); color: var(--charcoal); }
+        .client-badge.returning { background: var(--blue); }
+        .complete-check { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 1rem; }
+        .complete-check:hover { border-color: var(--success); }
+        .complete-check.checked { background: var(--success); border-color: var(--success); }
+        .card-body { padding: 1.25rem; }
+        .service-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--smoke); }
+        .service-row:last-child { border-bottom: none; }
+        .service-name { font-weight: 500; }
+        .service-price { color: var(--success); font-weight: 600; }
+        .history-text { font-size: 0.85rem; color: var(--silver); padding: 0.75rem 0; border-bottom: 1px solid var(--smoke); line-height: 1.5; }
+        .action-section { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--smoke); }
+        .action-title { font-size: 0.75rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .action-title::before { content: ''; width: 4px; height: 12px; background: var(--orange-primary); border-radius: 2px; }
+        .product-select { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239EA3AE' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
+        .product-select:focus { outline: none; border-color: var(--orange-primary); }
+        .product-select.selected { border-color: var(--success); background-color: rgba(52, 211, 153, 0.08); }
+        .product-select option { background: var(--slate); }
+        .checkbox-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem; }
+        .action-checkbox { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--smoke); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .action-checkbox:hover { background: var(--charcoal); }
+        .action-checkbox.checked { background: rgba(52, 211, 153, 0.15); }
+        .checkbox-box { width: 24px; height: 24px; border: 2px solid var(--silver); border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 0.85rem; }
+        .action-checkbox.checked .checkbox-box { background: var(--success); border-color: var(--success); }
+        .checkbox-label { font-size: 0.9rem; font-weight: 500; }
+        .rebook-section { background: var(--charcoal); border-radius: 10px; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; }
+        .rebook-date { font-weight: 600; color: var(--blue); }
+        .notes-section { margin-top: 1rem; }
+        .notes-input { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; resize: vertical; min-height: 60px; transition: all 0.2s; }
+        .notes-input:focus { outline: none; border-color: var(--orange-primary); }
+        .notes-input::placeholder { color: var(--silver); }
+ 
+        /* STUDIO PLAN */
+        .studio-section { background: var(--slate); border-radius: 16px; margin-bottom: 1.5rem; overflow: hidden; }
+        .section-header { background: var(--smoke); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .section-header:hover { background: var(--charcoal); }
+        .section-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .section-count { background: var(--orange-primary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .section-progress { display: flex; align-items: center; gap: 0.5rem; }
+        .progress-text { font-size: 0.8rem; color: var(--silver); }
+        .progress-bar { width: 60px; height: 6px; background: var(--charcoal); border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--success); border-radius: 3px; transition: width 0.3s ease; }
+        .section-body { padding: 1rem; }
         .section-body.collapsed { display: none; }
-
-        .task-item {
-            display: flex; align-items: flex-start; gap: 0.875rem;
-            padding: 0.875rem; background: var(--smoke); border-radius: 10px;
-            margin-bottom: 0.625rem; transition: all 0.2s;
-        }
+        .task-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; background: var(--smoke); border-radius: 12px; margin-bottom: 0.75rem; transition: all 0.2s; }
         .task-item:last-child { margin-bottom: 0; }
-        .task-item.done { opacity: 0.65; background: rgba(52,211,153,0.08); }
-        .task-check {
-            width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--silver);
-            background: transparent; cursor: pointer; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; margin-top: 0.1rem;
-        }
+        .task-item.completed { opacity: 0.7; background: rgba(52, 211, 153, 0.1); }
+        .task-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 0.9rem; }
         .task-check:hover { border-color: var(--success); }
-        .task-item.done .task-check { background: var(--success); border-color: var(--success); }
-        .task-item.done .task-check::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.75rem; }
+        .task-item.completed .task-check { background: var(--success); border-color: var(--success); }
         .task-content { flex: 1; min-width: 0; }
-        .task-main { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
-        .task-detail { font-size: 0.8rem; color: var(--silver); line-height: 1.4; margin-bottom: 0.5rem; }
-        .task-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-        .task-tag { padding: 0.15rem 0.45rem; background: var(--charcoal); border-radius: 5px; font-size: 0.72rem; color: var(--silver); }
-        .by-select {
-            padding: 0.25rem 0.6rem; background: var(--charcoal); border: 1px solid var(--smoke);
-            border-radius: 5px; color: var(--white); font-family: 'DM Sans', sans-serif;
-            font-size: 0.72rem; cursor: pointer;
-        }
-        .by-select option { background: var(--slate); }
-
-        /* ===== CHECKLISTS ===== */
-        .checklist-card { background: var(--slate); border-radius: 14px; margin-bottom: 1.25rem; overflow: hidden; }
-        .checklist-head {
-            padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;
-            background: var(--smoke);
-        }
-        .checklist-icon { font-size: 1.25rem; }
-        .checklist-name { font-weight: 700; font-size: 1rem; flex: 1; }
-        .checklist-prog { font-size: 0.8rem; color: var(--silver); }
-        .checklist-body { padding: 1rem; }
-        .cl-section { margin-bottom: 1rem; }
-        .cl-section:last-child { margin-bottom: 0; }
-        .cl-section-title { font-size: 0.72rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
-        .cl-item {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.65rem 0.875rem; background: var(--smoke); border-radius: 9px;
-            margin-bottom: 0.4rem; cursor: pointer; transition: all 0.2s;
-        }
-        .cl-item:last-child { margin-bottom: 0; }
-        .cl-item.checked { background: rgba(52,211,153,0.1); }
-        .cl-check {
-            width: 20px; height: 20px; border: 2px solid var(--silver); border-radius: 4px;
-            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .cl-item.checked .cl-check { background: var(--success); border-color: var(--success); }
-        .cl-item.checked .cl-check::after { content: '✓'; color: var(--white); font-weight: 700; font-size: 0.72rem; }
-        .cl-text { font-size: 0.875rem; font-weight: 500; }
-        .cl-item.checked .cl-text { text-decoration: line-through; color: var(--silver); }
-
-        .cl-footer { padding: 0 1rem 1rem; }
-        .cl-cash-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.875rem; }
-        .cl-cash-label { font-size: 0.85rem; color: var(--silver); white-space: nowrap; }
-        .cash-input {
-            flex: 1; padding: 0.6rem 0.875rem; background: var(--smoke);
-            border: 2px solid transparent; border-radius: 9px; color: var(--white);
-            font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
-        }
-        .cash-input:focus { outline: none; border-color: var(--orange); }
-        .followup-area {
-            width: 100%; padding: 0.7rem 0.875rem; background: var(--smoke);
-            border: 2px solid transparent; border-radius: 9px; color: var(--white);
-            font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
-            resize: none; min-height: 70px; margin-bottom: 0.875rem;
-        }
-        .followup-area:focus { outline: none; border-color: var(--orange); }
-        .followup-area::placeholder { color: var(--silver); }
-
-        /* ===== REPORTS ===== */
-        .report-card { background: var(--slate); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; }
-        .report-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.875rem; }
-        .stat-box { background: var(--smoke); border-radius: 11px; padding: 0.875rem; text-align: center; }
-        .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--orange); }
-        .stat-val.green { color: var(--success); }
-        .stat-val.blue { color: var(--blue); }
-        .stat-val.warn { color: var(--warning); }
-        .stat-label { font-size: 0.72rem; color: var(--silver); margin-top: 0.2rem; }
-
-        .highlight-list { list-style: none; }
-        .highlight-item {
-            padding: 0.7rem 0.875rem; background: var(--smoke); border-radius: 9px;
-            margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.625rem;
-        }
-        .h-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; flex-shrink: 0; }
-        .h-icon.green { background: rgba(52,211,153,0.15); }
-        .h-icon.orange { background: rgba(255,107,53,0.15); }
-        .h-icon.blue { background: rgba(96,165,250,0.15); }
-        .h-icon.warn { background: rgba(251,191,36,0.15); }
-        .h-text { font-size: 0.875rem; }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--slate); padding: 0.875rem 1.25rem;
-            padding-bottom: calc(0.875rem + var(--safe-bottom));
-            border-top: 1px solid var(--smoke);
-            display: flex; gap: 0.75rem; z-index: 50;
-        }
-        .footer .btn-outline { flex: 1; }
-        .footer .btn-success { flex: 1.5; }
-
-        /* ===== MODALS ===== */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.72);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 300; padding: 1.25rem;
-            opacity: 0; visibility: hidden; transition: all 0.25s;
-        }
-        .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal {
-            background: var(--slate); border-radius: 18px; width: 100%;
-            max-width: 480px; max-height: 85vh; overflow-y: auto;
-            transform: scale(0.92); transition: transform 0.25s;
-        }
-        .modal-overlay.open .modal { transform: scale(1); }
-        .modal-head {
-            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--smoke);
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; background: var(--slate); z-index: 1;
-        }
-        .modal-title { font-size: 1.1rem; font-weight: 700; }
-        .modal-close {
-            width: 32px; height: 32px; border-radius: 50%; border: none;
-            background: var(--smoke); color: var(--silver); font-size: 1.1rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .modal-close:hover { color: var(--white); background: var(--charcoal); }
-        .modal-body { padding: 1.25rem 1.5rem; }
-        .modal-foot {
-            padding: 1rem 1.5rem; border-top: 1px solid var(--smoke);
-            display: flex; gap: 0.75rem;
-        }
-        .modal-foot .btn-outline { flex: 1; }
-        .modal-foot .btn-success { flex: 1.5; }
-
-        /* Settings fields */
-        .setting-row { margin-bottom: 1rem; }
-        .setting-label { font-size: 0.78rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; display: block; }
-
-        /* Recap sections */
-        .recap-section { margin-bottom: 1.25rem; }
-        .recap-section-title { font-size: 0.75rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-        .recap-item {
-            padding: 0.6rem 0.875rem; background: var(--smoke); border-radius: 8px;
-            margin-bottom: 0.35rem; display: flex; justify-content: space-between; align-items: center;
-        }
-        .recap-item-name { font-weight: 500; font-size: 0.875rem; }
-        .recap-item-detail { font-size: 0.8rem; color: var(--silver); }
-        .recap-empty { color: var(--silver); font-size: 0.875rem; font-style: italic; padding: 0.4rem 0; }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed; bottom: calc(80px + var(--safe-bottom) + 12px); left: 50%;
-            transform: translateX(-50%) translateY(8px);
-            background: var(--charcoal); border: 1px solid var(--smoke);
-            padding: 0.75rem 1.25rem; border-radius: 10px;
-            display: flex; align-items: center; gap: 0.625rem;
-            z-index: 400; opacity: 0; visibility: hidden;
-            transition: all 0.3s; white-space: nowrap;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        .toast.show {
-            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
-        }
+        .task-main { font-weight: 600; margin-bottom: 0.25rem; }
+        .task-detail { font-size: 0.85rem; color: var(--silver); line-height: 1.4; }
+        .task-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .task-tag { padding: 0.2rem 0.5rem; background: var(--charcoal); border-radius: 6px; font-size: 0.75rem; color: var(--silver); }
+        .completed-by-select { padding: 0.35rem 0.75rem; background: var(--charcoal); border: 1px solid var(--smoke); border-radius: 6px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; cursor: pointer; }
+        .completed-by-select option { background: var(--slate); }
+ 
+        /* BUTTONS */
+        .btn { padding: 0.875rem 1.5rem; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-primary { background: var(--orange-primary); color: var(--white); }
+        .btn-primary:hover { background: var(--orange-dark); }
+        .btn-success { background: var(--success); color: var(--charcoal); }
+        .btn-success:hover { filter: brightness(1.1); }
+        .btn-outline { background: transparent; border: 2px solid var(--smoke); color: var(--white); }
+        .btn-outline:hover { border-color: var(--orange-primary); background: rgba(255, 107, 53, 0.1); }
+        .btn-block { width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+ 
+        /* FOOTER */
+        .footer-actions { position: fixed; bottom: 0; left: 0; right: 0; background: var(--slate); padding: 1rem 1.5rem; border-top: 1px solid var(--smoke); display: flex; gap: 1rem; z-index: 50; padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+        .footer-actions .btn { flex: 1; }
+ 
+        /* TOAST */
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--charcoal); border: 1px solid var(--smoke); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem; z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s; white-space: nowrap; }
+        .toast.visible { opacity: 1; visibility: visible; }
         .toast.success { border-color: var(--success); }
         .toast.error { border-color: var(--danger); }
-        .toast-msg { font-size: 0.875rem; font-weight: 500; }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--silver); }
-        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-        .empty-state h3 { font-size: 1rem; color: var(--white); margin-bottom: 0.4rem; }
-        .empty-state p { font-size: 0.85rem; }
+ 
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal { background: var(--slate); border-radius: 20px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; transform: scale(0.9); transition: all 0.3s; }
+        .modal-overlay.visible .modal { transform: scale(1); }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--smoke); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--slate); z-index: 1; }
+        .modal-title { font-size: 1.25rem; font-weight: 700; }
+        .modal-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--smoke); color: var(--silver); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .modal-close:hover { background: var(--charcoal); color: var(--white); }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--smoke); display: flex; gap: 0.75rem; position: sticky; bottom: 0; background: var(--slate); }
+        .recap-section { margin-bottom: 1.5rem; }
+        .recap-title { font-size: 0.85rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .recap-list { list-style: none; }
+        .recap-item { padding: 0.75rem; background: var(--smoke); border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .recap-item-name { font-weight: 500; }
+        .recap-item-detail { color: var(--silver); font-size: 0.85rem; }
+        .recap-empty { color: var(--silver); font-style: italic; padding: 0.5rem; font-size: 0.9rem; }
+ 
+        /* SHIFT NOTES */
+        .shift-notes-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .shift-notes-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; }
+        .shift-notes-input { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; transition: all 0.2s; }
+        .shift-notes-input:focus { outline: none; border-color: var(--orange-primary); }
+        .shift-notes-input::placeholder { color: var(--silver); }
+ 
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 3rem; color: var(--silver); }
+        .empty-state p:first-child { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .empty-state p:last-child { font-size: 0.9rem; }
+ 
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header { padding: 0.75rem 1rem; }
+            .main { padding: 1rem; }
+            .earnings-card { grid-template-columns: repeat(2, 1fr); }
+            .checkbox-actions { grid-template-columns: 1fr; }
+        }
+ 
+        /* SYNC STATUS */
+        .sync-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-family: 'Space Mono', monospace; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+        .sync-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
+        .sync-dot.error { background: var(--danger); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        /* CHECKLIST CARDS */
+        .checklist-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+        .checklist-card:hover { border-color: var(--orange-primary); transform: translateY(-2px); }
+        .checklist-card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .checklist-card-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+        .checklist-card-count { font-size: 0.8rem; color: var(--silver); }
+        .checklist-card.done { border-color: var(--success); background: rgba(52,211,153,0.1); }
+        .cl-section { background: var(--slate); border-radius: 16px; margin-bottom: 1rem; overflow: hidden; }
+        .cl-section-header { background: var(--smoke); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .cl-section-title { font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .cl-section-body { padding: 0.75rem; }
+        .cl-section-body.collapsed { display: none; }
+        .cl-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--charcoal); cursor: pointer; transition: all 0.15s; border-radius: 8px; }
+        .cl-item:last-child { border-bottom: none; }
+        .cl-item:hover { background: rgba(255,255,255,0.04); }
+        .cl-item.checked { opacity: 0.6; }
+        .cl-checkbox { width: 26px; height: 26px; border: 2px solid var(--silver); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; font-size: 0.9rem; }
+        .cl-item.checked .cl-checkbox { background: var(--success); border-color: var(--success); }
+        .cl-item-text { font-size: 0.9rem; line-height: 1.4; }
+        .cl-item.checked .cl-item-text { text-decoration: line-through; color: var(--silver); }
     </style>
 </head>
 <body>
-
-<!-- ===== LOADING ===== -->
-<div id="loadingScreen" style="display:none;">
-    <div class="loading-logo">WTC</div>
-    <div class="spinner"></div>
-    <div class="loading-text" id="loadingMsg">Loading...</div>
+ 
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading data...</div>
 </div>
-
-<!-- ===== SETTINGS MODAL ===== -->
-<div class="modal-overlay" id="settingsModal">
-    <div class="modal">
-        <div class="modal-head">
-            <div class="modal-title">&#9881;&#65039; Settings</div>
-            <button class="modal-close" onclick="closeModal('settingsModal')">&#x2715;</button>
-        </div>
-        <div class="modal-body">
-            <div class="setting-row">
-                <label class="setting-label" for="settingWorkerUrl">Worker URL</label>
-                <input class="form-input" id="settingWorkerUrl" placeholder="https://wtc-proxy.ccano-c46.workers.dev" style="width:100%">
-            </div>
-            <div class="setting-row">
-                <label class="setting-label" for="settingApiKey">API Key</label>
-                <input class="form-input" id="settingApiKey" placeholder="wtc2024shawneehills" type="password" style="width:100%">
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-outline" onclick="closeModal('settingsModal')">Cancel</button>
-            <button class="btn-success" onclick="saveSettings()">Save Settings</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== LOGIN ===== -->
-<div id="loginScreen" style="display:none;">
-    <div class="login-card" id="loginStep1">
+ 
+<!-- Login Screen -->
+<div id="loginScreen" class="login-screen">
+    <div class="login-card">
         <div class="login-logo">WTC</div>
         <h1 class="login-title">Daily Operations</h1>
-        <p class="login-sub">Shawnee Hills &#8212; W661</p>
-        <div class="form-field">
-            <label for="userSelect" style="display:none">Select team member</label>
-            <select class="form-select" id="userSelect">
-                <option value="">Select your name...</option>
-            </select>
+        <p class="login-subtitle" id="loginSubtitle">Sign in to start your shift</p>
+        <button onclick="openSettings()" style="background:none;border:none;color:var(--silver);font-size:0.85rem;cursor:pointer;margin-bottom:1rem;display:flex;align-items:center;gap:0.4rem;margin-left:auto;">&#9881; Settings</button>
+        
+        <div class="login-loading" id="loginLoading" style="display:none;">
+            <div class="loading-spinner" style="width:20px;height:20px;border-width:3px;"></div>
+            <span>Loading team...</span>
         </div>
-        <button class="btn-primary" id="loginBtn" onclick="handleNameSelect()" disabled>Continue</button>
+        
+        <select id="userSelect" class="login-select" style="display:none;">
+            <option value="">Select your name...</option>
+        </select>
+        
+        <div id="pinSection" style="display:none;">
+            <div class="pin-row" id="pinDots">
+                <div class="pin-dot" id="dot0"></div>
+                <div class="pin-dot" id="dot1"></div>
+                <div class="pin-dot" id="dot2"></div>
+                <div class="pin-dot" id="dot3"></div>
+            </div>
+            <div class="pin-pad">
+                <button class="pin-key" onclick="pinPress('1')">1</button>
+                <button class="pin-key" onclick="pinPress('2')">2</button>
+                <button class="pin-key" onclick="pinPress('3')">3</button>
+                <button class="pin-key" onclick="pinPress('4')">4</button>
+                <button class="pin-key" onclick="pinPress('5')">5</button>
+                <button class="pin-key" onclick="pinPress('6')">6</button>
+                <button class="pin-key" onclick="pinPress('7')">7</button>
+                <button class="pin-key" onclick="pinPress('8')">8</button>
+                <button class="pin-key" onclick="pinPress('9')">9</button>
+                <button class="pin-key clear" onclick="pinClear()">Clear</button>
+                <button class="pin-key" onclick="pinPress('0')">0</button>
+                <button class="pin-key clear" onclick="pinBack()">&#9003;</button>
+            </div>
+        </div>
+        
+        <button id="loginBtn" class="login-btn" disabled onclick="login()">Sign In</button>
+        <div style="margin-top:1rem; color: var(--danger); font-size: 0.85rem; display:none;" id="loginError"></div>
     </div>
-
-    <!-- PIN step (shown only if employee has PIN) -->
-    <div class="login-card" id="loginStep2" style="display:none;">
-        <div class="login-logo">WTC</div>
-        <h1 class="login-title" id="pinGreeting">Enter PIN</h1>
-        <p class="login-sub">4-digit PIN to continue</p>
-        <div class="pin-display">
-            <div class="pin-dot" id="pd1"></div>
-            <div class="pin-dot" id="pd2"></div>
-            <div class="pin-dot" id="pd3"></div>
-            <div class="pin-dot" id="pd4"></div>
-        </div>
-        <div class="pin-pad">
-            <button class="pin-btn" onclick="pinPress('1')">1</button>
-            <button class="pin-btn" onclick="pinPress('2')">2</button>
-            <button class="pin-btn" onclick="pinPress('3')">3</button>
-            <button class="pin-btn" onclick="pinPress('4')">4</button>
-            <button class="pin-btn" onclick="pinPress('5')">5</button>
-            <button class="pin-btn" onclick="pinPress('6')">6</button>
-            <button class="pin-btn" onclick="pinPress('7')">7</button>
-            <button class="pin-btn" onclick="pinPress('8')">8</button>
-            <button class="pin-btn" onclick="pinPress('9')">9</button>
-            <button class="pin-btn" onclick="pinPress('back')">&#8592;</button>
-            <button class="pin-btn" onclick="pinPress('0')">0</button>
-            <button class="pin-btn delete" onclick="clearPin()">&#x2715;</button>
-        </div>
-        <button class="btn-outline" onclick="backToNameSelect()" style="width:100%; margin-top:0.25rem;">Back</button>
-    </div>
-
-    <span class="settings-link" onclick="openSettings()">&#9881;&#65039; Configure connection</span>
 </div>
-
-<!-- ===== MAIN APP ===== -->
-<div id="mainApp">
+ 
+<!-- Main App -->
+<div id="mainApp" style="display:none;">
     <header class="header">
         <div class="header-top">
-            <div class="logo-row">
-                <div class="logo-box">WTC</div>
+            <div class="logo-section">
+                <div class="logo">WTC</div>
                 <div>
                     <div class="brand-name">Daily Operations</div>
-                    <div class="brand-date" id="headerDate"></div>
+                    <div class="brand-date" id="currentDate"></div>
                 </div>
             </div>
-            <div class="header-right">
-                <div class="sync-dot" id="syncDot" title="Sync status"></div>
-                <button class="icon-btn" onclick="openSettings()" title="Settings">&#9881;</button>
-                <div class="avatar" id="avatarBtn" onclick="confirmLogout()" title="Sign out"></div>
+            <div class="user-section">
+                <div class="sync-status" id="syncStatus">
+                    <div class="sync-dot" id="syncDot"></div>
+                    <span id="syncText">Live</span>
+                </div>
+                <div class="user-avatar" id="userAvatar" onclick="logout()" title="Tap to sign out"></div>
             </div>
         </div>
-        <nav class="tab-nav">
-            <button class="tab-btn active" data-tab="planTab" onclick="switchTab('planTab')">
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="planYourDay" onclick="switchTab('planYourDay')">
                 &#128203; My Plan
-                <span class="tab-badge" id="apptBadge">0</span>
+                <span class="tab-badge" id="apptCount">0</span>
             </button>
-            <button class="tab-btn" data-tab="studioTab" onclick="switchTab('studioTab')">
+            <button class="tab-btn" data-tab="studioPlan" onclick="switchTab('studioPlan')">
                 &#127970; Studio
             </button>
-            <button class="tab-btn" data-tab="checklistTab" onclick="switchTab('checklistTab')">
+            <button class="tab-btn" data-tab="checklists" onclick="switchTab('checklists')">
                 &#9989; Checklists
             </button>
-            <button class="tab-btn" data-tab="reportsTab" onclick="switchTab('reportsTab')">
-                &#128202; Reports
-            </button>
-        </nav>
+        </div>
     </header>
-
+ 
     <main class="main has-footer">
-
-        <!-- ===== MY PLAN TAB ===== -->
-        <div id="planTab" class="tab-pane active">
+ 
+        <!-- PLAN YOUR DAY TAB -->
+        <div id="planYourDayTab" class="tab-content active">
             <div class="training-banner">
-                <div class="training-day" id="trainDay"></div>
-                <div class="training-title" id="trainTitle"></div>
-                <div class="training-body" id="trainBody"></div>
+                <div class="training-day" id="trainingDay"></div>
+                <div class="training-title" id="trainingTitle"></div>
+                <div class="training-body" id="trainingBody"></div>
             </div>
-            <div class="earnings-card">
+ 
+            <div class="earnings-card" id="earningsCard">
                 <div class="earnings-item">
                     <div class="earnings-label">Scheduled</div>
-                    <div class="earnings-value" id="earnScheduled">$0</div>
+                    <div class="earnings-value" id="scheduledRevenue">$0</div>
                 </div>
                 <div class="earnings-item">
                     <div class="earnings-label">Potential</div>
-                    <div class="earnings-value orange" id="earnPotential">$0</div>
-                    <div class="earnings-meta">w/ upsells</div>
+                    <div class="earnings-value highlight" id="potentialRevenue">$0</div>
+                    <div class="earnings-meta">w/ add-ons &amp; retail</div>
                 </div>
                 <div class="earnings-item">
-                    <div class="earnings-label">Commission</div>
-                    <div class="earnings-value" id="earnCommission">$0</div>
-                    <div class="earnings-meta" id="earnCommRate">5%</div>
+                    <div class="earnings-label">Svc Commission</div>
+                    <div class="earnings-value" id="commissionValue">$0</div>
+                    <div class="earnings-meta" id="commissionRate">—</div>
                 </div>
                 <div class="earnings-item">
                     <div class="earnings-label">Est. Tips</div>
-                    <div class="earnings-value green" id="earnTips">$0</div>
-                    <div class="earnings-meta">~20%</div>
+                    <div class="earnings-value success" id="tipsValue">$0</div>
+                    <div class="earnings-meta">20% estimate</div>
                 </div>
             </div>
-            <div class="appt-list" id="apptList">
-                <div class="empty-state">
-                    <div class="empty-icon">&#128203;</div>
-                    <h3>Loading your schedule...</h3>
-                    <p>Connecting to Google Sheets</p>
+ 
+            <!-- RGAs -->
+            <div class="rga-card">
+                <div class="rga-card-title">&#127919; Revenue Generating Activities</div>
+                <div class="rga-item">
+                    <div class="rga-label">RGA 1</div>
+                    <select class="rga-select" id="rga1Select" onchange="updateRGA(1,'activity',this.value)">
+                        <option value="">Select activity...</option>
+                    </select>
+                    <textarea class="rga-note" id="rga1Note" placeholder="Notes..." rows="1" onchange="updateRGA(1,'note',this.value)"></textarea>
                 </div>
+                <div class="rga-item">
+                    <div class="rga-label">RGA 2</div>
+                    <select class="rga-select" id="rga2Select" onchange="updateRGA(2,'activity',this.value)">
+                        <option value="">Select activity...</option>
+                    </select>
+                    <textarea class="rga-note" id="rga2Note" placeholder="Notes..." rows="1" onchange="updateRGA(2,'note',this.value)"></textarea>
+                </div>
+                <div class="rga-item">
+                    <div class="rga-label">RGA 3</div>
+                    <select class="rga-select" id="rga3Select" onchange="updateRGA(3,'activity',this.value)">
+                        <option value="">Select activity...</option>
+                    </select>
+                    <textarea class="rga-note" id="rga3Note" placeholder="Notes..." rows="1" onchange="updateRGA(3,'note',this.value)"></textarea>
+                </div>
+            </div>
+ 
+            <div class="appointments-list" id="appointmentsList">
+                <div class="empty-state"><p>Loading appointments...</p></div>
             </div>
         </div>
-
-        <!-- ===== STUDIO TAB ===== -->
-        <div id="studioTab" class="tab-pane">
+ 
+        <!-- STUDIO PLAN TAB -->
+        <div id="studioPlanTab" class="tab-content">
             <div class="training-banner">
-                <div class="training-day" id="studioTrainDay"></div>
-                <div class="training-title" id="studioTrainTitle"></div>
-                <div class="training-body" id="studioTrainBody"></div>
+                <div class="training-day" id="studioTrainingDay"></div>
+                <div class="training-title" id="studioTrainingTitle"></div>
+                <div class="training-body" id="studioTrainingBody"></div>
             </div>
-            <div id="studioSections">
-                <div class="empty-state">
-                    <div class="empty-icon">&#127970;</div>
-                    <h3>Loading studio plan...</h3>
+            <div id="studioPlanSections">
+                <div class="empty-state"><p>Loading studio plan...</p></div>
+            </div>
+        </div>
+ 
+        <!-- CHECKLISTS TAB -->
+        <div id="checklistsTab" class="tab-content">
+            <div id="checklistSelector" style="margin-bottom:1.5rem;">
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;" id="checklistCards"></div>
+            </div>
+            <div id="activeChecklist" style="display:none;">
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+                    <button class="btn btn-outline" onclick="backToChecklistSelector()" style="padding:0.5rem 1rem;font-size:0.9rem;">&#8592; Back</button>
+                    <div id="activeChecklistTitle" style="font-size:1.1rem;font-weight:700;"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- ===== CHECKLISTS TAB ===== -->
-        <div id="checklistTab" class="tab-pane">
-            <div id="checklistsContainer">
-                <div class="empty-state">
-                    <div class="empty-icon">&#9989;</div>
-                    <h3>Loading checklists...</h3>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== REPORTS TAB ===== -->
-        <div id="reportsTab" class="tab-pane">
-            <div class="report-card">
-                <div class="report-title">&#127775; Today at a Glance</div>
-                <div class="stats-grid" id="reportStats">
-                    <div class="stat-box"><div class="stat-val" id="rs-appts">0</div><div class="stat-label">Appts</div></div>
-                    <div class="stat-box"><div class="stat-val green" id="rs-new">0</div><div class="stat-label">New Clients</div></div>
-                    <div class="stat-box"><div class="stat-val blue" id="rs-co">0</div><div class="stat-label">CO Members</div></div>
-                    <div class="stat-box"><div class="stat-val warn" id="rs-targets">0</div><div class="stat-label">CO Targets</div></div>
-                    <div class="stat-box"><div class="stat-val" id="rs-rev">$0</div><div class="stat-label">Sched. Revenue</div></div>
-                    <div class="stat-box"><div class="stat-val green" id="rs-rebooks">0</div><div class="stat-label">Rebooks Today</div></div>
-                </div>
-            </div>
-
-            <div class="report-card">
-                <div class="report-title">&#128100; Cerologist Breakdown</div>
-                <div id="cerologistBreakdown">
-                    <div class="empty-state" style="padding:1rem 0;"><p>Load data to see breakdown</p></div>
-                </div>
-            </div>
-
-            <div class="report-card">
-                <div class="report-title">&#128161; Highlights &amp; Actions</div>
-                <ul class="highlight-list" id="highlights">
-                    <li class="highlight-item">
-                        <div class="h-icon blue">&#128197;</div>
-                        <div class="h-text">Load today&#39;s data to see highlights</div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-    </main>
-
-    <div class="footer" id="footerBar">
-        <button class="btn-outline" onclick="saveProgress()">&#128190; Save</button>
-        <button class="btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
-    </div>
-</div>
-
-<!-- ===== RECAP MODAL ===== -->
-<div class="modal-overlay" id="recapModal">
-    <div class="modal">
-        <div class="modal-head">
-            <div class="modal-title">Daily Recap</div>
-            <button class="modal-close" onclick="closeModal('recapModal')">&#x2715;</button>
-        </div>
-        <div class="modal-body" id="recapBody"></div>
-        <div class="modal-foot">
-            <button class="btn-outline" onclick="closeModal('recapModal')">Cancel</button>
-            <button class="btn-success" onclick="submitRecap()">&#128140; Send to Slack</button>
-        </div>
-    </div>
-</div>
-
-<div class="toast" id="toast">
-    <span id="toastMsg" class="toast-msg"></span>
-</div>
-
-<script>
-// =============================================================================
-// API LAYER
-// ─────────────────────────────────────────────────────────────────────────────
-// This is the ONLY section that changes when migrating from Google Sheets
-// to Supabase. All other code calls API.fetch() and API.post() exclusively.
-//
-// SUPABASE MIGRATION CHECKLIST:
-//   1. Replace workerUrl() / apiKey() with supabaseUrl() / supabaseKey()
-//   2. Rewrite API.fetch() to query Supabase REST API with appropriate filters
-//   3. Rewrite API.post() to INSERT/UPDATE Supabase tables
-//      (Content-Type: application/json is SAFE to add back for Supabase)
-//   4. Map the response shape to match what getAllSheetData() returns today
-//   5. Everything else in this file stays unchanged
-// =============================================================================
-const API = {
-    workerUrl()  { return localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev'; },
-    apiKey()     { return localStorage.getItem('wtc_api_key')    || 'wtc2024shawneehills'; },
-
-    async fetch(params = {}) {
-        const url = new URL(this.workerUrl());
-        url.searchParams.set('key', this.apiKey());
-        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
-        // 12-second timeout — if Worker or Apps Script doesn't respond, fail fast
-        // so the app never hangs on the loading screen indefinitely.
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 12000);
-        try {
-            const resp = await fetch(url.toString(), { method: 'GET', signal: controller.signal });
-            clearTimeout(timer);
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            return resp.json();
-        } catch(e) {
-            clearTimeout(timer);
-            throw e;
-        }
-    },
-
-    // ⚠️  iOS Safari CORS fix: do NOT set Content-Type header on POST.
-    // Omitting the header avoids the CORS preflight that iOS Safari fails on.
-    // The Cloudflare Worker handles CORS server-side. Body is still valid JSON.
-    // Remove this comment and add back headers:{} when migrating to Supabase.
-    async post(body) {
-        const url = new URL(this.workerUrl());
-        url.searchParams.set('key', this.apiKey());
-        const resp = await fetch(url.toString(), {
-            method: 'POST',
-            body: JSON.stringify({ ...body, key: this.apiKey() })
-            // NO headers — intentional iOS fix
-        });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        return resp.json();
-    }
-};
-
-// =============================================================================
-// CONSTANTS
-// =============================================================================
-const STUDIO = 'Waxing the City - Shawnee Hills (W661)';
-const TRAINING_START = '2025-01-01';
-
-const FALLBACK_EMPLOYEES = [
-    { id: 'mackenzie', name: 'MacKenzie Ort',  initials: 'MO', role: 'cerologist', commissionRate: 0.05 },
-    { id: 'mary',      name: 'Mary Zangana',   initials: 'MZ', role: 'cerologist', commissionRate: 0.05 },
-    { id: 'moriah',    name: 'Moriah Jones',   initials: 'MJ', role: 'cerologist', commissionRate: 0.05 },
-    { id: 'chris',     name: 'Chris Cano',     initials: 'CC', role: 'manager',    commissionRate: 0.05 }
-];
-
-const TRAINING = [
-    { title: "Day 1 — The First 30 Seconds Decide Everything", body: "Clients decide whether they trust you before you touch them. Focus today on immediate eye contact, a genuine smile, and acknowledging each client the moment they walk in." },
-    { title: "Day 2 — Professional Appearance Is a Revenue Lever", body: "Your look communicates competence. Today, treat your uniform, hair, and name tag as part of the service." },
-    { title: "Day 3 — The Handshake Transfers Control & Comfort", body: "A confident handshake and warm introduction signal safety and professionalism. Today, focus on delivering that handshake consistently." },
-    { title: "Day 4 — Walk With the Client, Don't Make Them Chase You", body: "Today, walk with your client at their pace, use light conversation, and point out the restroom as you go." },
-    { title: "Day 5 — Guide Like a Concierge, Not 'Just' a Waxer", body: "Today, clearly guide them: show the client caddy, explain where to place clothes, how to use wipes, and where the trash is." },
-    { title: "Day 6 — Consultation Is Listening, Not a Checklist", body: "Today, ask open-ended questions and let your client talk. Focus on truly understanding their story." },
-    { title: "Day 7 — Past, Present, Products = Your Sales Blueprint", body: "Ask about what they did before, what they are doing now, and what products they use on that area." },
-    { title: "Day 8 — Work While You Listen to Build Authority", body: "Today, prep the skin while you listen — observe hair growth, density, and skin response at the same time." },
-    { title: "Day 9 — Repeat Back to Remove Hidden Fear", body: "Today, practice repeating back what you heard: 'So what I'm hearing is...' This simple step makes clients feel safe." },
-    { title: "Day 10 — The Lifestyle Question Changes the Plan", body: "Ask every client: 'Is this something you're doing occasionally, or as part of your routine?'" },
-    { title: "Day 11 — Educate Only After Anxiety Drops", body: "Today, wait until after the first strip is removed to share key education. Once you see their body relax, that is your moment." },
-    { title: "Day 12 — Use the First Pull to Reassure and Lead", body: "After the first pull, immediately tell them what you're seeing: how the hair is coming out, what's normal for their skin." },
-    { title: "Day 13 — Master the Professional Hat and Personal Hat", body: "Today, consciously switch hats: share focused education (professional hat), then connect on something personal." },
-    { title: "Day 14 — Teach the Waxing Lifestyle, Not Just a Service", body: "Today, explain exfoliation and aftercare as part of the waxing lifestyle: preventing ingrowns, keeping skin smooth." },
-    { title: "Day 15 — Introduce Club Orange at the Right Moment", body: "Today, wait until you have built trust — after they've experienced your skill and care — then introduce membership." },
-    { title: "Day 16 — Recap Belongs in the Room, Not at the Front Desk", body: "Today, make sure you recap in the room: when to come back, what to do at home, and what you'll be grabbing up front." },
-    { title: "Day 17 — Rebooking Is an Assumption, Not an Awkward Question", body: "Today, confidently assume the rebook: 'Four weeks would be perfect — does this same time work for you?'" },
-    { title: "Day 18 — Pre-Sell Retail Before Checkout", body: "Today, make sure you've already connected the dots in the room: 'Based on your skin and routine, I'd recommend this scrub.'" },
-    { title: "Day 19 — Present Club Orange as a Clear Comparison", body: "Today, present Club Orange with a simple comparison: 'If we do today without membership it's $X; if we add Club Orange it's $Y.'" },
-    { title: "Day 20 — End with a Warm, Confident Goodbye", body: "Today, finish with eye contact, a genuine thank you, and an offer of support." },
-    { title: "Day 21 — Manage Your Book Like It's Your Business", body: "Today, look at your day and ask: where can I safely shrink service times based on client history and consistency?" },
-    { title: "Day 22 — Add Enhancements That Don't Add Time", body: "Today, look for chances to add quick enhancements that fit into your existing service time — eye gels, targeted serums." },
-    { title: "Day 23 — Ask for Referrals with Confidence and Care", body: "Today, when you feel that strong connection, say: 'If you have friends who'd love this experience, I'd be honored to take care of them.'" },
-    { title: "Day 24 — Follow Up to Turn One Visit into Many", body: "Today, make sure every new client gets a quick, caring check-in: 'How are you feeling after your wax?'" },
-    { title: "Day 25 — Treat New Clients Like VIP Projects", body: "Today, be extra intentional with anyone marked as new: double down on greet and guide, consult more deeply." },
-    { title: "Day 26 — Read Body Language Like Another Data Point", body: "Today, notice when shoulders tense, hands grip, or eyes close. Use that as feedback: pause education, reassure, or slow your pace." },
-    { title: "Day 27 — Remember Personal Details to Deepen Loyalty", body: "Today, review client notes before they walk in and be ready to reference something small: a trip they mentioned, a kid's sport." },
-    { title: "Day 28 — Consistency Beats Talent Every Time", body: "Today, focus on running the full service experience intentionally: greet & guide, consult, educate & prescribe, recap, and close." },
-    { title: "Day 29 — Audit Yourself Like a Coach Would", body: "Today, choose one strength and one opportunity from your service experience. Name it, own it, and choose one micro-action to improve." },
-    { title: "Day 30 — Reset the Recipe and Start Strong Again", body: "Today, treat your full day like a reset: execute every step intentionally, as if every client is your first client." }
-];
-
-// =============================================================================
-// STATE
-// =============================================================================
-let currentUser   = null;
-let appData       = { appointments: [], salesAccrual: [], memberships: [], retail: [], addons: [], employees: [], checklists: [] };
-let apptStates    = {};  // { [guestCode]: { completed, rebooked, clubOrange, addonSelected, productSelected, notes } }
-let studioStates  = {};  // { [itemId]: { completed, completedBy } }
-let clStates      = {};  // { [checklistId]: { [itemIndex]: checked, cashTotal, followUp } }
-let rgaItems      = [];
-let pinBuffer     = '';
-let pendingUserId = null;
-let syncTimer     = null;
-
-// =============================================================================
-// INIT
-// =============================================================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Step 1 — synchronous setup (no network, no async)
-    setHeaderDate();
-    setTrainingMessage();
-
-    // Step 2 — populate dropdown with fallback names RIGHT NOW, synchronously
-    populateUserSelect(FALLBACK_EMPLOYEES);
-
-    // Step 3 — wire up the login button enable/disable
-    document.getElementById('userSelect').addEventListener('change', function() {
-        document.getElementById('loginBtn').disabled = !this.value;
-    });
-
-    // Step 4 — check for an existing session from today
-    var savedUser = localStorage.getItem('wtc_user');
-    var savedDate = localStorage.getItem('wtc_login_date');
-
-    if (savedUser && savedDate === todayKey()) {
-        // Returning user — skip login, go straight to app
-        bootstrapUser(savedUser, false);
-    } else {
-        // New session — show login immediately (names already in dropdown)
-        showScreen('login');
-        // Background: try to fetch live employee list and update dropdown
-        fetchLiveEmployeesBackground();
-    }
-});
-
-function fetchLiveEmployeesBackground() {
-    // Runs AFTER login screen is visible — failure is silent
-    API.fetch().then(function(data) {
-        if (data && data.employees && data.employees.length > 0) {
-            var live = parseEmployees(data.employees);
-            populateUserSelect(live);
-            cacheAppData(data);
-        }
-    }).catch(function(e) {
-        // Silently stay with fallback names — login already showing and working
-        console.warn('Background employee fetch failed:', e.message);
-    });
-}
-
-function parseEmployees(rows) {
-    return rows.map(r => ({
-        id:             (r.id || r.ID || r.EmployeeID || '').toLowerCase().trim(),
-        name:           r.name || r.Name || r.EmployeeName || '',
-        initials:       r.initials || r.Initials || makeInitials(r.name || r.Name || ''),
-        role:           (r.role || r.Role || 'cerologist').toLowerCase(),
-        commissionRate: parseFloat(r.ServiceCommission || r.CommissionRate || 0.05) || 0.05,
-        hasPin:         !!(r.pin || r.PIN)
-    })).filter(e => e.id && e.name);
-}
-
-function makeInitials(name) {
-    return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
-}
-
-function populateUserSelect(employees) {
-    const sel = document.getElementById('userSelect');
-    sel.innerHTML = '<option value="">Select your name...</option>';
-    employees.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value = e.id;
-        opt.textContent = e.name;
-        sel.appendChild(opt);
-    });
-    // Store employees in appData for later
-    if (!appData.employees || appData.employees.length === 0) {
-        appData.employees = employees;
-    }
-}
-
-// =============================================================================
-// LOGIN FLOW
-// =============================================================================
-function handleNameSelect() {
-    const userId = document.getElementById('userSelect').value;
-    if (!userId) return;
-
-    const employees = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
-    const emp = employees.find(e => e.id === userId) || FALLBACK_EMPLOYEES.find(e => e.id === userId);
-    if (!emp) return;
-
-    pendingUserId = userId;
-
-    if (emp.hasPin) {
-        document.getElementById('pinGreeting').textContent = 'Hi ' + emp.name.split(' ')[0] + '!';
-        document.getElementById('loginStep1').style.display = 'none';
-        document.getElementById('loginStep2').style.display = 'block';
-        clearPin();
-    } else {
-        bootstrapUser(userId, true);
-    }
-}
-
-function pinPress(val) {
-    if (val === 'back') {
-        pinBuffer = pinBuffer.slice(0, -1);
-    } else {
-        if (pinBuffer.length >= 4) return;
-        pinBuffer += val;
-    }
-    updatePinDisplay();
-    if (pinBuffer.length === 4) verifyPin();
-}
-
-function clearPin() {
-    pinBuffer = '';
-    updatePinDisplay();
-}
-
-function updatePinDisplay() {
-    for (let i = 1; i <= 4; i++) {
-        document.getElementById('pd' + i).classList.toggle('filled', i <= pinBuffer.length);
-    }
-}
-
-async function verifyPin() {
-    try {
-        const result = await API.post({ type: 'verifyPin', employeeId: pendingUserId, pin: pinBuffer });
-        if (result.success) {
-            bootstrapUser(pendingUserId, true);
-        } else {
-            showToast('Incorrect PIN — try again', 'error');
-            clearPin();
-        }
-    } catch(e) {
-        // If can't reach server, allow login anyway (offline mode)
-        showToast('Offline — PIN skipped', 'error');
-        bootstrapUser(pendingUserId, true);
-    }
-}
-
-function backToNameSelect() {
-    document.getElementById('loginStep1').style.display = 'block';
-    document.getElementById('loginStep2').style.display = 'none';
-    clearPin();
-    pendingUserId = null;
-}
-
-async function bootstrapUser(userId, saveSession) {
-    const employees = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
-    const emp = employees.find(e => e.id === userId)
-             || FALLBACK_EMPLOYEES.find(e => e.id === userId);
-    if (!emp) { showScreen('login'); return; }
-
-    currentUser = emp;
-
-    if (saveSession) {
-        localStorage.setItem('wtc_user', userId);
-        localStorage.setItem('wtc_login_date', todayKey());
-    }
-
-    // Show app shell immediately
-    document.getElementById('avatarBtn').textContent = emp.initials;
-    showScreen('app');
-
-    // Load state from localStorage first (instant)
-    loadLocalStates();
-
-    // Then load data from Sheets
-    await loadAppData();
-}
-
-function confirmLogout() {
-    if (confirm('Sign out?')) logout();
-}
-
-function logout() {
-    currentUser = null;
-    localStorage.removeItem('wtc_user');
-    localStorage.removeItem('wtc_login_date');
-    apptStates = {}; studioStates = {}; clStates = {}; rgaItems = [];
-    showScreen('login');
-    document.getElementById('userSelect').value = '';
-    document.getElementById('loginBtn').disabled = true;
-    document.getElementById('loginStep1').style.display = 'block';
-    document.getElementById('loginStep2').style.display = 'none';
-}
-
-// =============================================================================
-// DATA LOADING
-// =============================================================================
-async function loadAppData() {
-    setSyncStatus('syncing');
-
-    try {
-        // Try to get from cache first for instant render
-        const cached = loadCachedData();
-        if (cached) {
-            appData = cached;
-            renderAll();
-        }
-
-        // Always fetch fresh data
-        const fresh = await API.fetch();
-        if (fresh.error) throw new Error(fresh.error);
-
-        appData = {
-            appointments: fresh.appointments || [],
-            salesAccrual:  fresh.salesAccrual  || [],
-            memberships:   fresh.memberships   || [],
-            retail:        fresh.retail        || [],
-            addons:        fresh.addons        || [],
-            employees:     parseEmployees(fresh.employees || []),
-            checklists:    fresh.checklists    || []
-        };
-
-        cacheAppData(appData);
-        renderAll();
-
-        // Load ShiftState from Sheets
-        await loadRemoteShiftState();
-
-        setSyncStatus('synced');
-        showToast('Data loaded ✓', 'success');
-
-    } catch(e) {
-        setSyncStatus('offline');
-        console.error('Data load failed:', e);
-        if (!appData.appointments.length) {
-            showToast('Offline — using cached data', 'error');
-        } else {
-            showToast('Using cached data', 'error');
-        }
-        renderAll();
-    }
-}
-
-function cacheAppData(data) {
-    try { localStorage.setItem('wtc_data_' + todayKey(), JSON.stringify(data)); } catch(e) {}
-}
-
-function loadCachedData() {
-    try {
-        const raw = localStorage.getItem('wtc_data_' + todayKey());
-        return raw ? JSON.parse(raw) : null;
-    } catch(e) { return null; }
-}
-
-// =============================================================================
-// RENDER ALL
-// =============================================================================
-function renderAll() {
-    renderPlanYourDay();
-    renderStudio();
-    renderChecklists();
-    renderReports();
-}
-
-// =============================================================================
-// PLAN YOUR DAY
-// =============================================================================
-function renderPlanYourDay() {
-    if (!currentUser) return;
-
-    const todayAppts = getTodayAppts(currentUser.name);
-    document.getElementById('apptBadge').textContent = todayAppts.length;
-
-    // Earnings
-    let scheduled = 0;
-    todayAppts.forEach(a => { scheduled += a.totalPrice; });
-    const avgAddon   = 8;
-    const avgRetail  = 35;
-    const potential  = scheduled + (todayAppts.length * avgAddon) + (todayAppts.length * avgRetail);
-    const commRate   = currentUser.commissionRate || 0.05;
-    const commission = potential * commRate;
-    const tips       = scheduled * 0.20;
-
-    document.getElementById('earnScheduled').textContent   = fmt(scheduled);
-    document.getElementById('earnPotential').textContent   = fmt(potential);
-    document.getElementById('earnCommission').textContent  = fmt(commission);
-    document.getElementById('earnTips').textContent        = fmt(tips);
-    document.getElementById('earnCommRate').textContent    = Math.round(commRate * 100) + '%';
-
-    const container = document.getElementById('apptList');
-
-    if (todayAppts.length === 0) {
-        container.innerHTML = `<div class="empty-state">
-            <div class="empty-icon">&#128197;</div>
-            <h3>No appointments today</h3>
-            <p>Enjoy your day, ${currentUser.name.split(' ')[0]}!</p>
-        </div>`;
-        return;
-    }
-
-    container.innerHTML = todayAppts.map(appt => renderApptCard(appt)).join('');
-}
-
-function getTodayAppts(cerologist) {
-    const todayStr = todayKey();
-    const seen = {};
-    const grouped = {};
-
-    appData.appointments.forEach(a => {
-        const dateStr = parseDateKey(a['Appointment Date']);
-        const status  = (a['Status'] || '').toLowerCase();
-        const cerol   = (a['Cerologist'] || '').toLowerCase().trim();
-        const target  = cerologist.toLowerCase().trim();
-
-        if (dateStr !== todayStr) return;
-        if (status !== 'open' && status !== 'confirmed') return;
-        if (cerol !== target) return;
-
-        const gc = a['Guest Code'];
-        if (!grouped[gc]) {
-            grouped[gc] = {
-                guestCode:    gc,
-                guestName:    a['Guest Name'],
-                startTime:    a['Start Time'],
-                isFirstVisit: (a['First Visit'] || '').toLowerCase() === 'yes',
-                invoiceNo:    a['Invoice No'],
-                services:     [],
-                totalPrice:   0
-            };
-        }
-        const price = getSvcPrice(a['Invoice No'], gc, a['Service Name']);
-        grouped[gc].services.push({ name: a['Service Name'], price });
-        grouped[gc].totalPrice += price;
-
-        // Keep earliest start time
-        const t1 = parseTime(grouped[gc].startTime);
-        const t2 = parseTime(a['Start Time']);
-        if (t2 && t1 && t2 < t1) grouped[gc].startTime = a['Start Time'];
-    });
-
-    return Object.values(grouped).sort((a,b) => {
-        const ta = parseTime(a.startTime), tb = parseTime(b.startTime);
-        if (ta && tb) return ta - tb;
-        return 0;
-    });
-}
-
-function renderApptCard(appt) {
-    const st       = apptStates[appt.guestCode] || {};
-    const done     = !!st.completed;
-    const isCO     = hasMembership(appt.guestCode);
-    const history  = getHistory(appt.guestCode);
-    const svcType  = inferSvcType(appt.services[0]?.name);
-    const addons   = getAddons(svcType);
-    const products = getProducts(svcType);
-    const rebook   = rebookDate(appt.startTime);
-    const badge    = appt.isFirstVisit ? `<span class="badge badge-new">NEW</span>` :
-                     isCO              ? `<span class="badge badge-co">CO</span>` :
-                                         `<span class="badge badge-ret">RET</span>`;
-
-    return `<div class="appt-card ${done ? 'done' : ''}" id="card_${appt.guestCode}">
-        <div class="card-head">
-            <div class="client-left">
-                <span class="appt-time">${fmtTime(appt.startTime)}</span>
-                <span class="client-name">${appt.guestName}</span>
-                ${badge}
-            </div>
-            <button class="done-btn ${done ? 'checked' : ''}" id="doneBtn_${appt.guestCode}"
-                onclick="toggleDone('${appt.guestCode}')"></button>
-        </div>
-        <div class="card-body">
-            ${history ? `<div class="history-row">&#128196; ${history}</div>` : ''}
-
-            <div>${appt.services.map(s => `
-                <div class="svc-row">
-                    <span class="svc-name">${s.name}</span>
-                    <span class="svc-price">${fmt(s.price)}</span>
-                </div>`).join('')}
-            </div>
-
-            <div class="action-block">
-                <div class="action-label">Add-On Opportunity</div>
-                <select class="pill-select ${st.addonSelected ? 'has-value' : ''}"
-                        id="addon_${appt.guestCode}"
-                        onchange="updateAddon('${appt.guestCode}', this.value)">
-                    <option value="">Select add-on...</option>
-                    ${addons.map(a => `<option value="${a.name}" ${st.addonSelected===a.name?'selected':''}>
-                        ${a.name} (${fmt(a.cost)})</option>`).join('')}
-                </select>
-            </div>
-
-            <div class="action-block">
-                <div class="action-label">Retail Suggestion</div>
-                <select class="pill-select ${st.productSelected ? 'has-value' : ''}"
-                        id="product_${appt.guestCode}"
-                        onchange="updateProduct('${appt.guestCode}', this.value)">
-                    <option value="">Select product...</option>
-                    ${products.map(p => `<option value="${p.name}" ${st.productSelected===p.name?'selected':''}>
-                        ${p.name} (${fmt(p.cost)})</option>`).join('')}
-                </select>
-            </div>
-
-            <div class="checks-row">
-                <div class="check-tile ${st.rebooked ? 'checked' : ''}" id="chk_rebooked_${appt.guestCode}"
-                     onclick="toggleCheck('${appt.guestCode}', 'rebooked')">
-                    <div class="check-box" id="chkbox_rebooked_${appt.guestCode}"></div>
-                    <span class="check-label">Rebooked</span>
-                </div>
-                <div class="check-tile ${st.clubOrange ? 'checked' : ''}" id="chk_clubOrange_${appt.guestCode}"
-                     onclick="toggleCheck('${appt.guestCode}', 'clubOrange')">
-                    <div class="check-box" id="chkbox_clubOrange_${appt.guestCode}"></div>
-                    <span class="check-label">Club Orange</span>
-                </div>
-            </div>
-
-            <div class="rebook-hint">Suggest rebook: <span>${rebook}</span></div>
-
-            <textarea class="notes-area" id="notes_${appt.guestCode}"
-                placeholder="Notes for ${appt.guestName}..."
-                onchange="updateNotes('${appt.guestCode}', this.value)">${st.notes || ''}</textarea>
-        </div>
-    </div>`;
-}
-
-// In-place DOM updates (no full re-render on state change)
-function toggleDone(gc) {
-    ensureApptState(gc);
-    apptStates[gc].completed = !apptStates[gc].completed;
-    const done = apptStates[gc].completed;
-    document.getElementById('card_' + gc)?.classList.toggle('done', done);
-    document.getElementById('doneBtn_' + gc)?.classList.toggle('checked', done);
-    scheduleSave();
-}
-
-function toggleCheck(gc, field) {
-    ensureApptState(gc);
-    apptStates[gc][field] = !apptStates[gc][field];
-    const checked = apptStates[gc][field];
-    document.getElementById('chk_' + field + '_' + gc)?.classList.toggle('checked', checked);
-    scheduleSave();
-}
-
-function updateAddon(gc, val) {
-    ensureApptState(gc);
-    apptStates[gc].addonSelected = val || null;
-    const el = document.getElementById('addon_' + gc);
-    if (el) el.classList.toggle('has-value', !!val);
-    scheduleSave();
-}
-
-function updateProduct(gc, val) {
-    ensureApptState(gc);
-    apptStates[gc].productSelected = val || null;
-    const el = document.getElementById('product_' + gc);
-    if (el) el.classList.toggle('has-value', !!val);
-    scheduleSave();
-}
-
-function updateNotes(gc, val) {
-    ensureApptState(gc);
-    apptStates[gc].notes = val;
-    scheduleSave();
-}
-
-function ensureApptState(gc) {
-    if (!apptStates[gc]) apptStates[gc] = {};
-}
-
-// =============================================================================
-// STUDIO PLAN
-// =============================================================================
-function renderStudio() {
-    const todayStr = todayKey();
-    const allToday = appData.appointments.filter(a => {
-        const d = parseDateKey(a['Appointment Date']);
-        const s = (a['Status'] || '').toLowerCase();
-        return d === todayStr && (s === 'open' || s === 'confirmed');
-    });
-
-    // Visit counts for CO targeting
-    const visitCounts = {};
-    appData.appointments.forEach(a => {
-        if ((a['Status'] || '').toLowerCase() === 'closed') {
-            visitCounts[a['Guest Code']] = (visitCounts[a['Guest Code']] || 0) + 1;
-        }
-    });
-
-    // Unique guests today
-    const uniqueGuests = {};
-    allToday.forEach(a => { uniqueGuests[a['Guest Code']] = a; });
-
-    const sections = [];
-
-    // New clients
-    const newGuests = Object.values(uniqueGuests).filter(a => (a['First Visit']||'').toLowerCase()==='yes');
-    if (newGuests.length) sections.push({
-        id: 'newClients', title: 'New Clients Today', icon: '&#128075;',
-        items: newGuests.map(a => ({
-            id: 'new_' + a['Guest Code'],
-            main: a['Guest Name'],
-            detail: fmtTime(a['Start Time']) + ' with ' + a['Cerologist'] + ' — ' + a['Service Name'],
-            tags: ['New Client', 'Full Greet & Guide']
-        }))
-    });
-
-    // CO Members
-    const coGuests = Object.values(uniqueGuests).filter(a => hasMembership(a['Guest Code']));
-    if (coGuests.length) sections.push({
-        id: 'coMembers', title: 'Club Orange Members', icon: '&#129505;',
-        items: coGuests.map(a => ({
-            id: 'co_' + a['Guest Code'],
-            main: a['Guest Name'],
-            detail: fmtTime(a['Start Time']) + ' — ' + a['Service Name'],
-            tags: ['CO Member', 'Thank for membership']
-        }))
-    });
-
-    // CO Targets (2+ visits, no active membership)
-    const targets = Object.values(uniqueGuests).filter(a =>
-        (visitCounts[a['Guest Code']] || 0) >= 2 && !hasMembership(a['Guest Code'])
-    );
-    if (targets.length) sections.push({
-        id: 'coTargets', title: 'Club Orange Targets', icon: '&#127919;',
-        items: targets.map(a => ({
-            id: 'tgt_' + a['Guest Code'],
-            main: a['Guest Name'],
-            detail: (visitCounts[a['Guest Code']] || 0) + ' prior visits — great candidate!',
-            tags: [(visitCounts[a['Guest Code']] || 0) + ' Visits', 'CO Pitch Today']
-        }))
-    });
-
-    const container = document.getElementById('studioSections');
-    if (!sections.length) {
-        container.innerHTML = `<div class="empty-state">
-            <div class="empty-icon">&#127970;</div>
-            <h3>No studio plan items</h3>
-            <p>Check back once today's data loads</p>
-        </div>`;
-        return;
-    }
-
-    container.innerHTML = sections.map(sec => renderStudioSection(sec)).join('');
-}
-
-function renderStudioSection(sec) {
-    const done = sec.items.filter(i => studioStates[i.id]?.completed).length;
-    const pct  = sec.items.length ? Math.round(done / sec.items.length * 100) : 0;
-    const emp  = appData.employees.length > 0 ? appData.employees : FALLBACK_EMPLOYEES;
-
-    return `<div class="studio-section">
-        <div class="section-head" onclick="toggleSection('sbody_${sec.id}')">
-            <div class="section-title-row">
-                <span class="dot"></span>
-                <span>${sec.icon} ${sec.title}</span>
-                <span class="section-count">${sec.items.length}</span>
-            </div>
-            <div class="section-prog">
-                <span class="prog-text">${done}/${sec.items.length}</span>
-                <div class="prog-bar"><div class="prog-fill" id="pf_${sec.id}" style="width:${pct}%"></div></div>
-            </div>
-        </div>
-        <div class="section-body" id="sbody_${sec.id}">
-            ${sec.items.map(item => {
-                const ist = studioStates[item.id] || {};
-                return `<div class="task-item ${ist.completed ? 'done' : ''}" id="task_${item.id}">
-                    <button class="task-check" onclick="toggleTask('${item.id}', '${sec.id}')"></button>
-                    <div class="task-content">
-                        <div class="task-main">${item.main}</div>
-                        <div class="task-detail">${item.detail}</div>
-                        <div class="task-meta">
-                            ${item.tags.map(t => `<span class="task-tag">${t}</span>`).join('')}
-                            <select class="by-select" onchange="setTaskBy('${item.id}', this.value)">
-                                <option value="">By...</option>
-                                ${emp.map(e => `<option value="${e.id}" ${ist.completedBy===e.id?'selected':''}>${e.name.split(' ')[0]}</option>`).join('')}
-                            </select>
+                <div id="activeChecklistProgress" style="background:var(--slate);border-radius:12px;padding:1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;">
+                    <div style="flex:1;">
+                        <div style="font-size:0.75rem;color:var(--silver);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.05em;">Progress</div>
+                        <div style="background:var(--charcoal);border-radius:4px;height:8px;overflow:hidden;">
+                            <div id="checklistProgressBar" style="height:100%;background:var(--success);border-radius:4px;transition:width 0.3s;width:0%;"></div>
                         </div>
                     </div>
-                </div>`;
-            }).join('')}
+                    <div id="checklistProgressText" style="font-weight:700;font-size:1.1rem;color:var(--success);white-space:nowrap;">0 / 0</div>
+                </div>
+                <div id="activeChecklistSections"></div>
+                <div id="cashCountSection" style="display:none;background:var(--slate);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;">
+                    <div style="font-weight:700;margin-bottom:0.75rem;">&#128176; Cash Drawer Count</div>
+                    <input type="number" id="cashCountInput" placeholder="Enter total amount..." step="0.01" min="0"
+                           style="width:100%;padding:0.875rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:700;transition:all 0.2s;"
+                           onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+                </div>
+                <div id="followUpSection" style="display:none;background:var(--slate);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;">
+                    <div style="font-weight:700;margin-bottom:0.25rem;">&#128241; Follow-Up Texts Needed</div>
+                    <div style="font-size:0.85rem;color:var(--silver);margin-bottom:0.75rem;">List any clients who need a follow-up text</div>
+                    <textarea id="followUpInput" placeholder="e.g. Jane Smith — check in after first wax..."
+                              style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;resize:vertical;min-height:80px;transition:all 0.2s;"
+                              onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'"></textarea>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+                    <select id="checklistCompletedBy" style="flex:1;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;cursor:pointer;">
+                        <option value="">Completed by...</option>
+                    </select>
+                </div>
+                <button class="btn btn-success btn-block" onclick="submitChecklist()" id="submitChecklistBtn">
+                    &#128228; Submit to Slack
+                </button>
+            </div>
         </div>
-    </div>`;
+ 
+ 
+    <div class="footer-actions" id="footerActions">
+        <button class="btn btn-outline" onclick="refreshData()">&#8635; Refresh</button>
+        <button class="btn btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
+    </div>
+</div>
+ 
+<!-- Recap Modal -->
+<div class="modal-overlay" id="recapModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Daily Recap Summary</div>
+            <button class="modal-close" onclick="closeRecapModal()">&#215;</button>
+        </div>
+        <div class="modal-body" id="recapContent"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeRecapModal()" style="flex:1;">Cancel</button>
+            <button class="btn btn-success" onclick="sendRecap()" style="flex:1;" id="sendRecapBtn">&#128228; Send to Slack</button>
+        </div>
+    </div>
+</div>
+ 
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">&#10003;</span>
+    <span id="toastMessage">Saved!</span>
+</div>
+ 
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const CONFIG = {
+    AIRTABLE_TOKEN:  localStorage.getItem('wtc_at_token') || '',
+    AIRTABLE_BASE:   localStorage.getItem('wtc_at_base') || '',
+    AIRTABLE_API:    'https://api.airtable.com/v0',
+    WORKER_URL:      localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev',
+    API_KEY:         localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills',
+    STUDIO_NAME:     'Waxing the City - Shawnee Hills (W661)',
+    TRAINING_START:  '2025-01-01'
+};
+ 
+function reloadConfig() {
+    CONFIG.AIRTABLE_TOKEN = localStorage.getItem('wtc_at_token') || '';
+    CONFIG.AIRTABLE_BASE  = localStorage.getItem('wtc_at_base') || '';
+    CONFIG.WORKER_URL     = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
+    CONFIG.API_KEY        = localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills';
 }
-
-function toggleSection(bodyId) {
-    document.getElementById(bodyId)?.classList.toggle('collapsed');
-}
-
-function toggleTask(itemId, secId) {
-    if (!studioStates[itemId]) studioStates[itemId] = {};
-    studioStates[itemId].completed = !studioStates[itemId].completed;
-    if (studioStates[itemId].completed && currentUser) {
-        studioStates[itemId].completedBy = currentUser.id;
+ 
+const TABLES = {
+    appointments: 'Appointments',
+    employees:    'Employees',
+    salesAccrual: 'SalesAccrual',
+    memberships:  'Memberships',
+    retail:       'Retail',
+    addons:       'AddOns'
+};
+ 
+const RGA_OPTIONS = [
+    'High Rebook %', 'Club Orange Sign Up', 'Text Messages',
+    'Business Drop Ins', 'Attending Event', 'Social Post',
+    'Story Post', 'Thank You Card', 'Client Referral',
+    'Business Referral', 'Got a Review'
+];
+ 
+const TRAINING_MESSAGES = [
+    { title: "The First 30 Seconds Decide Everything", body: "Clients decide whether they trust you before you touch them. Focus today on immediate eye contact, a genuine smile, and acknowledging each client the moment they walk in." },
+    { title: "Professional Appearance Is a Revenue Lever", body: "Your look communicates competence. Today, treat your uniform, hair, and name tag as part of the service." },
+    { title: "The Handshake Transfers Control & Comfort", body: "A confident handshake and warm introduction signal safety and professionalism. Today, focus on delivering that handshake consistently." },
+    { title: "Walk With the Client, Don't Make Them Chase You", body: "Today, walk with your client at their pace, use light conversation, and point out the restroom as you go." },
+    { title: "Guide Like a Concierge, Not 'Just' a Waxer", body: "Today, clearly guide them: show the client caddy, explain where to place clothes, how to use wipes, and where the trash is." },
+    { title: "Consultation Is Listening, Not a Checklist", body: "Today, ask open-ended questions and let your client talk. Focus on truly understanding their story." },
+    { title: "Past, Present, Products = Your Sales Blueprint", body: "Ask about what they did before, what they are doing now, and what products they use on that area." },
+    { title: "Work While You Listen to Build Authority", body: "Today, prep the skin while you listen — observe hair growth, density, and skin response at the same time." },
+    { title: "Repeat Back to Remove Hidden Fear", body: "Today, practice repeating back what you heard: 'So what I'm hearing is...' This simple step makes clients feel safe." },
+    { title: "The Lifestyle Question Changes the Plan", body: "Ask every client: 'Is this something you're doing occasionally, or as part of your routine?'" },
+    { title: "Educate Only After Anxiety Drops", body: "Today, wait until after the first strip is removed to share key education. Once you see their body relax, that is your moment." },
+    { title: "Use the First Pull to Reassure and Lead", body: "After the first pull, immediately tell them what you're seeing: how the hair is coming out, what's normal for their skin." },
+    { title: "Master the Professional Hat and Personal Hat", body: "Today, consciously switch hats: share focused education (professional hat), then connect on something personal." },
+    { title: "Teach the Waxing Lifestyle, Not Just a Service", body: "Today, explain exfoliation and aftercare as part of the waxing lifestyle: preventing ingrowns, keeping skin smooth." },
+    { title: "Introduce Club Orange at the Right Moment", body: "Today, wait until you have built trust — after they've experienced your skill and care — then introduce membership." },
+    { title: "Recap Belongs in the Room, Not at the Front Desk", body: "Today, make sure you recap in the room: when to come back, what to do at home, and what you'll be grabbing up front." },
+    { title: "Rebooking Is an Assumption, Not an Awkward Question", body: "Today, confidently assume the rebook: 'Four weeks would be perfect — does this same time work for you?'" },
+    { title: "Pre-Sell Retail Before Checkout", body: "Today, make sure you've already connected the dots in the room: 'Based on your skin and routine, I'd recommend this scrub.'" },
+    { title: "Present Club Orange as a Clear Comparison", body: "Today, present Club Orange with a simple comparison: 'If we do today without membership it's $X; if we add Club Orange it's $Y.'" },
+    { title: "End with a Warm, Confident Goodbye", body: "Today, finish with eye contact, a genuine thank you, and an offer of support." },
+    { title: "Manage Your Book Like It's Your Business", body: "Today, look at your day and ask: where can I safely shrink service times based on client history and consistency?" },
+    { title: "Add Enhancements That Don't Add Time", body: "Today, look for chances to add quick enhancements that fit into your existing service time — eye gels, targeted serums." },
+    { title: "Ask for Referrals with Confidence and Care", body: "Today, when you feel that strong connection, say: 'If you have friends who'd love this experience, I'd be honored to take care of them.'" },
+    { title: "Follow Up to Turn One Visit into Many", body: "Today, make sure every new client gets a quick, caring check-in: 'How are you feeling after your wax?'" },
+    { title: "Treat New Clients Like VIP Projects", body: "Today, be extra intentional with anyone marked as new: double down on greet and guide, consult more deeply." },
+    { title: "Read Body Language Like Another Data Point", body: "Today, notice when shoulders tense, hands grip, or eyes close. Use that as feedback: pause education, reassure, or slow your pace." },
+    { title: "Remember Personal Details to Deepen Loyalty", body: "Today, review client notes before they walk in and be ready to reference something small: a trip they mentioned, a kid's sport." },
+    { title: "Consistency Beats Talent Every Time", body: "Today, focus on running the full service experience intentionally: greet & guide, consult, educate & prescribe, recap, and close." },
+    { title: "Audit Yourself Like a Coach Would", body: "Today, choose one strength and one opportunity from your service experience. Name it, own it, and choose one micro-action to improve." },
+    { title: "Reset the Recipe and Start Strong Again", body: "Today, treat your full day like a reset: execute every step intentionally, as if every client is your first client." }
+];
+ 
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let employees = [];
+let selectedEmployeeId = '';
+let pinBuffer = '';
+let data = { appointments: [], salesAccrual: [], memberships: [], retail: [], addons: [] };
+let appointmentStates = {};
+let studioPlanStates = {};
+let rgaStates = { rga1: { activity: '', note: '' }, rga2: { activity: '', note: '' }, rga3: { activity: '', note: '' } };
+let shiftNotes = '';
+ 
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', async function () {
+    setCurrentDate();
+    setTrainingMessage();
+    populateRGASelects();
+    loadLocalStates();
+    await initLogin();
+ 
+    // Check for saved session
+    const savedId = localStorage.getItem('wtc_user_id');
+    if (savedId) {
+        const user = employees.find(e => e.id === savedId);
+        if (user) {
+            currentUser = user;
+            showMainApp();
+            await loadAllData();
+        }
     }
-    document.getElementById('task_' + itemId)?.classList.toggle('done', studioStates[itemId].completed);
-    scheduleSave();
+});
+ 
+function setCurrentDate() {
+    const today = new Date();
+    document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric'
+    });
 }
-
-function setTaskBy(itemId, val) {
-    if (!studioStates[itemId]) studioStates[itemId] = {};
-    studioStates[itemId].completedBy = val || null;
-    scheduleSave();
+ 
+function setTrainingMessage() {
+    const today = new Date();
+    const start = new Date(CONFIG.TRAINING_START);
+    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    const idx = ((diffDays % 30) + 30) % 30;
+    const msg = TRAINING_MESSAGES[idx];
+    const dayLabel = `Day ${idx + 1} of 30`;
+ 
+    document.getElementById('trainingDay').textContent = dayLabel;
+    document.getElementById('trainingTitle').textContent = msg.title;
+    document.getElementById('trainingBody').textContent = msg.body;
+    document.getElementById('studioTrainingDay').textContent = dayLabel;
+    document.getElementById('studioTrainingTitle').textContent = msg.title;
+    document.getElementById('studioTrainingBody').textContent = msg.body;
 }
-
-// =============================================================================
-// CHECKLISTS
-// =============================================================================
-function renderChecklists() {
-    const container = document.getElementById('checklistsContainer');
-    const lists = appData.checklists;
-
-    if (!lists || !lists.length) {
-        container.innerHTML = `<div class="empty-state">
-            <div class="empty-icon">&#9989;</div>
-            <h3>No checklists found</h3>
-            <p>Add checklists to the Checklists tab in Google Sheets</p>
-        </div>`;
+ 
+function populateRGASelects() {
+    [1, 2, 3].forEach(n => {
+        const sel = document.getElementById(`rga${n}Select`);
+        RGA_OPTIONS.forEach(opt => {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            sel.appendChild(o);
+        });
+    });
+}
+ 
+// ============================================================
+// AIRTABLE FETCH
+// ============================================================
+async function fetchTable(tableName, filterFormula = null, maxRecords = null) {
+    const records = [];
+    let offset = null;
+ 
+    do {
+        const params = new URLSearchParams({ pageSize: '100' });
+        if (filterFormula) params.append('filterByFormula', filterFormula);
+        if (offset) params.append('offset', offset);
+        if (maxRecords) params.append('maxRecords', String(maxRecords));
+ 
+        const resp = await fetch(
+            `${CONFIG.AIRTABLE_API}/${CONFIG.AIRTABLE_BASE}/${encodeURIComponent(tableName)}?${params}`,
+            { headers: { Authorization: `Bearer ${CONFIG.AIRTABLE_TOKEN}` } }
+        );
+ 
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            throw new Error(err.error?.message || `Airtable HTTP ${resp.status}`);
+        }
+ 
+        const json = await resp.json();
+        json.records.forEach(r => records.push({ _id: r.id, ...r.fields }));
+        offset = json.offset || null;
+    } while (offset);
+ 
+    return records;
+}
+ 
+// ============================================================
+// LOGIN
+// ============================================================
+async function initLogin() {
+    const loadingEl = document.getElementById('loginLoading');
+    const selectEl = document.getElementById('userSelect');
+ 
+    loadingEl.style.display = 'flex';
+ 
+    try {
+        const raw = await fetchTable(TABLES.employees);
+        employees = raw
+            .filter(e => String(e.Active || '').toLowerCase() === 'true' || String(e.Active || '') === '1')
+            .sort((a, b) => (a.Name || '').localeCompare(b.Name || ''));
+ 
+        if (employees.length === 0) {
+            employees = [
+                { id: 'mackenzie', Name: 'MacKenzie Ort', PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+                { id: 'mary',      Name: 'Mary Zangana',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+                { id: 'moriah',    Name: 'Moriah Jones',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+                { id: 'chris',     Name: 'Chris Cano',    PIN: '', Role: 'manager',    ServiceCommission: 0,    ProductCommission: 0 }
+            ];
+        }
+    } catch (err) {
+        console.warn('Could not load employees from Airtable, using fallback:', err);
+        employees = [
+            { id: 'mackenzie', Name: 'MacKenzie Ort', PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+            { id: 'mary',      Name: 'Mary Zangana',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+            { id: 'moriah',    Name: 'Moriah Jones',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
+            { id: 'chris',     Name: 'Chris Cano',    PIN: '', Role: 'manager',    ServiceCommission: 0,    ProductCommission: 0 }
+        ];
+    }
+ 
+    loadingEl.style.display = 'none';
+    employees.forEach(emp => {
+        const o = document.createElement('option');
+        o.value = emp.id || emp.Name;
+        o.textContent = emp.Name;
+        selectEl.appendChild(o);
+    });
+ 
+    selectEl.style.display = 'block';
+    selectEl.addEventListener('change', function () {
+        selectedEmployeeId = this.value;
+        pinBuffer = '';
+        updatePinDots();
+        const emp = employees.find(e => (e.id || e.Name) === this.value);
+        const hasPin = emp && emp.PIN && emp.PIN.toString().trim().length > 0;
+        document.getElementById('pinSection').style.display = hasPin ? 'block' : 'none';
+        document.getElementById('loginBtn').disabled = !this.value;
+        document.getElementById('loginError').style.display = 'none';
+    });
+}
+ 
+function pinPress(digit) {
+    if (pinBuffer.length >= 4) return;
+    pinBuffer += digit;
+    updatePinDots();
+    if (pinBuffer.length === 4) {
+        document.getElementById('loginBtn').disabled = false;
+    }
+}
+ 
+function pinBack() {
+    pinBuffer = pinBuffer.slice(0, -1);
+    updatePinDots();
+}
+ 
+function pinClear() {
+    pinBuffer = '';
+    updatePinDots();
+    document.getElementById('loginBtn').disabled = !selectedEmployeeId;
+}
+ 
+function updatePinDots() {
+    for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('dot' + i);
+        if (dot) dot.classList.toggle('filled', i < pinBuffer.length);
+    }
+}
+ 
+async function login() {
+    const emp = employees.find(e => (e.id || e.Name) === selectedEmployeeId);
+    if (!emp) return;
+ 
+    const hasPin = emp.PIN && emp.PIN.toString().trim().length > 0;
+    if (hasPin && pinBuffer !== emp.PIN.toString().trim()) {
+        const errEl = document.getElementById('loginError');
+        errEl.textContent = 'Incorrect PIN. Please try again.';
+        errEl.style.display = 'block';
+        pinBuffer = '';
+        updatePinDots();
         return;
     }
-
-    container.innerHTML = lists.map(cl => renderChecklist(cl)).join('');
+ 
+    currentUser = emp;
+    currentUser._initials = getInitials(emp.Name);
+    localStorage.setItem('wtc_user_id', emp.id || emp.Name);
+    showMainApp();
+    await loadAllData();
 }
-
-function renderChecklist(cl) {
-    if (!clStates[cl.id]) clStates[cl.id] = {};
-    const clSt = clStates[cl.id];
-
-    const allItems = cl.sections.flatMap(s => s.items);
-    const doneCount = allItems.filter((_,i) => clSt['item_' + cl.id + '_' + i]).length;
-
-    return `<div class="checklist-card">
-        <div class="checklist-head">
-            <span class="checklist-icon">${cl.icon || '&#9989;'}</span>
-            <span class="checklist-name">${cl.name}</span>
-            <span class="checklist-prog">${doneCount}/${allItems.length}</span>
-        </div>
-        <div class="checklist-body">
-            ${cl.sections.map((sec, si) => `
-                <div class="cl-section">
-                    ${cl.sections.length > 1 ? `<div class="cl-section-title">${sec.icon ? sec.icon + ' ' : ''}${sec.name}</div>` : ''}
-                    ${sec.items.map((item, ii) => {
-                        const globalIdx = cl.sections.slice(0, si).reduce((acc,s) => acc + s.items.length, 0) + ii;
-                        const key = 'item_' + cl.id + '_' + globalIdx;
-                        const checked = !!clSt[key];
-                        return `<div class="cl-item ${checked ? 'checked' : ''}" id="clitem_${cl.id}_${globalIdx}"
-                            onclick="toggleClItem('${cl.id}', ${globalIdx})">
-                            <div class="cl-check" id="clcheck_${cl.id}_${globalIdx}"></div>
-                            <span class="cl-text">${item}</span>
-                        </div>`;
-                    }).join('')}
-                </div>`).join('')}
-        </div>
-        <div class="cl-footer">
-            ${cl.hasCashCount ? `
-                <div class="cl-cash-row">
-                    <span class="cl-cash-label">&#128176; Cash Drawer:</span>
-                    <input class="cash-input" type="number" step="0.01" placeholder="0.00"
-                        id="cash_${cl.id}" value="${clSt.cashTotal || ''}"
-                        oninput="clStates['${cl.id}'].cashTotal=this.value; scheduleSave()">
-                </div>` : ''}
-            ${cl.hasFollowUp ? `
-                <textarea class="followup-area" placeholder="Follow-up texts needed..."
-                    id="followup_${cl.id}"
-                    oninput="clStates['${cl.id}'].followUp=this.value; scheduleSave()">${clSt.followUp || ''}</textarea>` : ''}
-            <button class="btn-success" style="width:100%" onclick="submitChecklist('${cl.id}')">
-                &#128228; Submit ${cl.name}
-            </button>
-        </div>
-    </div>`;
+ 
+function logout() {
+    if (!confirm('Sign out and end your shift?')) return;
+    localStorage.removeItem('wtc_user_id');
+    currentUser = null;
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('userSelect').value = '';
+    document.getElementById('loginBtn').disabled = true;
+    document.getElementById('pinSection').style.display = 'none';
+    pinBuffer = '';
 }
-
-function toggleClItem(clId, idx) {
-    if (!clStates[clId]) clStates[clId] = {};
-    const key = 'item_' + clId + '_' + idx;
-    clStates[clId][key] = !clStates[clId][key];
-    const checked = clStates[clId][key];
-    document.getElementById('clitem_' + clId + '_' + idx)?.classList.toggle('checked', checked);
-    scheduleSave();
-}
-
-async function submitChecklist(clId) {
-    const cl   = appData.checklists.find(c => c.id === clId);
-    if (!cl) return;
-
-    const clSt     = clStates[clId] || {};
-    const allItems = cl.sections.flatMap(s => s.items);
-    const done     = allItems.filter((_,i) => clSt['item_' + clId + '_' + i]).length;
-
-    setSyncStatus('syncing');
+ 
+// ============================================================
+// DATA LOADING
+// ============================================================
+async function loadAllData() {
+    setSyncStatus('loading');
+    showOverlay('Loading your schedule...');
+ 
     try {
-        const result = await API.post({
-            type:           'checklist',
-            checklistName:  cl.name,
-            completedBy:    currentUser?.name || 'Unknown',
-            tasksCompleted: done,
-            tasksTotal:     allItems.length,
-            cashTotal:      clSt.cashTotal || null,
-            followUpNotes:  clSt.followUp || '',
-            date:           new Date().toLocaleDateString()
-        });
-        setSyncStatus('synced');
-        showToast(cl.name + ' submitted to Slack ✓', 'success');
-    } catch(e) {
-        setSyncStatus('offline');
-        showToast('Could not submit — check connection', 'error');
+        const apptFilter = `AND(IS_AFTER({Appointment Date}, DATEADD(TODAY(), -90, 'days')), IS_BEFORE({Appointment Date}, DATEADD(TODAY(), 8, 'days')))`;
+        const salesFilter = `IS_AFTER({Sale Date}, DATEADD(TODAY(), -90, 'days'))`;
+ 
+        const [appointments, salesAccrual, memberships, retail, addons] = await Promise.all([
+            fetchTable(TABLES.appointments, apptFilter),
+            fetchTable(TABLES.salesAccrual, salesFilter),
+            fetchTable(TABLES.memberships),
+            fetchTable(TABLES.retail),
+            fetchTable(TABLES.addons)
+        ]);
+ 
+        data.appointments = appointments;
+        data.salesAccrual = salesAccrual;
+        data.memberships = memberships;
+        data.retail = retail;
+        data.addons = addons;
+ 
+        hideOverlay();
+        setSyncStatus('live');
+        renderAppointments();
+        renderStudioPlan();
+        restoreRGASelects();
+        await loadChecklists();
+ 
+    } catch (err) {
+        hideOverlay();
+        setSyncStatus('error');
+        showToast('Data error: ' + err.message, 'error');
+        console.error(err);
     }
 }
-
-// =============================================================================
-// REPORTS
-// =============================================================================
-function renderReports() {
-    const todayStr = todayKey();
-    const allToday = appData.appointments.filter(a => {
-        const d = parseDateKey(a['Appointment Date']);
-        const s = (a['Status']||'').toLowerCase();
-        return d === todayStr && (s === 'open' || s === 'confirmed');
+ 
+async function refreshData() {
+    await loadAllData();
+    showToast('Data refreshed', 'success');
+}
+ 
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(tabName + 'Tab').classList.add('active');
+}
+ 
+// ============================================================
+// RENDER APPOINTMENTS (My Plan)
+// ============================================================
+function renderAppointments() {
+    if (!data.appointments.length || !currentUser) return;
+ 
+    const todayStr = todayISO();
+    const userName = currentUser.Name;
+ 
+    const todaysAppts = data.appointments.filter(a => {
+        const apptDate = toISO(a['Appointment Date']);
+        const status = (a['Status'] || '').toLowerCase();
+        const cerologistMatch = (a['Cerologist'] || '').toLowerCase() === userName.toLowerCase();
+        return apptDate === todayStr && cerologistMatch && (status === 'open' || status === 'confirmed');
     });
-
-    const uniqueToday = {};
-    allToday.forEach(a => { uniqueToday[a['Guest Code']] = a; });
-    const guests = Object.values(uniqueToday);
-
-    const newCount   = guests.filter(a => (a['First Visit']||'').toLowerCase()==='yes').length;
-    const coCount    = guests.filter(a => hasMembership(a['Guest Code'])).length;
-
-    const visitCounts = {};
-    appData.appointments.forEach(a => {
-        if ((a['Status']||'').toLowerCase()==='closed') {
-            visitCounts[a['Guest Code']] = (visitCounts[a['Guest Code']]||0) + 1;
+ 
+    // Group by guest code
+    const byGuest = {};
+    todaysAppts.forEach(a => {
+        const gc = a['Guest Code'];
+        if (!byGuest[gc]) {
+            byGuest[gc] = {
+                guestCode: gc,
+                guestName: a['Guest Name'],
+                startTime: a['Start Time'],
+                services: [],
+                isFirstVisit: String(a['First Visit'] || '').toLowerCase() === 'yes',
+                invoiceNo: a['Invoice No']
+            };
+        }
+        byGuest[gc].services.push({
+            name: a['Service Name'],
+            price: getServicePrice(a['Invoice No'], gc, a['Service Name'])
+        });
+        // Keep earliest start time
+        if (a['Start Time'] && (!byGuest[gc].startTime || a['Start Time'] < byGuest[gc].startTime)) {
+            byGuest[gc].startTime = a['Start Time'];
         }
     });
-    const targets = guests.filter(a => (visitCounts[a['Guest Code']]||0) >= 2 && !hasMembership(a['Guest Code'])).length;
-
-    // Revenue from salesAccrual
-    const todaySales = appData.salesAccrual.filter(r => parseDateKey(r['Sale Date']) === todayStr);
-    const totalRev   = todaySales.reduce((sum,r) => sum + (parseFloat(r['Sales (Exc. Tax)'])||0), 0);
-
-    // Rebooks from apptStates
-    const rebooks = Object.values(apptStates).filter(s => s.rebooked).length;
-
-    document.getElementById('rs-appts').textContent   = guests.length;
-    document.getElementById('rs-new').textContent     = newCount;
-    document.getElementById('rs-co').textContent      = coCount;
-    document.getElementById('rs-targets').textContent = targets;
-    document.getElementById('rs-rev').textContent     = fmt(totalRev);
-    document.getElementById('rs-rebooks').textContent = rebooks;
-
-    // Cerologist breakdown
-    const byCarol = {};
-    allToday.forEach(a => {
-        const c = a['Cerologist'] || 'Unassigned';
-        if (!byCarol[c]) byCarol[c] = { appts: new Set(), newCount: 0, coCount: 0 };
-        byCarol[c].appts.add(a['Guest Code']);
-        if ((a['First Visit']||'').toLowerCase()==='yes') byCarol[c].newCount++;
-        if (hasMembership(a['Guest Code'])) byCarol[c].coCount++;
-    });
-
-    const bkEl = document.getElementById('cerologistBreakdown');
-    if (Object.keys(byCarol).length === 0) {
-        bkEl.innerHTML = `<div class="empty-state" style="padding:1rem 0;"><p>No data</p></div>`;
-    } else {
-        bkEl.innerHTML = Object.entries(byCarol).map(([name, d]) => `
-            <div class="highlight-item">
-                <div class="h-icon orange">&#128100;</div>
-                <div class="h-text">
-                    <strong>${name}</strong> — ${d.appts.size} appts
-                    ${d.newCount > 0 ? ` · <span style="color:var(--orange)">${d.newCount} new</span>` : ''}
-                    ${d.coCount > 0  ? ` · <span style="color:var(--success)">${d.coCount} CO</span>` : ''}
+ 
+    const appointments = Object.values(byGuest).sort((a, b) =>
+        (a.startTime || '').localeCompare(b.startTime || '')
+    );
+ 
+    document.getElementById('apptCount').textContent = appointments.length;
+ 
+    // Earnings
+    let scheduled = 0;
+    appointments.forEach(a => a.services.forEach(s => scheduled += s.price));
+    const potential = scheduled + (appointments.length * 10) + (appointments.length * 40);
+    const svcRate = parseFloat(currentUser.ServiceCommission || 0.05);
+    const commission = scheduled * svcRate;
+    const tips = potential * 0.20;
+ 
+    document.getElementById('scheduledRevenue').textContent = fmt$(scheduled);
+    document.getElementById('potentialRevenue').textContent = fmt$(potential);
+    document.getElementById('commissionValue').textContent = fmt$(commission);
+    document.getElementById('commissionRate').textContent = `${Math.round(svcRate * 100)}% svc commission`;
+    document.getElementById('tipsValue').textContent = fmt$(tips);
+ 
+    const container = document.getElementById('appointmentsList');
+ 
+    if (!appointments.length) {
+        container.innerHTML = '<div class="empty-state"><p>No appointments today</p><p>Enjoy your day!</p></div>';
+        return;
+    }
+ 
+    container.innerHTML = appointments.map(appt => {
+        const state = appointmentStates[appt.guestCode] || {};
+        const isCompleted = !!state.completed;
+        const clientType = getClientType(appt);
+        const serviceType = inferServiceType(appt.services[0]?.name);
+        const addons = getSuggestedAddons(serviceType);
+        const products = getSuggestedProducts(serviceType);
+        const history = getClientHistory(appt.guestCode);
+        const rebookDate = getRebookDate(appt.startTime);
+ 
+        return `
+            <div class="appointment-card ${isCompleted ? 'completed' : ''}">
+                <div class="card-header">
+                    <div class="client-info">
+                        <span class="client-time">${formatTime(appt.startTime)}</span>
+                        <span class="client-name">${appt.guestName}</span>
+                        <span class="client-badge ${clientType.cls}">${clientType.label}</span>
+                    </div>
+                    <button class="complete-check ${isCompleted ? 'checked' : ''}"
+                            onclick="toggleComplete('${appt.guestCode}')">${isCompleted ? '&#10003;' : ''}</button>
                 </div>
-            </div>`).join('');
-    }
-
-    // Highlights
-    const hl = [];
-    if (newCount > 0) hl.push({ icon: '&#128075;', cls: 'orange', text: `${newCount} new client${newCount>1?'s':''} today — full greet & guide protocol` });
-    if (targets > 0) hl.push({ icon: '&#127919;', cls: 'warn',   text: `${targets} CO target${targets>1?'s':''} scheduled — make the pitch today` });
-    if (coCount > 0)  hl.push({ icon: '&#129505;', cls: 'green',  text: `${coCount} CO member${coCount>1?'s':''} on the books — thank them by name` });
-    if (!hl.length)   hl.push({ icon: '&#128197;', cls: 'blue',   text: 'Check back after data loads' });
-
-    document.getElementById('highlights').innerHTML = hl.map(h => `
-        <li class="highlight-item">
-            <div class="h-icon ${h.cls}">${h.icon}</div>
-            <div class="h-text">${h.text}</div>
-        </li>`).join('');
+                <div class="card-body">
+                    ${history ? `<div class="history-text">&#128220; ${history}</div>` : ''}
+ 
+                    ${appt.services.map(s => `
+                        <div class="service-row">
+                            <span class="service-name">${s.name}</span>
+                            <span class="service-price">${fmt$(s.price)}</span>
+                        </div>
+                    `).join('')}
+ 
+                    <div class="action-section">
+                        <div class="action-title">Add-On Opportunity</div>
+                        <select class="product-select ${state.addonSelected ? 'selected' : ''}"
+                                onchange="updateApptState('${appt.guestCode}','addonSelected',this.value)">
+                            <option value="">Select add-on...</option>
+                            ${addons.map(a => `<option value="${a.name}" ${state.addonSelected === a.name ? 'selected' : ''}>${a.name} (${fmt$(a.cost)})</option>`).join('')}
+                        </select>
+                    </div>
+ 
+                    <div class="action-section">
+                        <div class="action-title">Product Suggestion</div>
+                        <select class="product-select ${state.productSelected ? 'selected' : ''}"
+                                onchange="updateApptState('${appt.guestCode}','productSelected',this.value)">
+                            <option value="">Select product...</option>
+                            ${products.map(p => `<option value="${p.name}" ${state.productSelected === p.name ? 'selected' : ''}>${p.name} (${fmt$(p.cost)})</option>`).join('')}
+                        </select>
+                    </div>
+ 
+                    <div class="checkbox-actions">
+                        <div class="action-checkbox ${state.rebooked ? 'checked' : ''}"
+                             onclick="toggleApptCheck('${appt.guestCode}','rebooked')">
+                            <div class="checkbox-box">${state.rebooked ? '&#10003;' : ''}</div>
+                            <span class="checkbox-label">Rebooked</span>
+                        </div>
+                        <div class="action-checkbox ${state.clubOrange ? 'checked' : ''}"
+                             onclick="toggleApptCheck('${appt.guestCode}','clubOrange')">
+                            <div class="checkbox-box">${state.clubOrange ? '&#10003;' : ''}</div>
+                            <span class="checkbox-label">Club Orange</span>
+                        </div>
+                    </div>
+ 
+                    <div class="rebook-section">
+                        <span style="color:var(--silver);font-size:0.85rem;">Suggested rebook: </span>
+                        <span class="rebook-date">${rebookDate}</span>
+                    </div>
+ 
+                    <div class="notes-section">
+                        <textarea class="notes-input" placeholder="Client notes..."
+                                  onchange="updateApptState('${appt.guestCode}','notes',this.value)">${state.notes || ''}</textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
-
-// =============================================================================
-// SHIFT STATE SYNC
-// =============================================================================
-function loadLocalStates() {
-    const key = todayKey();
-    try {
-        const a = localStorage.getItem('wtc_appt_' + key);
-        const s = localStorage.getItem('wtc_studio_' + key);
-        const c = localStorage.getItem('wtc_cl_' + key);
-        const r = localStorage.getItem('wtc_rga_' + key);
-        if (a) apptStates   = JSON.parse(a);
-        if (s) studioStates = JSON.parse(s);
-        if (c) clStates     = JSON.parse(c);
-        if (r) rgaItems     = JSON.parse(r);
-    } catch(e) {}
-}
-
-async function loadRemoteShiftState() {
-    if (!currentUser) return;
-    try {
-        const result = await API.fetch({ action: 'getShiftState', date: todayKey(), cerologistId: currentUser.id });
-        if (result.success && result.states && Object.keys(result.states).length > 0) {
-            // Merge remote into local (remote wins on conflicts)
-            apptStates   = { ...apptStates,   ...result.states };
-            if (result.rgas) rgaItems = result.rgas;
-            saveLocalStates();
-            renderPlanYourDay();
-            renderReports();
-        }
-    } catch(e) { /* silent — will use localStorage */ }
-}
-
-function saveLocalStates() {
-    const key = todayKey();
-    try {
-        localStorage.setItem('wtc_appt_'   + key, JSON.stringify(apptStates));
-        localStorage.setItem('wtc_studio_' + key, JSON.stringify(studioStates));
-        localStorage.setItem('wtc_cl_'     + key, JSON.stringify(clStates));
-        localStorage.setItem('wtc_rga_'    + key, JSON.stringify(rgaItems));
-    } catch(e) {}
-}
-
-function scheduleSave() {
-    saveLocalStates();
-    // Debounce remote save 2s after last change
-    clearTimeout(syncTimer);
-    syncTimer = setTimeout(pushShiftState, 2000);
-}
-
-async function pushShiftState() {
-    if (!currentUser) return;
-    setSyncStatus('syncing');
-    try {
-        await API.post({
-            type:           'saveShiftState',
-            date:           todayKey(),
-            cerologistId:   currentUser.id,
-            cerologistName: currentUser.name,
-            states:         apptStates,
-            rgas:           rgaItems,
-            shiftNotes:     '',
-            updatedAt:      new Date().toISOString()
+ 
+// ============================================================
+// RENDER STUDIO PLAN
+// ============================================================
+function renderStudioPlan() {
+    if (!data.appointments.length) return;
+ 
+    const todayStr = todayISO();
+    const yesterdayStr = yesterdayISO();
+ 
+    const isEligible = a => {
+        const status = (a['Status'] || '').toLowerCase();
+        return status === 'open' || status === 'confirmed';
+    };
+ 
+    const isClosed = a => (a['Status'] || '').toLowerCase() === 'closed';
+ 
+    const todaysAll = data.appointments.filter(a => toISO(a['Appointment Date']) === todayStr && isEligible(a));
+    const yesterdaysAll = data.appointments.filter(a => toISO(a['Appointment Date']) === yesterdayStr && isClosed(a));
+ 
+    // Dedup by guest code, keep first occurrence
+    const dedupByGuest = arr => {
+        const seen = new Set();
+        return arr.filter(a => {
+            if (seen.has(a['Guest Code'])) return false;
+            seen.add(a['Guest Code']);
+            return true;
         });
-        setSyncStatus('synced');
-    } catch(e) {
-        setSyncStatus('offline');
+    };
+ 
+    // Past visit counts
+    const visitCounts = {};
+    data.appointments.filter(isClosed).forEach(a => {
+        const gc = a['Guest Code'];
+        visitCounts[gc] = (visitCounts[gc] || 0) + 1;
+    });
+ 
+    // 1. New Clients Today
+    const newToday = dedupByGuest(todaysAll.filter(a => String(a['First Visit'] || '').toLowerCase() === 'yes'));
+ 
+    // 2. CO Members Today
+    const coToday = dedupByGuest(todaysAll.filter(a => hasActiveMembership(a['Guest Code'])));
+ 
+    // 3. CO Targets (2+ visits, not member, today)
+    const coTargets = dedupByGuest(todaysAll.filter(a =>
+        !String(a['First Visit'] || '').toLowerCase().includes('yes') &&
+        !hasActiveMembership(a['Guest Code']) &&
+        (visitCounts[a['Guest Code']] || 0) >= 2
+    ));
+ 
+    // 4. New Client Outreach (yesterday's new clients)
+    const newOutreach = dedupByGuest(yesterdaysAll.filter(a => String(a['First Visit'] || '').toLowerCase() === 'yes'));
+ 
+    const sections = [];
+ 
+    if (newToday.length) sections.push({
+        id: 'newClients', title: 'New Clients Today', icon: '&#128075;',
+        items: newToday.map(a => ({
+            id: `nc_${a['Guest Code']}`,
+            main: a['Guest Name'],
+            detail: `${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags: ['New Client']
+        }))
+    });
+ 
+    if (coToday.length) sections.push({
+        id: 'coMembers', title: 'Club Orange Members', icon: '&#129305;',
+        items: coToday.map(a => ({
+            id: `co_${a['Guest Code']}`,
+            main: a['Guest Name'],
+            detail: `${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags: ['Member']
+        }))
+    });
+ 
+    if (coTargets.length) sections.push({
+        id: 'coTargets', title: 'Club Orange Targets', icon: '&#127919;',
+        items: coTargets.map(a => ({
+            id: `ct_${a['Guest Code']}`,
+            main: a['Guest Name'],
+            detail: `${visitCounts[a['Guest Code']] || 0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`,
+            tags: [`${visitCounts[a['Guest Code']] || 0} visits`]
+        }))
+    });
+ 
+    if (newOutreach.length) sections.push({
+        id: 'outreach', title: 'New Client Outreach', icon: '&#128241;',
+        hasCompletedBy: true,
+        items: newOutreach.map(a => ({
+            id: `out_${a['Guest Code']}`,
+            main: a['Guest Name'],
+            detail: `New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags: ['Yesterday']
+        }))
+    });
+ 
+    const container = document.getElementById('studioPlanSections');
+ 
+    if (!sections.length) {
+        container.innerHTML = '<div class="empty-state"><p>Studio plan building...</p><p>Check back after data loads.</p></div>';
+        return;
     }
+ 
+    container.innerHTML = sections.map(section => {
+        const completedCount = section.items.filter(item => studioPlanStates[item.id]?.completed).length;
+        const pct = section.items.length > 0 ? Math.round(completedCount / section.items.length * 100) : 0;
+ 
+        return `
+            <div class="studio-section">
+                <div class="section-header" onclick="toggleSection('${section.id}')">
+                    <div class="section-title">
+                        <span>${section.icon} ${section.title}</span>
+                        <span class="section-count">${section.items.length}</span>
+                    </div>
+                    <div class="section-progress">
+                        <span class="progress-text">${completedCount}/${section.items.length}</span>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+                    </div>
+                </div>
+                <div class="section-body" id="sec_${section.id}">
+                    ${section.items.map(item => {
+                        const st = studioPlanStates[item.id] || {};
+                        return `
+                            <div class="task-item ${st.completed ? 'completed' : ''}" id="task_${item.id}">
+                                <button class="task-check" onclick="toggleTask('${item.id}')">${st.completed ? '&#10003;' : ''}</button>
+                                <div class="task-content">
+                                    <div class="task-main">${item.main}</div>
+                                    <div class="task-detail">${item.detail}</div>
+                                    <div class="task-meta">
+                                        ${item.tags.map(t => `<span class="task-tag">${t}</span>`).join('')}
+                                        ${section.hasCompletedBy ? `
+                                        <select class="completed-by-select" onchange="updateTaskBy('${item.id}',this.value)">
+                                            <option value="">Completed by...</option>
+                                            ${employees.map(e => `<option value="${e.id||e.Name}" ${st.completedBy === (e.id||e.Name) ? 'selected' : ''}>${e.Name}</option>`).join('')}
+                                        </select>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
 }
-
-async function saveProgress() {
+ 
+function toggleSection(id) {
+    document.getElementById('sec_' + id)?.classList.toggle('collapsed');
+}
+ 
+// ============================================================
+// APPOINTMENT STATE
+// ============================================================
+function toggleComplete(gc) {
+    initState(gc);
+    appointmentStates[gc].completed = !appointmentStates[gc].completed;
     saveLocalStates();
-    await pushShiftState();
-    showToast('Progress saved ✓', 'success');
+    renderAppointments();
 }
-
-// =============================================================================
+ 
+function toggleApptCheck(gc, field) {
+    initState(gc);
+    appointmentStates[gc][field] = !appointmentStates[gc][field];
+    saveLocalStates();
+    renderAppointments();
+}
+ 
+function updateApptState(gc, field, value) {
+    initState(gc);
+    appointmentStates[gc][field] = value || null;
+    saveLocalStates();
+}
+ 
+function initState(gc) {
+    if (!appointmentStates[gc]) appointmentStates[gc] = {};
+}
+ 
+// ============================================================
+// STUDIO PLAN STATE
+// ============================================================
+function toggleTask(itemId) {
+    if (!studioPlanStates[itemId]) studioPlanStates[itemId] = {};
+    studioPlanStates[itemId].completed = !studioPlanStates[itemId].completed;
+    if (studioPlanStates[itemId].completed && currentUser) {
+        studioPlanStates[itemId].completedBy = currentUser.id || currentUser.Name;
+    }
+    saveLocalStates();
+    renderStudioPlan();
+}
+ 
+function updateTaskBy(itemId, userId) {
+    if (!studioPlanStates[itemId]) studioPlanStates[itemId] = {};
+    studioPlanStates[itemId].completedBy = userId || null;
+    saveLocalStates();
+}
+ 
+// ============================================================
+// RGA STATE
+// ============================================================
+function updateRGA(num, field, value) {
+    const key = `rga${num}`;
+    rgaStates[key][field] = value;
+    const sel = document.getElementById(`rga${num}Select`);
+    if (sel) sel.classList.toggle('selected', !!rgaStates[key].activity);
+    saveLocalStates();
+}
+ 
+function restoreRGASelects() {
+    [1, 2, 3].forEach(n => {
+        const key = `rga${n}`;
+        const st = rgaStates[key];
+        const sel = document.getElementById(`rga${n}Select`);
+        const note = document.getElementById(`rga${n}Note`);
+        if (sel && st.activity) { sel.value = st.activity; sel.classList.add('selected'); }
+        if (note && st.note) note.value = st.note;
+    });
+}
+ 
+// ============================================================
 // RECAP MODAL
-// =============================================================================
+// ============================================================
 function openRecapModal() {
-    const rebooks    = [];
-    const coSignups  = [];
-    const retailSold = [];
-    const addOnsSold = [];
-    const notes      = [];
-
-    Object.entries(apptStates).forEach(([gc, st]) => {
+    const rebooks = [], co = [], retail = [], addons = [], notes = [];
+ 
+    Object.entries(appointmentStates).forEach(([gc, st]) => {
         const name = getGuestName(gc);
-        if (st.rebooked)        rebooks.push(name);
-        if (st.clubOrange)      coSignups.push(name);
-        if (st.productSelected) retailSold.push(name + ' — ' + st.productSelected);
-        if (st.addonSelected)   addOnsSold.push(name + ' — ' + st.addonSelected);
-        if (st.notes)           notes.push(name + ': ' + st.notes);
+        if (st.rebooked) rebooks.push(name);
+        if (st.clubOrange) co.push(name);
+        if (st.productSelected) retail.push(`${name} — ${st.productSelected}`);
+        if (st.addonSelected) addons.push(`${name} — ${st.addonSelected}`);
+        if (st.notes?.trim()) notes.push(`${name}: ${st.notes.trim()}`);
     });
-
-    const section = (title, items, empty) => `
+ 
+    const rgaLines = [1, 2, 3]
+        .map(n => rgaStates[`rga${n}`])
+        .filter(r => r.activity)
+        .map(r => r.note ? `${r.activity}: ${r.note}` : r.activity);
+ 
+    const makeSection = (title, items, empty) => `
         <div class="recap-section">
-            <div class="recap-section-title">${title} (${items.length})</div>
-            ${items.length ? items.map(i => `
-                <div class="recap-item"><span class="recap-item-name">${i}</span></div>`).join('')
-            : `<div class="recap-empty">${empty}</div>`}
+            <div class="recap-title">${title} (${items.length})</div>
+            ${items.length ? `<ul class="recap-list">${items.map(i => `<li class="recap-item"><span class="recap-item-name">${i}</span></li>`).join('')}</ul>` : `<div class="recap-empty">${empty}</div>`}
         </div>`;
-
-    document.getElementById('recapBody').innerHTML = `
-        ${section('&#9989; Rebooks',           rebooks,    'No rebooks recorded')}
-        ${section('&#129505; Club Orange',      coSignups,  'No CO signups today')}
-        ${section('&#128717; Retail Sold',      retailSold, 'No retail sold today')}
-        ${section('&#10024; Add-Ons',           addOnsSold, 'No add-ons today')}
-        ${notes.length ? section('&#128203; Notes', notes, '') : ''}`;
-
-    openModal('recapModal');
+ 
+    document.getElementById('recapContent').innerHTML =
+        makeSection('&#10003; Rebooks', rebooks, 'No rebooks today') +
+        makeSection('&#129305; Club Orange Signups', co, 'No signups today') +
+        makeSection('&#128717; Retail Sold', retail, 'No retail today') +
+        makeSection('&#10024; Add-Ons', addons, 'No add-ons today') +
+        makeSection('&#127919; RGAs', rgaLines, 'No RGAs logged') +
+        (notes.length ? makeSection('&#128221; Notes', notes, '') : '');
+ 
+    document.getElementById('recapModal').classList.add('visible');
 }
-
-async function submitRecap() {
-    const rebooks    = [], coSignups = [], retailSold = [], addOnsSold = [], notes = [];
-    Object.entries(apptStates).forEach(([gc, st]) => {
+ 
+function closeRecapModal() {
+    document.getElementById('recapModal').classList.remove('visible');
+}
+ 
+async function sendRecap() {
+    const btn = document.getElementById('sendRecapBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+ 
+    const rebooks = [], co = [], retail = [], addons = [], notes = [], rgaArr = [];
+ 
+    Object.entries(appointmentStates).forEach(([gc, st]) => {
         const name = getGuestName(gc);
-        if (st.rebooked)        rebooks.push(name);
-        if (st.clubOrange)      coSignups.push(name);
-        if (st.productSelected) retailSold.push(name + ' — ' + st.productSelected);
-        if (st.addonSelected)   addOnsSold.push(name + ' — ' + st.addonSelected);
-        if (st.notes)           notes.push(name + ': ' + st.notes);
+        if (st.rebooked) rebooks.push(name);
+        if (st.clubOrange) co.push(name);
+        if (st.productSelected) retail.push(`${name} — ${st.productSelected}`);
+        if (st.addonSelected) addons.push(`${name} — ${st.addonSelected}`);
+        if (st.notes?.trim()) notes.push(`${name}: ${st.notes.trim()}`);
     });
-
-    setSyncStatus('syncing');
+ 
+    [1, 2, 3].forEach(n => {
+        const r = rgaStates[`rga${n}`];
+        if (r.activity) rgaArr.push(r.note ? `${r.activity}: ${r.note}` : r.activity);
+    });
+ 
+    const payload = {
+        key: CONFIG.API_KEY,
+        type: 'recap',
+        cerologist: currentUser.Name,
+        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        rebooks, clubOrangeSignups: co, retailSold: retail, addOnsSold: addons, notes, rgas: rgaArr
+    };
+ 
     try {
-        await API.post({
-            type:              'recap',
-            cerologist:        currentUser?.name || 'Unknown',
-            date:              new Date().toLocaleDateString(),
-            rebooks,
-            clubOrangeSignups: coSignups,
-            retailSold,
-            addOnsSold,
-            notes,
-            rgas:              rgaItems
+        const resp = await fetch(CONFIG.WORKER_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
         });
-        setSyncStatus('synced');
-        closeModal('recapModal');
-        showToast('Recap sent to Slack ✓', 'success');
-    } catch(e) {
-        setSyncStatus('offline');
-        showToast('Could not send — check connection', 'error');
+        const result = await resp.json();
+        if (result.success) {
+            showToast('Recap sent to Slack!', 'success');
+            closeRecapModal();
+        } else {
+            showToast('Send failed: ' + (result.error || 'unknown'), 'error');
+        }
+    } catch (err) {
+        showToast('Network error — check connection', 'error');
     }
+ 
+    btn.disabled = false;
+    btn.innerHTML = '&#128228; Send to Slack';
 }
-
-// =============================================================================
-// SETTINGS
-// =============================================================================
-function openSettings() {
-    document.getElementById('settingWorkerUrl').value = localStorage.getItem('wtc_worker_url') || '';
-    document.getElementById('settingApiKey').value    = localStorage.getItem('wtc_api_key')    || '';
-    openModal('settingsModal');
+ 
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+function todayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
-
-function saveSettings() {
-    const url = document.getElementById('settingWorkerUrl').value.trim();
-    const key = document.getElementById('settingApiKey').value.trim();
-    if (url) localStorage.setItem('wtc_worker_url', url);
-    if (key) localStorage.setItem('wtc_api_key',    key);
-    closeModal('settingsModal');
-    showToast('Settings saved', 'success');
+ 
+function yesterdayISO() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
-
-// =============================================================================
-// TRAINING
-// =============================================================================
-function setTrainingMessage() {
-    const start = new Date(TRAINING_START);
-    const today = new Date();
-    const days  = Math.floor((today - start) / 86400000);
-    const idx   = ((days % 30) + 30) % 30;
-    const t     = TRAINING[idx];
-    const label = 'Day ' + (idx + 1) + ' of 30';
-
-    ['trainDay','studioTrainDay'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=label; });
-    ['trainTitle','studioTrainTitle'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=t.title; });
-    ['trainBody','studioTrainBody'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=t.body; });
+ 
+function pad(n) { return String(n).padStart(2, '0'); }
+ 
+function toISO(dateStr) {
+    if (!dateStr) return '';
+    // Already ISO: 2026-03-13
+    if (/^\d{4}-\d{2}-\d{2}/.test(String(dateStr))) return String(dateStr).substring(0, 10);
+    // MM/DD/YYYY
+    const parts = String(dateStr).split('/');
+    if (parts.length === 3) return `${parts[2]}-${pad(parts[0])}-${pad(parts[1])}`;
+    return String(dateStr).substring(0, 10);
 }
-
-function setHeaderDate() {
-    const el = document.getElementById('headerDate');
-    if (el) el.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+ 
+function formatTime(timeStr) {
+    if (!timeStr) return '--:--';
+    // ISO datetime: 2026-03-13T14:00:00.000Z
+    if (timeStr.includes('T') || timeStr.includes('Z')) {
+        const d = new Date(timeStr);
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+    // Already formatted
+    return timeStr;
 }
-
-// =============================================================================
-// HELPERS
-// =============================================================================
-function hasMembership(gc) {
-    const m = appData.memberships.find(r => {
-        const code = r['GuestCode'] || r['Guest Code'] || '';
-        return code === gc;
-    });
+ 
+function fmt$(val) {
+    return '$' + (parseFloat(val) || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+ 
+function getInitials(name) {
+    return (name || '??').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+}
+ 
+function getGuestName(gc) {
+    const a = data.appointments.find(x => x['Guest Code'] === gc);
+    return a ? a['Guest Name'] : gc;
+}
+ 
+function getServicePrice(invoiceNo, gc, serviceName) {
+    const match = data.salesAccrual.find(r =>
+        r['Invoice No'] === invoiceNo &&
+        r['Guest Code'] === gc &&
+        r['Item Name'] === serviceName
+    );
+    return parseFloat(match?.['Sales (Exc. Tax)'] || 0);
+}
+ 
+function hasActiveMembership(gc) {
+    const m = data.memberships.find(x => (x['GuestCode'] || x['Guest Code']) === gc);
     if (!m) return false;
     const status = (m['Recurrence Status'] || m['Membership Status'] || '').toLowerCase();
     return status === 'active';
 }
-
-function getSvcPrice(invoiceNo, gc, svcName) {
-    const match = appData.salesAccrual.find(r =>
-        r['Invoice No'] === invoiceNo && r['Guest Code'] === gc && r['Item Name'] === svcName
-    );
-    return match ? parseFloat(match['Sales (Exc. Tax)']) || 0 : 0;
+ 
+function getClientType(appt) {
+    if (appt.isFirstVisit) return { label: 'New', cls: 'new' };
+    if (hasActiveMembership(appt.guestCode)) return { label: 'CO', cls: 'co' };
+    return { label: 'Returning', cls: 'returning' };
 }
-
-function getHistory(gc) {
-    const past = appData.appointments
-        .filter(a => a['Guest Code']===gc && (a['Status']||'').toLowerCase()==='closed')
-        .sort((a,b) => new Date(b['Appointment Date']) - new Date(a['Appointment Date']));
-    if (!past.length) return null;
+ 
+function getClientHistory(gc) {
+    const today = new Date();
+    const past = data.appointments
+        .filter(a => a['Guest Code'] === gc && (a['Status'] || '').toLowerCase() === 'closed')
+        .sort((a, b) => toISO(b['Appointment Date']).localeCompare(toISO(a['Appointment Date'])));
+ 
+    if (!past.length) return 'First visit ever';
     const last = past[0];
-    const d    = new Date(last['Appointment Date']);
-    const ds   = isNaN(d) ? last['Appointment Date'] : d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return 'Last: ' + last['Service Name'] + ' on ' + ds + ' (' + past.length + ' total visits)';
+    const d = new Date(toISO(last['Appointment Date']));
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `Last: ${last['Service Name']} on ${dateStr} (${past.length} total visits)`;
 }
-
-function inferSvcType(name) {
+ 
+function inferServiceType(name) {
     if (!name) return 'Waxing Service';
-    const n = name.toLowerCase();
-    if (n.includes('brow'))    return 'Brow';
-    if (n.includes('brazilian')) return 'Brazilian';
-    if (n.includes('bikini'))  return 'Bikini';
-    if (n.includes('face') || n.includes('lip') || n.includes('chin')) return 'Face';
+    const s = name.toLowerCase();
+    if (s.includes('brow')) return 'Brow';
+    if (s.includes('brazilian')) return 'Brazilian';
+    if (s.includes('bikini')) return 'Bikini';
+    if (s.includes('face') || s.includes('lip') || s.includes('chin') || s.includes('upper')) return 'Face';
+    if (s.includes('leg')) return 'Leg';
+    if (s.includes('arm') || s.includes('underarm')) return 'Underarm';
+    if (s.includes('back') || s.includes('chest')) return 'Body';
     return 'Waxing Service';
 }
-
-function getAddons(svcType) {
-    if (!appData.addons.length) return [
+ 
+function getSuggestedAddons(serviceType) {
+    if (!data.addons.length) return [
         { name: 'Hydrating Hand Mask', cost: 10 },
         { name: 'Rejuvenating Eye Gel', cost: 5 },
         { name: 'Calming Body Mask', cost: 10 }
     ];
-    return appData.addons
+    return data.addons
         .filter(a => {
-            const types = (a['Service Type']||'').split(',').map(t=>t.trim());
-            return types.includes(svcType) || types.includes('Waxing Service');
+            const types = (a['Service Type'] || '').split(',').map(t => t.trim());
+            return types.includes(serviceType) || types.includes('Waxing Service') || types.includes('Any');
         })
-        .sort((a,b) => (parseInt(a['Priority'])||99) - (parseInt(b['Priority'])||99))
-        .slice(0,5)
-        .map(a => ({ name: a['Add Ons'], cost: parseCost(a['Cost']) }));
+        .sort((a, b) => (parseFloat(a['Priority'] || 99)) - (parseFloat(b['Priority'] || 99)))
+        .slice(0, 5)
+        .map(a => ({ name: a['Add Ons'], cost: parseFloat(String(a['Cost'] || '0').replace('$','')) || 0 }));
 }
-
-function getProducts(svcType) {
-    if (!appData.retail.length) return [
+ 
+function getSuggestedProducts(serviceType) {
+    if (!data.retail.length) return [
         { name: 'FUR Silk Scrub', cost: 55 },
         { name: 'PFB Vanish', cost: 22 },
         { name: 'Spongelle Buffer', cost: 14 }
     ];
-    return appData.retail
+    return data.retail
         .filter(r => {
-            const types = (r['Service Type']||'').split(',').map(t=>t.trim());
-            return types.includes(svcType) || types.includes('Any');
+            const types = (r['Service Type'] || '').split(',').map(t => t.trim());
+            return types.includes(serviceType) || types.includes('Any');
         })
-        .sort((a,b) => (parseFloat(a['Priority ']||a['Priority'])||99) - (parseFloat(b['Priority ']||b['Priority'])||99))
-        .slice(0,5)
-        .map(r => ({ name: r['Retail Item'], cost: parseCost(r['Retail Cost']) }));
+        .sort((a, b) => (parseFloat(a['Priority '] || a['Priority'] || 99)) - (parseFloat(b['Priority '] || b['Priority'] || 99)))
+        .slice(0, 5)
+        .map(r => ({ name: r['Retail Item'], cost: parseFloat(String(r['Retail Cost'] || '0').replace('$','')) || 0 }));
 }
-
-function rebookDate(startTime) {
-    const t = parseTime(startTime);
-    if (!t) return '4 weeks out';
-    const d = new Date(t); d.setDate(d.getDate() + 28);
-    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',weekday:'long'}) + ' at ' +
-           t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+ 
+function getRebookDate(startTime) {
+    if (!startTime) return '4 weeks out';
+    const d = new Date(startTime);
+    if (isNaN(d)) return '4 weeks out';
+    d.setDate(d.getDate() + 28);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }) +
+           ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
-
-function getGuestName(gc) {
-    const a = appData.appointments.find(r => r['Guest Code']===gc);
-    return a ? a['Guest Name'] : gc;
+ 
+// ============================================================
+// STATE PERSISTENCE
+// ============================================================
+function saveLocalStates() {
+    const key = todayISO();
+    const uid = currentUser?.id || currentUser?.Name || 'unknown';
+    localStorage.setItem(`wtc_appt_${key}`, JSON.stringify(appointmentStates));
+    localStorage.setItem(`wtc_studio_${key}`, JSON.stringify(studioPlanStates));
+    localStorage.setItem(`wtc_rga_${key}_${uid}`, JSON.stringify(rgaStates));
 }
-
-function parseCost(str) {
-    return parseFloat((str||'').toString().replace(/[^0-9.]/g,'')) || 0;
+ 
+function loadLocalStates() {
+    const key = todayISO();
+    const apptSaved = localStorage.getItem(`wtc_appt_${key}`);
+    if (apptSaved) appointmentStates = JSON.parse(apptSaved);
+    const studioSaved = localStorage.getItem(`wtc_studio_${key}`);
+    if (studioSaved) studioPlanStates = JSON.parse(studioSaved);
 }
-
-function todayKey() {
-    const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+ 
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showMainApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userAvatar').textContent = currentUser._initials || getInitials(currentUser.Name);
+ 
+    // Load user-specific RGA state
+    const key = todayISO();
+    const uid = currentUser.id || currentUser.Name;
+    const rgaSaved = localStorage.getItem(`wtc_rga_${key}_${uid}`);
+    if (rgaSaved) rgaStates = JSON.parse(rgaSaved);
 }
-
-function parseDateKey(str) {
-    if (!str) return '';
-    // Handle M/D/YYYY
-    const parts = str.toString().split('/');
-    if (parts.length === 3) {
-        return parts[2] + '-' + String(parts[0]).padStart(2,'0') + '-' + String(parts[1]).padStart(2,'0');
-    }
-    // Handle YYYY-MM-DD
-    if (str.includes('-') && str.length >= 8) return str.substring(0,10);
-    // Try Date parse
-    const d = new Date(str);
-    return isNaN(d) ? '' : d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+ 
+function showOverlay(text) {
+    document.getElementById('loadingText').textContent = text || 'Loading...';
+    document.getElementById('loadingOverlay').style.display = 'flex';
 }
-
-function parseTime(str) {
-    if (!str) return null;
-    const d = new Date(str);
-    return isNaN(d) ? null : d;
+ 
+function hideOverlay() {
+    document.getElementById('loadingOverlay').style.display = 'none';
 }
-
-function fmtTime(str) {
-    const d = parseTime(str);
-    if (!d) return str || '';
-    return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-}
-
-function fmt(val) {
-    return '$' + (val||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-}
-
-// =============================================================================
-// UI UTILITIES
-// =============================================================================
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    document.getElementById(tabId)?.classList.add('active');
-    const footer = document.getElementById('footerBar');
-    if (footer) footer.style.display = tabId === 'reportsTab' ? 'none' : 'flex';
-}
-
-function showScreen(name) {
-    var loading = document.getElementById('loadingScreen');
-    var login   = document.getElementById('loginScreen');
-    var app     = document.getElementById('mainApp');
-    loading.style.display = 'none';
-    if (name === 'login') {
-        login.style.display = 'flex';
-        app.style.display   = 'none';
-    } else {
-        login.style.display = 'none';
-        app.style.display   = 'block';
-    }
-}
-
-function setLoadingMsg(msg) {
-    // Only updates text — does NOT force loading screen visible.
-    // Loading screen visibility is controlled exclusively by showScreen().
-    const el = document.getElementById('loadingMsg');
-    if (el) el.textContent = msg;
-}
-
-function setSyncStatus(status) {
+ 
+function setSyncStatus(state) {
     const dot = document.getElementById('syncDot');
-    if (!dot) return;
-    dot.className = 'sync-dot';
-    if (status === 'syncing') dot.classList.add('syncing');
-    if (status === 'offline') dot.classList.add('offline');
+    const text = document.getElementById('syncText');
+    dot.className = 'sync-dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
+    text.textContent = state === 'loading' ? 'Syncing' : state === 'error' ? 'Offline' : 'Live';
 }
-
-function openModal(id)  { document.getElementById(id)?.classList.add('open'); }
-function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
-
-function showToast(msg, type = 'success') {
+ 
+ 
+// ============================================================
+// CHECKLISTS — hardcoded from Airtable export, fetched live on load
+// ============================================================
+const CHECKLISTS_HARDCODED = [
+    {
+        id: 'openingA', name: 'Opening A', icon: '🌅', hasCashCount: false, hasFollowUp: false,
+        sections: [
+            { name: 'Administrative Tasks', icon: '📋', items: [
+                'Turn on Lights (4 Switches in Sanctuary)',
+                'Review Daily Standup Message in Slack (thumbs up)',
+                'Print Appointment Sheets for Cero\'s Working',
+                'Fill out referral cards for all clients',
+                'Turn On Music',
+                'Log in to Security Cameras on large TV',
+                'Verify Check in Kiosk is Ready',
+                'Review Voicemails (Outlook Email Box) Update Zenoti - Text or Call Clients',
+                'Review EZ Connect in Zenoti',
+                'Test AI by Calling the Studio and Leaving a message (614-389-0075)',
+                'Verify Retail Shelves are Fully Stocked',
+                'Unlock the Front Door (key in lock box behind office door)',
+                'Stripe Reader charged and ready to go'
+            ]},
+            { name: 'Service Room Checks', icon: '🛏️', items: [
+                'Ensure all wax pots are on for all cerologists working',
+                'Verify your room cleanliness (Floors bed surfaces garbage)',
+                'Verify all supplies are stocked in your room for your services',
+                'Client caddy is stocked (charger underwear wipes)'
+            ]},
+            { name: 'Public Area Checks', icon: '🏢', items: [
+                'Verify Lobby Swept and Mopped',
+                'Kiosk Ipad screen is clean',
+                'Podium Ipad screen is clean',
+                'Check glass and doors for smudges and streaks',
+                'Verify hallway is swept and mopped'
+            ]}
+        ]
+    },
+    {
+        id: 'openingB', name: 'Opening B', icon: '🌅', hasCashCount: true, hasFollowUp: false,
+        sections: [
+            { name: 'Restroom Checks', icon: '🚿', items: [
+                'Sink area clean', 'Mirror Clean', 'Toilet Area Clean',
+                'Floor Vacuumed / Swept', 'Floor Mopped', 'Garbage Empty',
+                'Paper Towel Stocked', 'Tampons / Pads / Wipes Stocked', 'Tissue Stocked'
+            ]},
+            { name: 'Service Room Checks', icon: '🛏️', items: [
+                'Ensure all wax pots are on for all cerologists working',
+                'Verify your room cleanliness (Floors bed surfaces garbage)',
+                'Verify all supplies are stocked in your room for your services',
+                'Client caddy is stocked (charger underwear wipes)'
+            ]}
+        ]
+    },
+    {
+        id: 'closingA', name: 'Closing A', icon: '🌙', hasCashCount: false, hasFollowUp: true,
+        sections: [
+            { name: 'Administrative Tasks', icon: '📋', items: [
+                'Turn Off lights (4 switches in sanctuary)',
+                'Turn off music',
+                'Log out of Security Cameras',
+                'Review Voicemails (Outlook Email) update Zenoti and Text / Call Client',
+                'Review EZ Connect in Zenoti',
+                'Test AI by Calling the Studio and Leaving a Message (614-389-0075)',
+                'Verify all Retail Shelves are Full Stocked as needed',
+                'Lock the Front Door',
+                'Plug in Stripe',
+                'Charge Podium Ipad'
+            ]},
+            { name: 'Public Area Tasks', icon: '🏢', items: [
+                'Lobby is swept and mopped',
+                'Glass and Doors are cleaned and smudge free',
+                'Hallway is Swept and Mopped',
+                'All Trash and Recycling are taken to dumpster'
+            ]},
+            { name: 'Rooms Tasks', icon: '🛏️', items: [
+                'Ensure All Wax Pots are Off',
+                'Ensure All Wax pots for team working tomorrow are full per training',
+                'Verify your room cleanliness (Floor Bed Surfaces Garbage)',
+                'Verify all supplies are stocked in your room',
+                'Client caddy is stocked (Charger underwear wipes)'
+            ]}
+        ]
+    },
+    {
+        id: 'closingB', name: 'Closing B', icon: '🌙', hasCashCount: true, hasFollowUp: true,
+        sections: [
+            { name: 'Restroom Tasks', icon: '🚿', items: [
+                'Sink Area Clean', 'Mirror Clean', 'Toilet Area Clean',
+                'Floor Vacuumed / Swept', 'Floor Mopped', 'Garbage Empty',
+                'Paper Towel Stocked', 'Tampons / Pads / Wipes Stocked', 'Tissue Stocked'
+            ]},
+            { name: 'Rooms Tasks', icon: '🛏️', items: [
+                'Ensure All Wax Pots are Off',
+                'Ensure All Wax pots for team working tomorrow are full per training',
+                'Verify your room cleanliness (Floor Bed Surfaces Garbage)',
+                'Verify all supplies are stocked in your room',
+                'Client caddy is stocked (Charger underwear wipes)'
+            ]}
+        ]
+    }
+];
+ 
+let checklists = CHECKLISTS_HARDCODED;
+let checklistStates = {}; // { checklistId: { 'SectionName|itemIndex': true } }
+let activeChecklistId = null;
+ 
+async function loadChecklists() {
+    try {
+        const raw = await fetchTable('Checklists');
+        if (raw.length > 0) {
+            checklists = parseAirtableChecklists(raw);
+        }
+    } catch (e) {
+        console.warn('Using hardcoded checklists:', e.message);
+    }
+    renderChecklistCards();
+}
+ 
+function parseAirtableChecklists(rows) {
+    const map = {};
+    const order = [];
+    rows.forEach(r => {
+        const id = r['ChecklistID'] || r['id'];
+        if (!id) return;
+        if (!map[id]) {
+            map[id] = {
+                id, name: r['ChecklistName'] || id, icon: r['ChecklistIcon'] || '📋',
+                hasCashCount: String(r['HasCashCount'] || '').toLowerCase() === 'true',
+                hasFollowUp: String(r['HasFollowUp'] || '').toLowerCase() === 'true',
+                sections: []
+            };
+            order.push(id);
+        }
+        const cl = map[id];
+        const secName = r['SectionName'] || '';
+        const secIcon = r['SectionIcon'] || '';
+        const item = r['ItemText'] || '';
+        if (!secName) return;
+        let sec = cl.sections.find(s => s.name === secName);
+        if (!sec) { sec = { name: secName, icon: secIcon, items: [] }; cl.sections.push(sec); }
+        if (item) sec.items.push(item);
+    });
+    return order.map(id => map[id]);
+}
+ 
+function renderChecklistCards() {
+    const container = document.getElementById('checklistCards');
+    if (!container) return;
+ 
+    // Load saved states
+    const key = todayISO();
+    const saved = localStorage.getItem(`wtc_cl_${key}`);
+    if (saved) checklistStates = JSON.parse(saved);
+ 
+    container.innerHTML = checklists.map(cl => {
+        const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
+        const doneItems = Object.values(checklistStates[cl.id] || {}).filter(Boolean).length;
+        const isDone = doneItems === totalItems && totalItems > 0;
+        return `
+            <div class="checklist-card ${isDone ? 'done' : ''}" onclick="openChecklist('${cl.id}')">
+                <div class="checklist-card-icon">${cl.icon}</div>
+                <div class="checklist-card-name">${cl.name}</div>
+                <div class="checklist-card-count">${doneItems}/${totalItems} tasks${isDone ? ' ✓' : ''}</div>
+            </div>
+        `;
+    }).join('');
+}
+ 
+function openChecklist(id) {
+    const cl = checklists.find(c => c.id === id);
+    if (!cl) return;
+    activeChecklistId = id;
+    if (!checklistStates[id]) checklistStates[id] = {};
+ 
+    document.getElementById('checklistSelector').style.display = 'none';
+    document.getElementById('activeChecklist').style.display = 'block';
+    document.getElementById('activeChecklistTitle').innerHTML = `${cl.icon} ${cl.name}`;
+    document.getElementById('cashCountSection').style.display = cl.hasCashCount ? 'block' : 'none';
+    document.getElementById('followUpSection').style.display = cl.hasFollowUp ? 'block' : 'none';
+ 
+    // Populate completed-by
+    const sel = document.getElementById('checklistCompletedBy');
+    sel.innerHTML = '<option value="">Completed by...</option>' +
+        employees.map(e => `<option value="${e.Name}">${e.Name}</option>`).join('');
+    if (currentUser) sel.value = currentUser.Name;
+ 
+    renderActiveChecklist(cl);
+}
+ 
+function renderActiveChecklist(cl) {
+    const state = checklistStates[cl.id] || {};
+    const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
+    const doneItems = Object.values(state).filter(Boolean).length;
+    const pct = totalItems > 0 ? Math.round(doneItems / totalItems * 100) : 0;
+ 
+    document.getElementById('checklistProgressBar').style.width = pct + '%';
+    document.getElementById('checklistProgressText').textContent = `${doneItems} / ${totalItems}`;
+ 
+    const container = document.getElementById('activeChecklistSections');
+    container.innerHTML = cl.sections.map((sec, si) => {
+        const secDone = sec.items.filter((_, ii) => state[`${si}_${ii}`]).length;
+        return `
+            <div class="cl-section">
+                <div class="cl-section-header" onclick="toggleClSection('cls_${si}')">
+                    <div class="cl-section-title">${sec.icon} ${sec.name}</div>
+                    <div style="font-size:0.8rem;color:var(--silver);">${secDone}/${sec.items.length}</div>
+                </div>
+                <div class="cl-section-body" id="cls_${si}">
+                    ${sec.items.map((item, ii) => {
+                        const checked = !!state[`${si}_${ii}`];
+                        return `
+                            <div class="cl-item ${checked ? 'checked' : ''}" onclick="toggleClItem('${cl.id}',${si},${ii})">
+                                <div class="cl-checkbox">${checked ? '&#10003;' : ''}</div>
+                                <div class="cl-item-text">${item}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+ 
+function toggleClSection(id) {
+    document.getElementById(id)?.classList.toggle('collapsed');
+}
+ 
+function toggleClItem(clId, secIdx, itemIdx) {
+    const key = `${secIdx}_${itemIdx}`;
+    if (!checklistStates[clId]) checklistStates[clId] = {};
+    checklistStates[clId][key] = !checklistStates[clId][key];
+    saveChecklistStates();
+    const cl = checklists.find(c => c.id === clId);
+    if (cl) renderActiveChecklist(cl);
+    renderChecklistCards();
+}
+ 
+function saveChecklistStates() {
+    localStorage.setItem(`wtc_cl_${todayISO()}`, JSON.stringify(checklistStates));
+}
+ 
+function backToChecklistSelector() {
+    activeChecklistId = null;
+    document.getElementById('activeChecklist').style.display = 'none';
+    document.getElementById('checklistSelector').style.display = 'block';
+    renderChecklistCards();
+}
+ 
+async function submitChecklist() {
+    const cl = checklists.find(c => c.id === activeChecklistId);
+    if (!cl) return;
+ 
+    const state = checklistStates[activeChecklistId] || {};
+    const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
+    const doneItems = Object.values(state).filter(Boolean).length;
+    const completedBy = document.getElementById('checklistCompletedBy').value || currentUser?.Name || 'Unknown';
+    const cashTotal = cl.hasCashCount ? document.getElementById('cashCountInput').value : null;
+    const followUpNotes = cl.hasFollowUp ? document.getElementById('followUpInput').value : '';
+ 
+    const btn = document.getElementById('submitChecklistBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+ 
+    const payload = {
+        key: CONFIG.API_KEY,
+        type: 'checklist',
+        checklistName: cl.name,
+        completedBy,
+        tasksCompleted: doneItems,
+        tasksTotal: totalItems,
+        cashTotal: cashTotal ? parseFloat(cashTotal) : null,
+        followUpNotes,
+        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    };
+ 
+    try {
+        const resp = await fetch(CONFIG.WORKER_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await resp.json();
+        if (result.success) {
+            showToast(`${cl.name} submitted to Slack!`, 'success');
+            backToChecklistSelector();
+        } else {
+            showToast('Submit failed: ' + (result.error || 'unknown'), 'error');
+        }
+    } catch (err) {
+        showToast('Network error — check connection', 'error');
+    }
+ 
+    btn.disabled = false;
+    btn.innerHTML = '&#128228; Submit to Slack';
+}
+ 
     const toast = document.getElementById('toast');
-    const text  = document.getElementById('toastMsg');
-    if (!toast || !text) return;
-    text.textContent = msg;
-    toast.className = 'toast show ' + type;
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => { toast.className = 'toast'; }, 3000);
+    const icon = document.getElementById('toastIcon');
+    document.getElementById('toastMessage').textContent = msg;
+    icon.innerHTML = type === 'error' ? '&#9888;' : '&#10003;';
+    toast.className = 'toast visible ' + type;
+    setTimeout(() => toast.className = 'toast', 3500);
+}
+ 
+function openSettings() {
+    document.getElementById('settingToken').value  = localStorage.getItem('wtc_at_token') || '';
+    document.getElementById('settingBase').value   = localStorage.getItem('wtc_at_base') || '';
+    document.getElementById('settingWorker').value = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
+    document.getElementById('settingApiKey').value = localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills';
+    document.getElementById('settingsModal').classList.add('visible');
+}
+ 
+function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('visible');
+}
+ 
+function saveSettings() {
+    const token  = document.getElementById('settingToken').value.trim();
+    const base   = document.getElementById('settingBase').value.trim();
+    const worker = document.getElementById('settingWorker').value.trim();
+    const apiKey = document.getElementById('settingApiKey').value.trim();
+ 
+    if (!token || !base) {
+        alert('Airtable Token and Base ID are required.');
+        return;
+    }
+ 
+    localStorage.setItem('wtc_at_token',   token);
+    localStorage.setItem('wtc_at_base',    base);
+    if (worker) localStorage.setItem('wtc_worker_url', worker);
+    if (apiKey) localStorage.setItem('wtc_api_key',    apiKey);
+ 
+    reloadConfig();
+    closeSettings();
+    setTimeout(() => location.reload(), 400);
 }
 </script>
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">&#9881; Settings</div>
+            <button class="modal-close" onclick="closeSettings()">&#215;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--silver);font-size:0.85rem;margin-bottom:1.5rem;">Credentials are stored only on this device. Never shared or uploaded.</p>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Personal Access Token</label>
+                <input type="password" id="settingToken" placeholder="patXXXX..." autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Base ID</label>
+                <input type="text" id="settingBase" placeholder="appXXXXXXXX" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Cloudflare Worker URL</label>
+                <input type="text" id="settingWorker" placeholder="https://wtc-proxy.xxx.workers.dev" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">API Key</label>
+                <input type="password" id="settingApiKey" placeholder="wtc2024shawneehills" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeSettings()" style="flex:1;">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSettings()" style="flex:1;">Save &amp; Reload</button>
+        </div>
+    </div>
+</div>
+ 
 </body>
 </html>
