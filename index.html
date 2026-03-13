@@ -279,7 +279,7 @@
         <div class="login-logo">WTC</div>
         <h1 class="login-title">Daily Operations</h1>
         <p class="login-subtitle" id="loginSubtitle">Sign in to start your shift</p>
-        <button onclick="openSettings()" style="background:none;border:none;color:var(--silver);font-size:0.85rem;cursor:pointer;margin-bottom:1rem;display:flex;align-items:center;gap:0.4rem;margin-left:auto;">&#9881; Settings</button>
+        <button onclick="openSettings()" style="background:none;border:none;color:var(--silver);font-size:0.9rem;cursor:pointer;margin-bottom:1rem;display:flex;align-items:center;gap:0.4rem;margin-left:auto;padding:0.5rem;min-height:44px;min-width:44px;">&#9881; Settings</button>
         
         <div class="login-loading" id="loginLoading" style="display:none;">
             <div class="loading-spinner" style="width:20px;height:20px;border-width:3px;"></div>
@@ -474,6 +474,47 @@
     <div class="footer-actions" id="footerActions">
         <button class="btn btn-outline" onclick="refreshData()">&#8635; Refresh</button>
         <button class="btn btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
+    </div>
+</div>
+ 
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal" style="z-index:9999;">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">&#9881; Settings</div>
+            <button class="modal-close" onclick="closeSettings()">&#215;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--silver);font-size:0.85rem;margin-bottom:1.5rem;">Credentials are stored only on this device. Never shared or uploaded.</p>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Personal Access Token</label>
+                <input type="password" id="settingToken" placeholder="patXXXX..." autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Base ID</label>
+                <input type="text" id="settingBase" placeholder="appXXXXXXXX" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Cloudflare Worker URL</label>
+                <input type="text" id="settingWorker" placeholder="https://wtc-proxy.xxx.workers.dev" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">API Key</label>
+                <input type="password" id="settingApiKey" placeholder="wtc2024shawneehills" autocomplete="off"
+                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
+                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeSettings()" style="flex:1;">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSettings()" style="flex:1;">Save &amp; Reload</button>
+        </div>
     </div>
 </div>
  
@@ -1814,46 +1855,6 @@ function saveSettings() {
     setTimeout(() => location.reload(), 400);
 }
 </script>
-<!-- Settings Modal -->
-<div class="modal-overlay" id="settingsModal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">&#9881; Settings</div>
-            <button class="modal-close" onclick="closeSettings()">&#215;</button>
-        </div>
-        <div class="modal-body">
-            <p style="color:var(--silver);font-size:0.85rem;margin-bottom:1.5rem;">Credentials are stored only on this device. Never shared or uploaded.</p>
-            <div style="margin-bottom:1rem;">
-                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Personal Access Token</label>
-                <input type="password" id="settingToken" placeholder="patXXXX..." autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
-            </div>
-            <div style="margin-bottom:1rem;">
-                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Base ID</label>
-                <input type="text" id="settingBase" placeholder="appXXXXXXXX" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
-            </div>
-            <div style="margin-bottom:1rem;">
-                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Cloudflare Worker URL</label>
-                <input type="text" id="settingWorker" placeholder="https://wtc-proxy.xxx.workers.dev" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
-            </div>
-            <div style="margin-bottom:1.5rem;">
-                <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">API Key</label>
-                <input type="password" id="settingApiKey" placeholder="wtc2024shawneehills" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-outline" onclick="closeSettings()" style="flex:1;">Cancel</button>
-            <button class="btn btn-primary" onclick="saveSettings()" style="flex:1;">Save &amp; Reload</button>
-        </div>
-    </div>
-</div>
  
 </body>
 </html>
