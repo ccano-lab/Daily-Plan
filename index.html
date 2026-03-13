@@ -1,6 +1,3 @@
-
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -691,7 +688,7 @@ async function fetchTable(tableName, filterFormula = null, maxRecords = null) {
     let offset = null;
  
     do {
-        const params = new URLSearchParams({ pageSize: '100' });
+        const params = new URLSearchParams({ pageSize: '100', cellFormat: 'string', timeZone: 'America/New_York', userLocale: 'en-us' });
         if (filterFormula) params.append('filterByFormula', filterFormula);
         if (offset) params.append('offset', offset);
         if (maxRecords) params.append('maxRecords', String(maxRecords));
@@ -890,24 +887,6 @@ function renderAppointments() {
  
     const todayStr = todayISO();
     const userName = currentUser.Name;
- 
-    // Diagnostic: log today's appointments specifically
-    console.log('TODAY:', todayStr, '| USER:', userName);
-    const allToday = data.appointments.filter(a => toISO(a['Appointment Date']) === todayStr);
-    console.log('Appointments matching today:', allToday.length);
-    allToday.slice(0, 5).forEach(a => {
-        console.log('  NAME:', a['Guest Name'], '| CERO:', a['Cerologist'], '| STATUS:', a['Status'], '| DATE_RAW:', a['Appointment Date'], '| DATE_ISO:', toISO(a['Appointment Date']));
-    });
-    if (allToday.length === 0) {
-        const statuses = [...new Set(data.appointments.map(a => a['Status']))];
-        console.log('All status values in data:', statuses);
-        const dateFormats = data.appointments.slice(0,5).map(a => a['Appointment Date']);
-        console.log('Sample dates:', dateFormats);
-    }
-    // Log actual field names from first appointment
-    if (data.appointments.length > 0) {
-        console.log('ACTUAL FIELD NAMES:', Object.keys(data.appointments[0]).join(' | '));
-    }
  
     const todaysAppts = data.appointments.filter(a => {
         const apptDate = toISO(a['Appointment Date']);
