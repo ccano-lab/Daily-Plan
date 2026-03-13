@@ -888,11 +888,19 @@ function renderAppointments() {
     const todayStr = todayISO();
     const userName = currentUser.Name;
  
-    // Diagnostic: log first 3 appointments to console
+    // Diagnostic: log today's appointments specifically
     console.log('TODAY:', todayStr, '| USER:', userName);
-    data.appointments.slice(0, 3).forEach(a => {
-        console.log('APPT:', a['Appointment Date'], '| CERO:', a['Cerologist'], '| STATUS:', a['Status']);
+    const allToday = data.appointments.filter(a => toISO(a['Appointment Date']) === todayStr);
+    console.log('Appointments matching today:', allToday.length);
+    allToday.slice(0, 5).forEach(a => {
+        console.log('  NAME:', a['Guest Name'], '| CERO:', a['Cerologist'], '| STATUS:', a['Status'], '| DATE_RAW:', a['Appointment Date'], '| DATE_ISO:', toISO(a['Appointment Date']));
     });
+    if (allToday.length === 0) {
+        const statuses = [...new Set(data.appointments.map(a => a['Status']))];
+        console.log('All status values in data:', statuses);
+        const dateFormats = data.appointments.slice(0,5).map(a => a['Appointment Date']);
+        console.log('Sample dates:', dateFormats);
+    }
  
     const todaysAppts = data.appointments.filter(a => {
         const apptDate = toISO(a['Appointment Date']);
