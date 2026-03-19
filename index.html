@@ -545,13 +545,10 @@
 // CONFIGURATION
 // ============================================================
 const CONFIG = {
-    AIRTABLE_TOKEN:  localStorage.getItem('wtc_at_token') || '',
-    AIRTABLE_BASE:   localStorage.getItem('wtc_at_base') || '',
-    AIRTABLE_API:    'https://api.airtable.com/v0',
-    WORKER_URL:      localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev',
-    API_KEY:         localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills',
-    STUDIO_NAME:     'Waxing the City - Shawnee Hills (W661)',
-    TRAINING_START:  '2025-01-01'
+    WORKER_URL:    'https://wtc-proxy.ccano-c46.workers.dev',
+    API_KEY:       'wtc2024shawneehills',
+    STUDIO_NAME:   'Waxing the City - Shawnee Hills (W661)',
+    TRAINING_START: '2025-01-01'
 };
  
 function reloadConfig() {
@@ -686,28 +683,30 @@ function populateRGASelects() {
 async function fetchTable(tableName, filterFormula = null, maxRecords = null) {
     const records = [];
     let offset = null;
- 
+
     do {
-        const params = new URLSearchParams({ pageSize: '100', cellFormat: 'string', timeZone: 'America/New_York', userLocale: 'en-us' });
-        if (filterFormula) params.append('filterByFormula', filterFormula);
-        if (offset) params.append('offset', offset);
-        if (maxRecords) params.append('maxRecords', String(maxRecords));
- 
+        const params = new URLSearchParams({
+            key:      CONFIG.API_KEY,
+            pageSize: '100'
+        });
+        if (filterFormula) params.append('filter', filterFormula);
+        if (offset)        params.append('offset', offset);
+        if (maxRecords)    params.append('maxRecords', String(maxRecords));
+
         const resp = await fetch(
-            `${CONFIG.AIRTABLE_API}/${CONFIG.AIRTABLE_BASE}/${encodeURIComponent(tableName)}?${params}`,
-            { headers: { Authorization: `Bearer ${CONFIG.AIRTABLE_TOKEN}` } }
+            `${CONFIG.WORKER_URL}/airtable/${encodeURIComponent(tableName)}?${params}`
         );
- 
+
         if (!resp.ok) {
             const err = await resp.json().catch(() => ({}));
-            throw new Error(err.error?.message || `Airtable HTTP ${resp.status}`);
+            throw new Error(err.error?.message || `Proxy HTTP ${resp.status}`);
         }
- 
+
         const json = await resp.json();
         json.records.forEach(r => records.push({ _id: r.id, ...r.fields }));
         offset = json.offset || null;
     } while (offset);
- 
+
     return records;
 }
  
@@ -1312,9 +1311,10 @@ async function sendRecap() {
  
     try {
         const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
         const result = await resp.json();
         if (result.success) {
             showToast('Recap sent to Slack!', 'success');
@@ -1797,9 +1797,10 @@ async function submitChecklist() {
  
     try {
         const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
         const result = await resp.json();
         if (result.success) {
             showToast(`${cl.name} submitted to Slack!`, 'success');
