@@ -384,7 +384,12 @@
                 </div>
             </div>
  
-            <!-- RGAs -->
+ 
+            <div class="appointments-list" id="appointmentsList">
+                <div class="empty-state"><p>Loading appointments...</p></div>
+            </div>
+        </div>
+ <!-- RGAs -->
             <div class="rga-card">
                 <div class="rga-card-title">&#127919; Revenue Generating Activities</div>
                 <div class="rga-item">
@@ -409,12 +414,6 @@
                     <textarea class="rga-note" id="rga3Note" placeholder="Notes..." rows="1" onchange="updateRGA(3,'note',this.value)"></textarea>
                 </div>
             </div>
- 
-            <div class="appointments-list" id="appointmentsList">
-                <div class="empty-state"><p>Loading appointments...</p></div>
-            </div>
-        </div>
- 
         <!-- STUDIO PLAN TAB -->
         <div id="studioPlanTab" class="tab-content">
             <div class="training-banner">
@@ -918,9 +917,11 @@ function renderAppointments() {
         }
     });
  
-    const appointments = Object.values(byGuest).sort((a, b) =>
-        (a.startTime || '').localeCompare(b.startTime || '')
-    );
+    const appointments = Object.values(byGuest).sort((a, b) => {
+        const tA = a.startTime ? new Date(a.startTime).getTime() : 0;
+        const tB = b.startTime ? new Date(b.startTime).getTime() : 0;
+        return tA - tB;
+    });
  
     document.getElementById('apptCount').textContent = appointments.length;
  
