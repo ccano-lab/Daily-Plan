@@ -219,12 +219,12 @@
     </style>
 </head>
 <body>
-
+ 
 <div class="loading-overlay" id="loadingOverlay" style="display:none;">
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Loading data...</div>
 </div>
-
+ 
 <div id="loginScreen" class="login-screen">
     <div class="login-card">
         <div class="login-logo">WTC</div>
@@ -260,7 +260,7 @@
         <div style="margin-top:1rem; color: var(--danger); font-size: 0.85rem; display:none;" id="loginError"></div>
     </div>
 </div>
-
+ 
 <div id="mainApp" style="display:none;">
     <header class="header">
         <div class="header-top">
@@ -287,9 +287,9 @@
             <button class="tab-btn" data-tab="checklists" onclick="switchTab('checklists')">&#9989; Checklists</button>
         </div>
     </header>
-
+ 
     <main class="main has-footer">
-
+ 
         <!-- ═══════════════════════════════════════════════════
              PLAN YOUR DAY TAB
              BUG FIX #1: RGA card is now INSIDE this div.
@@ -298,13 +298,13 @@
              on every tab (Studio, Checklists included).
         ════════════════════════════════════════════════════ -->
         <div id="planYourDayTab" class="tab-content active">
-
+ 
             <div class="training-banner">
                 <div class="training-day" id="trainingDay"></div>
                 <div class="training-title" id="trainingTitle"></div>
                 <div class="training-body" id="trainingBody"></div>
             </div>
-
+ 
             <div class="earnings-card" id="earningsCard">
                 <div class="earnings-item">
                     <div class="earnings-label">Scheduled</div>
@@ -326,11 +326,11 @@
                     <div class="earnings-meta">20% estimate</div>
                 </div>
             </div>
-
+ 
             <div class="appointments-list" id="appointmentsList">
                 <div class="empty-state"><p>Loading appointments...</p></div>
             </div>
-
+ 
             <!-- RGAs — correctly scoped inside planYourDayTab -->
             <div class="rga-card" style="margin-top:1.5rem;">
                 <div class="rga-card-title">&#127919; Revenue Generating Activities</div>
@@ -356,9 +356,9 @@
                     <textarea class="rga-note" id="rga3Note" placeholder="Notes..." rows="1" onchange="updateRGA(3,'note',this.value)"></textarea>
                 </div>
             </div>
-
+ 
         </div><!-- /planYourDayTab — closes AFTER RGA card -->
-
+ 
         <!-- STUDIO PLAN TAB -->
         <div id="studioPlanTab" class="tab-content">
             <div class="training-banner">
@@ -370,7 +370,7 @@
                 <div class="empty-state"><p>Loading studio plan...</p></div>
             </div>
         </div>
-
+ 
         <!-- CHECKLISTS TAB -->
         <div id="checklistsTab" class="tab-content">
             <div id="checklistSelector" style="margin-bottom:1.5rem;">
@@ -414,15 +414,15 @@
                 </button>
             </div>
         </div>
-
+ 
     </main>
-
+ 
     <div class="footer-actions">
         <button class="btn btn-outline" onclick="refreshData()">&#8635; Refresh</button>
         <button class="btn btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
     </div>
 </div>
-
+ 
 <!-- Settings Modal -->
 <div class="modal-overlay" id="settingsModal" style="z-index:9999;">
     <div class="modal">
@@ -455,7 +455,7 @@
         </div>
     </div>
 </div>
-
+ 
 <!-- Recap Modal -->
 <div class="modal-overlay" id="recapModal">
     <div class="modal">
@@ -470,12 +470,12 @@
         </div>
     </div>
 </div>
-
+ 
 <div class="toast" id="toast">
     <span class="toast-icon" id="toastIcon">&#10003;</span>
     <span id="toastMessage">Saved!</span>
 </div>
-
+ 
 <script>
 // ============================================================
 // CONFIGURATION
@@ -486,12 +486,12 @@ const CONFIG = {
     STUDIO_NAME:    'Waxing the City - Shawnee Hills (W661)',
     TRAINING_START: '2025-01-01'
 };
-
+ 
 function reloadConfig() {
     CONFIG.WORKER_URL = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
     CONFIG.API_KEY    = localStorage.getItem('wtc_api_key')    || 'wtc2024shawneehills';
 }
-
+ 
 const TABLES = {
     appointments: 'Appointments',
     employees:    'Employees',
@@ -500,13 +500,13 @@ const TABLES = {
     retail:       'Retail',
     addons:       'Addons'
 };
-
+ 
 const RGA_OPTIONS = [
     'High Rebook %','Club Orange Sign Up','Text Messages','Business Drop Ins',
     'Attending Event','Social Post','Story Post','Thank You Card',
     'Client Referral','Business Referral','Got a Review'
 ];
-
+ 
 const TRAINING_MESSAGES = [
     { title: "The First 30 Seconds Decide Everything", body: "Clients decide whether they trust you before you touch them. Focus today on immediate eye contact, a genuine smile, and acknowledging each client the moment they walk in." },
     { title: "Professional Appearance Is a Revenue Lever", body: "Your look communicates competence. Today, treat your uniform, hair, and name tag as part of the service." },
@@ -539,7 +539,7 @@ const TRAINING_MESSAGES = [
     { title: "Audit Yourself Like a Coach Would", body: "Today, choose one strength and one opportunity from your service experience. Name it, own it, and choose one micro-action to improve." },
     { title: "Reset the Recipe and Start Strong Again", body: "Today, treat your full day like a reset: execute every step intentionally, as if every client is your first client." }
 ];
-
+ 
 // ============================================================
 // STATE
 // ============================================================
@@ -551,7 +551,7 @@ let data = { appointments: [], salesAccrual: [], memberships: [], retail: [], ad
 let appointmentStates  = {};
 let studioPlanStates   = {};
 let rgaStates = { rga1:{activity:'',note:''}, rga2:{activity:'',note:''}, rga3:{activity:'',note:''} };
-
+ 
 // ============================================================
 // INIT
 // ============================================================
@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     populateRGASelects();
     loadLocalStates();
     await initLogin();
-
+ 
     const savedId = localStorage.getItem('wtc_user_id');
     if (savedId) {
         const user = employees.find(e => e.id === savedId);
@@ -573,23 +573,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 });
-
+ 
 function setCurrentDate() {
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 }
-
+ 
 function setTrainingMessage() {
     const diffDays = Math.floor((new Date() - new Date(CONFIG.TRAINING_START)) / 86400000);
     const idx = ((diffDays % 30) + 30) % 30;
     const msg = TRAINING_MESSAGES[idx];
     const label = `Day ${idx + 1} of 30`;
-    ['','studio'].forEach(p => {
-        document.getElementById(p+'trainingDay').textContent   = label;
-        document.getElementById(p+'trainingTitle').textContent = msg.title;
-        document.getElementById(p+'trainingBody').textContent  = msg.body;
-    });
+    document.getElementById('trainingDay').textContent        = label;
+    document.getElementById('trainingTitle').textContent       = msg.title;
+    document.getElementById('trainingBody').textContent        = msg.body;
+    document.getElementById('studioTrainingDay').textContent   = label;
+    document.getElementById('studioTrainingTitle').textContent = msg.title;
+    document.getElementById('studioTrainingBody').textContent  = msg.body;
 }
-
+ 
 function populateRGASelects() {
     [1,2,3].forEach(n => {
         const sel = document.getElementById(`rga${n}Select`);
@@ -600,7 +601,7 @@ function populateRGASelects() {
         });
     });
 }
-
+ 
 // ============================================================
 // AIRTABLE FETCH
 // ============================================================
@@ -612,7 +613,7 @@ async function fetchTable(tableName, filterFormula=null, maxRecords=null) {
         if (filterFormula) params.append('filter', filterFormula);
         if (offset)        params.append('offset', offset);
         if (maxRecords)    params.append('maxRecords', String(maxRecords));
-
+ 
         const resp = await fetch(`${CONFIG.WORKER_URL}/airtable/${encodeURIComponent(tableName)}?${params}`);
         if (!resp.ok) {
             const err = await resp.json().catch(()=>({}));
@@ -624,7 +625,7 @@ async function fetchTable(tableName, filterFormula=null, maxRecords=null) {
     } while (offset);
     return records;
 }
-
+ 
 // ============================================================
 // LOGIN
 // ============================================================
@@ -632,14 +633,14 @@ async function initLogin() {
     const loadingEl = document.getElementById('loginLoading');
     const selectEl  = document.getElementById('userSelect');
     loadingEl.style.display = 'flex';
-
+ 
     const FALLBACK = [
         { id:'mackenzie', Name:'MacKenzie Ort', PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
         { id:'mary',      Name:'Mary Zangana',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
         { id:'moriah',    Name:'Moriah Jones',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
         { id:'chris',     Name:'Chris Cano',    PIN:'', Role:'manager',    ServiceCommission:0,    ProductCommission:0    }
     ];
-
+ 
     try {
         const raw = await fetchTable(TABLES.employees);
         employees = raw
@@ -650,7 +651,7 @@ async function initLogin() {
         console.warn('Employee load failed, using fallback:', err);
         employees = FALLBACK;
     }
-
+ 
     loadingEl.style.display = 'none';
     employees.forEach(emp => {
         const o = document.createElement('option');
@@ -659,7 +660,7 @@ async function initLogin() {
         selectEl.appendChild(o);
     });
     selectEl.style.display = 'block';
-
+ 
     selectEl.addEventListener('change', function() {
         selectedEmployeeId = this.value;
         pinBuffer = '';
@@ -671,12 +672,12 @@ async function initLogin() {
         document.getElementById('loginError').style.display = 'none';
     });
 }
-
+ 
 function pinPress(d) { if (pinBuffer.length>=4) return; pinBuffer+=d; updatePinDots(); if(pinBuffer.length===4) document.getElementById('loginBtn').disabled=false; }
 function pinBack()   { pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); }
 function pinClear()  { pinBuffer=''; updatePinDots(); document.getElementById('loginBtn').disabled=!selectedEmployeeId; }
 function updatePinDots() { for(let i=0;i<4;i++) document.getElementById('dot'+i)?.classList.toggle('filled',i<pinBuffer.length); }
-
+ 
 async function login() {
     const emp = employees.find(e=>(e.id||e.Name)===selectedEmployeeId);
     if (!emp) return;
@@ -693,7 +694,7 @@ async function login() {
     showMainApp();
     await loadAllData();
 }
-
+ 
 function logout() {
     if (!confirm('Sign out and end your shift?')) return;
     localStorage.removeItem('wtc_user_id');
@@ -705,7 +706,7 @@ function logout() {
     document.getElementById('pinSection').style.display = 'none';
     pinBuffer = '';
 }
-
+ 
 // ============================================================
 // DATA LOADING
 // ============================================================
@@ -734,9 +735,9 @@ async function loadAllData() {
         console.error(err);
     }
 }
-
+ 
 async function refreshData() { await loadAllData(); showToast('Data refreshed','success'); }
-
+ 
 // ============================================================
 // TAB SWITCHING
 // ============================================================
@@ -745,7 +746,7 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     document.getElementById(tabName+'Tab').classList.add('active');
 }
-
+ 
 // ============================================================
 // BUG FIX #2 — First Visit field normaliser
 //
@@ -759,13 +760,13 @@ function isFirstVisit(a) {
     const v = String(a['First Visit'] || '').toLowerCase().trim();
     return v === 'yes' || v === 'true' || v === '1';
 }
-
+ 
 // ============================================================
 // RENDER APPOINTMENTS
 // ============================================================
 function renderAppointments() {
     if (!data.appointments.length || !currentUser) return;
-
+ 
     const todayStr = todayISO();
     const todaysAppts = data.appointments.filter(a => {
         const status = (a['Status']||'').toLowerCase();
@@ -773,7 +774,7 @@ function renderAppointments() {
             && (a['Cerologist']||'').toLowerCase()===currentUser.Name.toLowerCase()
             && (status==='open'||status==='confirmed');
     });
-
+ 
     const byGuest = {};
     todaysAppts.forEach(a => {
         const gc = a['Guest Code'];
@@ -781,7 +782,7 @@ function renderAppointments() {
         byGuest[gc].services.push({ name:a['Service Name'], price:getServicePrice(a['Invoice No'],gc,a['Service Name']) });
         if (a['Start Time']&&(!byGuest[gc].startTime||a['Start Time']<byGuest[gc].startTime)) byGuest[gc].startTime=a['Start Time'];
     });
-
+ 
     // Determine new vs returning from closed appointment history — more reliable
     // than the Airtable "First Visit" field, which can be blank or use "true"/"yes"/etc.
     const closedCounts = {};
@@ -791,10 +792,10 @@ function renderAppointments() {
     Object.values(byGuest).forEach(appt => {
         appt.isFirstVisit = (closedCounts[appt.guestCode] || 0) === 0;
     });
-
+ 
     const appointments = Object.values(byGuest).sort((a,b)=>(new Date(a.startTime||0))-(new Date(b.startTime||0)));
     document.getElementById('apptCount').textContent = appointments.length;
-
+ 
     let scheduled = 0;
     appointments.forEach(a=>a.services.forEach(s=>scheduled+=s.price));
     const potential   = scheduled + appointments.length*50;
@@ -804,10 +805,10 @@ function renderAppointments() {
     document.getElementById('commissionValue').textContent   = fmt$(scheduled*svcRate);
     document.getElementById('commissionRate').textContent    = `${Math.round(svcRate*100)}% svc commission`;
     document.getElementById('tipsValue').textContent         = fmt$(potential*0.20);
-
+ 
     const container = document.getElementById('appointmentsList');
     if (!appointments.length) { container.innerHTML='<div class="empty-state"><p>No appointments today</p><p>Enjoy your day!</p></div>'; return; }
-
+ 
     container.innerHTML = appointments.map(appt => {
         const state      = appointmentStates[appt.guestCode]||{};
         const done       = !!state.completed;
@@ -817,7 +818,7 @@ function renderAppointments() {
         const products   = getSuggestedProducts(serviceType);
         const history    = getClientHistory(appt.guestCode);
         const rebookDate = getRebookDate(appt.startTime);
-
+ 
         return `<div class="appointment-card ${done?'completed':''}">
             <div class="card-header">
                 <div class="client-info">
@@ -860,41 +861,41 @@ function renderAppointments() {
         </div>`;
     }).join('');
 }
-
+ 
 // ============================================================
 // RENDER STUDIO PLAN
 // ============================================================
 function renderStudioPlan() {
     if (!data.appointments.length) return;
-
+ 
     const todayStr     = todayISO();
     const yesterdayStr = yesterdayISO();
     const isEligible   = a => { const s=(a['Status']||'').toLowerCase(); return s==='open'||s==='confirmed'; };
     const isClosed     = a => (a['Status']||'').toLowerCase()==='closed';
-
+ 
     const todaysAll    = data.appointments.filter(a=>toISO(a['Appointment Date'])===todayStr    && isEligible(a));
     const yesterdaysAll= data.appointments.filter(a=>toISO(a['Appointment Date'])===yesterdayStr && isClosed(a));
-
+ 
     const dedup = arr => { const seen=new Set(); return arr.filter(a=>{ if(seen.has(a['Guest Code']))return false; seen.add(a['Guest Code']); return true; }); };
-
+ 
     const visitCounts = {};
     data.appointments.filter(isClosed).forEach(a=>{ visitCounts[a['Guest Code']]=(visitCounts[a['Guest Code']]||0)+1; });
-
+ 
     // All four sections now use isFirstVisit() — fixes "true" vs "yes" mismatch
     const newToday    = dedup(todaysAll.filter(a => isFirstVisit(a)));
     const coToday     = dedup(todaysAll.filter(a => hasActiveMembership(a['Guest Code'])));
     const coTargets   = dedup(todaysAll.filter(a => !isFirstVisit(a) && !hasActiveMembership(a['Guest Code']) && (visitCounts[a['Guest Code']]||0)>=2));
     const newOutreach = dedup(yesterdaysAll.filter(a => isFirstVisit(a)));
-
+ 
     const sections = [];
     if (newToday.length)    sections.push({ id:'newClients', title:'New Clients Today',      icon:'&#128075;', items:newToday.map(a=>({    id:`nc_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['New Client'] })) });
     if (coToday.length)     sections.push({ id:'coMembers',  title:'Club Orange Members',    icon:'&#129305;', items:coToday.map(a=>({     id:`co_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Member'] })) });
     if (coTargets.length)   sections.push({ id:'coTargets',  title:'Club Orange Targets',    icon:'&#127919;', items:coTargets.map(a=>({   id:`ct_${a['Guest Code']}`, main:a['Guest Name'], detail:`${visitCounts[a['Guest Code']]||0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`, tags:[`${visitCounts[a['Guest Code']]||0} visits`] })) });
     if (newOutreach.length) sections.push({ id:'outreach',   title:'New Client Outreach',   icon:'&#128241;', hasCompletedBy:true, items:newOutreach.map(a=>({ id:`out_${a['Guest Code']}`, main:a['Guest Name'], detail:`New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Yesterday'] })) });
-
+ 
     const container = document.getElementById('studioPlanSections');
     if (!sections.length) { container.innerHTML='<div class="empty-state"><p>Studio plan building...</p><p>Check back after data loads.</p></div>'; return; }
-
+ 
     container.innerHTML = sections.map(section => {
         const done = section.items.filter(i=>studioPlanStates[i.id]?.completed).length;
         const pct  = Math.round(done/section.items.length*100);
@@ -922,9 +923,9 @@ function renderStudioPlan() {
         </div>`;
     }).join('');
 }
-
+ 
 function toggleSection(id) { document.getElementById('sec_'+id)?.classList.toggle('collapsed'); }
-
+ 
 // ============================================================
 // APPOINTMENT STATE
 // ============================================================
@@ -932,7 +933,7 @@ function toggleComplete(gc) { initState(gc); appointmentStates[gc].completed=!ap
 function toggleApptCheck(gc,field) { initState(gc); appointmentStates[gc][field]=!appointmentStates[gc][field]; saveLocalStates(); renderAppointments(); }
 function updateApptState(gc,field,value) { initState(gc); appointmentStates[gc][field]=value||null; saveLocalStates(); }
 function initState(gc) { if(!appointmentStates[gc]) appointmentStates[gc]={}; }
-
+ 
 // ============================================================
 // STUDIO PLAN STATE
 // ============================================================
@@ -943,7 +944,7 @@ function toggleTask(itemId) {
     saveLocalStates(); renderStudioPlan();
 }
 function updateTaskBy(itemId,userId) { if(!studioPlanStates[itemId])studioPlanStates[itemId]={}; studioPlanStates[itemId].completedBy=userId||null; saveLocalStates(); }
-
+ 
 // ============================================================
 // RGA STATE
 // ============================================================
@@ -961,7 +962,7 @@ function restoreRGASelects() {
         if(note&&st.note) note.value=st.note;
     });
 }
-
+ 
 // ============================================================
 // RECAP MODAL
 // ============================================================
@@ -987,7 +988,7 @@ function openRecapModal() {
     document.getElementById('recapModal').classList.add('visible');
 }
 function closeRecapModal() { document.getElementById('recapModal').classList.remove('visible'); }
-
+ 
 async function sendRecap() {
     const btn=document.getElementById('sendRecapBtn');
     btn.disabled=true; btn.textContent='Sending...';
@@ -1009,7 +1010,7 @@ async function sendRecap() {
     } catch(err) { showToast('Network error — check connection','error'); }
     btn.disabled=false; btn.innerHTML='&#128228; Send to Slack';
 }
-
+ 
 // ============================================================
 // HELPERS
 // ============================================================
@@ -1087,7 +1088,7 @@ function getRebookDate(startTime) {
     d.setDate(d.getDate()+28);
     return d.toLocaleDateString('en-US',{month:'short',day:'numeric',weekday:'short'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
 }
-
+ 
 // ============================================================
 // STATE PERSISTENCE
 // ============================================================
@@ -1102,7 +1103,7 @@ function loadLocalStates() {
     const a=localStorage.getItem(`wtc_appt_${key}`);   if(a) appointmentStates=JSON.parse(a);
     const s=localStorage.getItem(`wtc_studio_${key}`); if(s) studioPlanStates=JSON.parse(s);
 }
-
+ 
 // ============================================================
 // UI HELPERS
 // ============================================================
@@ -1120,7 +1121,7 @@ function setSyncStatus(state) {
     document.getElementById('syncDot').className='sync-dot'+(state==='loading'?' loading':state==='error'?' error':'');
     document.getElementById('syncText').textContent=state==='loading'?'Syncing':state==='error'?'Offline':'Live';
 }
-
+ 
 // ============================================================
 // CHECKLISTS
 // ============================================================
@@ -1144,11 +1145,11 @@ const CHECKLISTS_HARDCODED = [
         { name:'Rooms Tasks', icon:'🛏️', items:['Ensure All Wax Pots are Off','Ensure All Wax pots for team working tomorrow are full per training','Verify your room cleanliness (Floor Bed Surfaces Garbage)','Verify all supplies are stocked in your room','Client caddy is stocked (Charger underwear wipes)'] }
     ]}
 ];
-
+ 
 let checklists       = CHECKLISTS_HARDCODED;
 let checklistStates  = {};
 let activeChecklistId= null;
-
+ 
 async function loadChecklists() {
     try {
         const raw=await fetchTable('Checklists');
@@ -1156,7 +1157,7 @@ async function loadChecklists() {
     } catch(e){ console.warn('Using hardcoded checklists:',e.message); }
     renderChecklistCards();
 }
-
+ 
 function parseAirtableChecklists(rows) {
     const map={}, order=[];
     rows.forEach(r=>{
@@ -1167,7 +1168,7 @@ function parseAirtableChecklists(rows) {
     });
     return order.map(id=>map[id]);
 }
-
+ 
 function renderChecklistCards() {
     const container=document.getElementById('checklistCards'); if(!container) return;
     const saved=localStorage.getItem(`wtc_cl_${todayISO()}`); if(saved) checklistStates=JSON.parse(saved);
@@ -1178,7 +1179,7 @@ function renderChecklistCards() {
         return `<div class="checklist-card ${isDone?'done':''}" onclick="openChecklist('${cl.id}')"><div class="checklist-card-icon">${cl.icon}</div><div class="checklist-card-name">${cl.name}</div><div class="checklist-card-count">${done}/${total} tasks${isDone?' ✓':''}</div></div>`;
     }).join('');
 }
-
+ 
 function openChecklist(id) {
     const cl=checklists.find(c=>c.id===id); if(!cl) return;
     activeChecklistId=id; if(!checklistStates[id]) checklistStates[id]={};
@@ -1192,7 +1193,7 @@ function openChecklist(id) {
     if(currentUser) sel.value=currentUser.Name;
     renderActiveChecklist(cl);
 }
-
+ 
 function renderActiveChecklist(cl) {
     const state=checklistStates[cl.id]||{};
     const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
@@ -1205,7 +1206,7 @@ function renderActiveChecklist(cl) {
         return `<div class="cl-section"><div class="cl-section-header" onclick="toggleClSection('cls_${si}')"><div class="cl-section-title">${sec.icon} ${sec.name}</div><div style="font-size:0.8rem;color:var(--silver);">${secDone}/${sec.items.length}</div></div><div class="cl-section-body" id="cls_${si}">${sec.items.map((item,ii)=>{const checked=!!state[`${si}_${ii}`];return `<div class="cl-item ${checked?'checked':''}" onclick="toggleClItem('${cl.id}',${si},${ii})"><div class="cl-checkbox">${checked?'&#10003;':''}</div><div class="cl-item-text">${item}</div></div>`;}).join('')}</div></div>`;
     }).join('');
 }
-
+ 
 function toggleClSection(id) { document.getElementById(id)?.classList.toggle('collapsed'); }
 function toggleClItem(clId,si,ii) {
     const key=`${si}_${ii}`; if(!checklistStates[clId])checklistStates[clId]={};
@@ -1214,7 +1215,7 @@ function toggleClItem(clId,si,ii) {
 }
 function saveChecklistStates() { localStorage.setItem(`wtc_cl_${todayISO()}`,JSON.stringify(checklistStates)); }
 function backToChecklistSelector() { activeChecklistId=null; document.getElementById('activeChecklist').style.display='none'; document.getElementById('checklistSelector').style.display='block'; renderChecklistCards(); }
-
+ 
 async function submitChecklist() {
     const cl=checklists.find(c=>c.id===activeChecklistId); if(!cl) return;
     const state=checklistStates[activeChecklistId]||{};
@@ -1232,7 +1233,7 @@ async function submitChecklist() {
     } catch(err){ showToast('Network error — check connection','error'); }
     btn.disabled=false; btn.innerHTML='&#128228; Submit to Slack';
 }
-
+ 
 function showToast(msg,type='success') {
     const toast=document.getElementById('toast');
     document.getElementById('toastIcon').innerHTML=type==='error'?'&#9888;':'&#10003;';
@@ -1240,7 +1241,7 @@ function showToast(msg,type='success') {
     toast.className='toast visible '+type;
     setTimeout(()=>toast.className='toast',3500);
 }
-
+ 
 function openSettings() {
     document.getElementById('settingToken').value  =localStorage.getItem('wtc_at_token')||'';
     document.getElementById('settingBase').value   =localStorage.getItem('wtc_at_base')||'';
