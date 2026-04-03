@@ -27,8 +27,6 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'DM Sans', sans-serif; background: var(--charcoal); color: var(--white); min-height: 100vh; line-height: 1.5; }
- 
-        /* HEADER */
         .header { background: linear-gradient(135deg, var(--slate) 0%, var(--charcoal) 100%); border-bottom: 2px solid var(--orange-primary); padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .logo-section { display: flex; align-items: center; gap: 0.75rem; }
@@ -43,15 +41,11 @@
         .tab-btn:hover { background: var(--slate); color: var(--white); }
         .tab-btn.active { background: var(--orange-primary); color: var(--white); }
         .tab-badge { background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.75rem; }
- 
-        /* MAIN */
         .main { padding: 1.25rem; max-width: 1400px; margin: 0 auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .has-footer { padding-bottom: 110px; }
- 
-        /* LOGIN */
         .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; background: var(--charcoal); }
         .login-card { background: var(--slate); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 400px; text-align: center; }
         .login-logo { width: 80px; height: 80px; background: var(--orange-primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.75rem; margin: 0 auto 1.5rem; }
@@ -68,26 +62,19 @@
         .pin-key:hover { background: var(--charcoal); }
         .pin-key:active { transform: scale(0.95); background: var(--orange-primary); }
         .pin-key.clear { font-size: 0.85rem; color: var(--silver); }
-        .pin-key.wide { grid-column: span 2; }
         .login-btn { width: 100%; padding: 1rem; background: var(--orange-primary); border: none; border-radius: 12px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .login-btn:hover { background: var(--orange-dark); }
         .login-btn:disabled { background: var(--smoke); color: var(--silver); cursor: not-allowed; }
         .login-loading { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--silver); font-size: 0.9rem; margin-bottom: 1rem; }
- 
-        /* LOADING OVERLAY */
         .loading-overlay { position: fixed; inset: 0; background: rgba(30,30,36,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; gap: 1rem; }
         .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--smoke); border-top-color: var(--orange-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { color: var(--silver); font-size: 0.9rem; }
- 
-        /* TRAINING BANNER */
         .training-banner { background: linear-gradient(135deg, #FF6B35 0%, #E5522A 100%); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
         .training-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
         .training-day { font-size: 0.75rem; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; margin-bottom: 0.5rem; }
         .training-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
         .training-body { font-size: 0.9rem; opacity: 0.95; line-height: 1.6; }
- 
-        /* EARNINGS */
         .earnings-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; }
         .earnings-item { text-align: center; padding: 0.75rem; background: var(--smoke); border-radius: 12px; }
         .earnings-label { font-size: 0.7rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
@@ -95,8 +82,6 @@
         .earnings-value.highlight { color: var(--orange-primary); }
         .earnings-value.success { color: var(--success); }
         .earnings-meta { font-size: 0.7rem; color: var(--silver); margin-top: 0.25rem; }
- 
-        /* RGA SECTION */
         .rga-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
         .rga-card-title { font-weight: 700; font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
         .rga-item { background: var(--smoke); border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; }
@@ -108,8 +93,6 @@
         .rga-note { width: 100%; padding: 0.5rem 0.75rem; background: var(--charcoal); border: 2px solid transparent; border-radius: 8px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; resize: none; min-height: 48px; transition: all 0.2s; }
         .rga-note:focus { outline: none; border-color: var(--orange-primary); }
         .rga-note::placeholder { color: var(--silver); }
- 
-        /* APPOINTMENT CARDS */
         .appointments-list { display: flex; flex-direction: column; gap: 1rem; }
         .appointment-card { background: var(--slate); border-radius: 16px; overflow: hidden; transition: all 0.2s; }
         .appointment-card.completed { opacity: 0.75; }
@@ -151,8 +134,6 @@
         .notes-input { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; resize: vertical; min-height: 60px; transition: all 0.2s; }
         .notes-input:focus { outline: none; border-color: var(--orange-primary); }
         .notes-input::placeholder { color: var(--silver); }
- 
-        /* STUDIO PLAN */
         .studio-section { background: var(--slate); border-radius: 16px; margin-bottom: 1.5rem; overflow: hidden; }
         .section-header { background: var(--smoke); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .section-header:hover { background: var(--charcoal); }
@@ -177,8 +158,6 @@
         .task-tag { padding: 0.2rem 0.5rem; background: var(--charcoal); border-radius: 6px; font-size: 0.75rem; color: var(--silver); }
         .completed-by-select { padding: 0.35rem 0.75rem; background: var(--charcoal); border: 1px solid var(--smoke); border-radius: 6px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; cursor: pointer; }
         .completed-by-select option { background: var(--slate); }
- 
-        /* BUTTONS */
         .btn { padding: 0.875rem 1.5rem; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-primary { background: var(--orange-primary); color: var(--white); }
         .btn-primary:hover { background: var(--orange-dark); }
@@ -188,18 +167,12 @@
         .btn-outline:hover { border-color: var(--orange-primary); background: rgba(255, 107, 53, 0.1); }
         .btn-block { width: 100%; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
- 
-        /* FOOTER */
         .footer-actions { position: fixed; bottom: 0; left: 0; right: 0; background: var(--slate); padding: 1rem 1.5rem; border-top: 1px solid var(--smoke); display: flex; gap: 1rem; z-index: 50; padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
         .footer-actions .btn { flex: 1; }
- 
-        /* TOAST */
         .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--charcoal); border: 1px solid var(--smoke); padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem; z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s; white-space: nowrap; }
         .toast.visible { opacity: 1; visibility: visible; }
         .toast.success { border-color: var(--success); }
         .toast.error { border-color: var(--danger); }
- 
-        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .modal-overlay.visible { opacity: 1; visibility: visible; }
         .modal { background: var(--slate); border-radius: 20px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; transform: scale(0.9); transition: all 0.3s; }
@@ -215,36 +188,15 @@
         .recap-list { list-style: none; }
         .recap-item { padding: 0.75rem; background: var(--smoke); border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
         .recap-item-name { font-weight: 500; }
-        .recap-item-detail { color: var(--silver); font-size: 0.85rem; }
         .recap-empty { color: var(--silver); font-style: italic; padding: 0.5rem; font-size: 0.9rem; }
- 
-        /* SHIFT NOTES */
-        .shift-notes-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; }
-        .shift-notes-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.75rem; }
-        .shift-notes-input { width: 100%; padding: 0.75rem 1rem; background: var(--smoke); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; transition: all 0.2s; }
-        .shift-notes-input:focus { outline: none; border-color: var(--orange-primary); }
-        .shift-notes-input::placeholder { color: var(--silver); }
- 
-        /* EMPTY STATE */
         .empty-state { text-align: center; padding: 3rem; color: var(--silver); }
         .empty-state p:first-child { font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .empty-state p:last-child { font-size: 0.9rem; }
- 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .header { padding: 0.75rem 1rem; }
-            .main { padding: 1rem; }
-            .earnings-card { grid-template-columns: repeat(2, 1fr); }
-            .checkbox-actions { grid-template-columns: 1fr; }
-        }
- 
-        /* SYNC STATUS */
+        @media (max-width: 768px) { .header { padding: 0.75rem 1rem; } .main { padding: 1rem; } .earnings-card { grid-template-columns: repeat(2, 1fr); } .checkbox-actions { grid-template-columns: 1fr; } }
         .sync-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-family: 'Space Mono', monospace; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
         .sync-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
         .sync-dot.error { background: var(--danger); }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        /* CHECKLIST CARDS */
         .checklist-card { background: var(--slate); border-radius: 16px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
         .checklist-card:hover { border-color: var(--orange-primary); transform: translateY(-2px); }
         .checklist-card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
@@ -268,35 +220,26 @@
 </head>
 <body>
  
-<!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay" style="display:none;">
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Loading data...</div>
 </div>
  
-<!-- Login Screen -->
 <div id="loginScreen" class="login-screen">
     <div class="login-card">
         <div class="login-logo">WTC</div>
         <h1 class="login-title">Daily Operations</h1>
         <p class="login-subtitle" id="loginSubtitle">Sign in to start your shift</p>
         <button onclick="openSettings()" style="background:none;border:none;color:var(--silver);font-size:0.9rem;cursor:pointer;margin-bottom:1rem;display:flex;align-items:center;gap:0.4rem;margin-left:auto;padding:0.5rem;min-height:44px;min-width:44px;">&#9881; Settings</button>
-        
         <div class="login-loading" id="loginLoading" style="display:none;">
             <div class="loading-spinner" style="width:20px;height:20px;border-width:3px;"></div>
             <span>Loading team...</span>
         </div>
-        
-        <select id="userSelect" class="login-select" style="display:none;">
-            <option value="">Select your name...</option>
-        </select>
-        
+        <select id="userSelect" class="login-select" style="display:none;"><option value="">Select your name...</option></select>
         <div id="pinSection" style="display:none;">
             <div class="pin-row" id="pinDots">
-                <div class="pin-dot" id="dot0"></div>
-                <div class="pin-dot" id="dot1"></div>
-                <div class="pin-dot" id="dot2"></div>
-                <div class="pin-dot" id="dot3"></div>
+                <div class="pin-dot" id="dot0"></div><div class="pin-dot" id="dot1"></div>
+                <div class="pin-dot" id="dot2"></div><div class="pin-dot" id="dot3"></div>
             </div>
             <div class="pin-pad">
                 <button class="pin-key" onclick="pinPress('1')">1</button>
@@ -313,13 +256,11 @@
                 <button class="pin-key clear" onclick="pinBack()">&#9003;</button>
             </div>
         </div>
-        
         <button id="loginBtn" class="login-btn" disabled onclick="login()">Sign In</button>
         <div style="margin-top:1rem; color: var(--danger); font-size: 0.85rem; display:none;" id="loginError"></div>
     </div>
 </div>
  
-<!-- Main App -->
 <div id="mainApp" style="display:none;">
     <header class="header">
         <div class="header-top">
@@ -340,22 +281,24 @@
         </div>
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="planYourDay" onclick="switchTab('planYourDay')">
-                &#128203; My Plan
-                <span class="tab-badge" id="apptCount">0</span>
+                &#128203; My Plan <span class="tab-badge" id="apptCount">0</span>
             </button>
-            <button class="tab-btn" data-tab="studioPlan" onclick="switchTab('studioPlan')">
-                &#127970; Studio
-            </button>
-            <button class="tab-btn" data-tab="checklists" onclick="switchTab('checklists')">
-                &#9989; Checklists
-            </button>
+            <button class="tab-btn" data-tab="studioPlan" onclick="switchTab('studioPlan')">&#127970; Studio</button>
+            <button class="tab-btn" data-tab="checklists" onclick="switchTab('checklists')">&#9989; Checklists</button>
         </div>
     </header>
  
     <main class="main has-footer">
  
-        <!-- PLAN YOUR DAY TAB -->
+        <!-- ═══════════════════════════════════════════════════
+             PLAN YOUR DAY TAB
+             BUG FIX #1: RGA card is now INSIDE this div.
+             Original code closed planYourDayTab before the RGA
+             block, leaving it orphaned in <main> and rendering
+             on every tab (Studio, Checklists included).
+        ════════════════════════════════════════════════════ -->
         <div id="planYourDayTab" class="tab-content active">
+ 
             <div class="training-banner">
                 <div class="training-day" id="trainingDay"></div>
                 <div class="training-title" id="trainingTitle"></div>
@@ -384,13 +327,12 @@
                 </div>
             </div>
  
- 
             <div class="appointments-list" id="appointmentsList">
                 <div class="empty-state"><p>Loading appointments...</p></div>
             </div>
-        </div>
- <!-- RGAs -->
-            <div class="rga-card">
+ 
+            <!-- RGAs — correctly scoped inside planYourDayTab -->
+            <div class="rga-card" style="margin-top:1.5rem;">
                 <div class="rga-card-title">&#127919; Revenue Generating Activities</div>
                 <div class="rga-item">
                     <div class="rga-label">RGA 1</div>
@@ -414,6 +356,9 @@
                     <textarea class="rga-note" id="rga3Note" placeholder="Notes..." rows="1" onchange="updateRGA(3,'note',this.value)"></textarea>
                 </div>
             </div>
+ 
+        </div><!-- /planYourDayTab — closes AFTER RGA card -->
+ 
         <!-- STUDIO PLAN TAB -->
         <div id="studioPlanTab" class="tab-content">
             <div class="training-banner">
@@ -470,8 +415,9 @@
             </div>
         </div>
  
+    </main>
  
-    <div class="footer-actions" id="footerActions">
+    <div class="footer-actions">
         <button class="btn btn-outline" onclick="refreshData()">&#8635; Refresh</button>
         <button class="btn btn-success" onclick="openRecapModal()">&#128228; Send Recap</button>
     </div>
@@ -488,27 +434,19 @@
             <p style="color:var(--silver);font-size:0.85rem;margin-bottom:1.5rem;">Credentials are stored only on this device. Never shared or uploaded.</p>
             <div style="margin-bottom:1rem;">
                 <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Personal Access Token</label>
-                <input type="password" id="settingToken" placeholder="patXXXX..." autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+                <input type="password" id="settingToken" placeholder="patXXXX..." autocomplete="off" style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;" onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Airtable Base ID</label>
-                <input type="text" id="settingBase" placeholder="appXXXXXXXX" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+                <input type="text" id="settingBase" placeholder="appXXXXXXXX" autocomplete="off" style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;" onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Cloudflare Worker URL</label>
-                <input type="text" id="settingWorker" placeholder="https://wtc-proxy.xxx.workers.dev" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+                <input type="text" id="settingWorker" placeholder="https://wtc-proxy.xxx.workers.dev" autocomplete="off" style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;" onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
             </div>
             <div style="margin-bottom:1.5rem;">
                 <label style="font-size:0.75rem;color:var(--silver);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">API Key</label>
-                <input type="password" id="settingApiKey" placeholder="wtc2024shawneehills" autocomplete="off"
-                       style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;"
-                       onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
+                <input type="password" id="settingApiKey" placeholder="wtc2024shawneehills" autocomplete="off" style="width:100%;padding:0.75rem;background:var(--smoke);border:2px solid transparent;border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;" onfocus="this.style.borderColor='var(--orange-primary)'" onblur="this.style.borderColor='transparent'">
             </div>
         </div>
         <div class="modal-footer">
@@ -533,7 +471,6 @@
     </div>
 </div>
  
-<!-- Toast -->
 <div class="toast" id="toast">
     <span class="toast-icon" id="toastIcon">&#10003;</span>
     <span id="toastMessage">Saved!</span>
@@ -544,17 +481,15 @@
 // CONFIGURATION
 // ============================================================
 const CONFIG = {
-    WORKER_URL:    'https://wtc-proxy.ccano-c46.workers.dev',
-    API_KEY:       'wtc2024shawneehills',
-    STUDIO_NAME:   'Waxing the City - Shawnee Hills (W661)',
+    WORKER_URL:     'https://wtc-proxy.ccano-c46.workers.dev',
+    API_KEY:        'wtc2024shawneehills',
+    STUDIO_NAME:    'Waxing the City - Shawnee Hills (W661)',
     TRAINING_START: '2025-01-01'
 };
  
 function reloadConfig() {
-    CONFIG.AIRTABLE_TOKEN = localStorage.getItem('wtc_at_token') || '';
-    CONFIG.AIRTABLE_BASE  = localStorage.getItem('wtc_at_base') || '';
-    CONFIG.WORKER_URL     = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
-    CONFIG.API_KEY        = localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills';
+    CONFIG.WORKER_URL = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
+    CONFIG.API_KEY    = localStorage.getItem('wtc_api_key')    || 'wtc2024shawneehills';
 }
  
 const TABLES = {
@@ -567,10 +502,9 @@ const TABLES = {
 };
  
 const RGA_OPTIONS = [
-    'High Rebook %', 'Club Orange Sign Up', 'Text Messages',
-    'Business Drop Ins', 'Attending Event', 'Social Post',
-    'Story Post', 'Thank You Card', 'Client Referral',
-    'Business Referral', 'Got a Review'
+    'High Rebook %','Club Orange Sign Up','Text Messages','Business Drop Ins',
+    'Attending Event','Social Post','Story Post','Thank You Card',
+    'Client Referral','Business Referral','Got a Review'
 ];
  
 const TRAINING_MESSAGES = [
@@ -610,14 +544,13 @@ const TRAINING_MESSAGES = [
 // STATE
 // ============================================================
 let currentUser = null;
-let employees = [];
+let employees   = [];
 let selectedEmployeeId = '';
-let pinBuffer = '';
+let pinBuffer   = '';
 let data = { appointments: [], salesAccrual: [], memberships: [], retail: [], addons: [] };
-let appointmentStates = {};
-let studioPlanStates = {};
-let rgaStates = { rga1: { activity: '', note: '' }, rga2: { activity: '', note: '' }, rga3: { activity: '', note: '' } };
-let shiftNotes = '';
+let appointmentStates  = {};
+let studioPlanStates   = {};
+let rgaStates = { rga1:{activity:'',note:''}, rga2:{activity:'',note:''}, rga3:{activity:'',note:''} };
  
 // ============================================================
 // INIT
@@ -629,12 +562,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     loadLocalStates();
     await initLogin();
  
-    // Check for saved session
     const savedId = localStorage.getItem('wtc_user_id');
     if (savedId) {
         const user = employees.find(e => e.id === savedId);
         if (user) {
             currentUser = user;
+            currentUser._initials = getInitials(user.Name);
             showMainApp();
             await loadAllData();
         }
@@ -642,35 +575,27 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
  
 function setCurrentDate() {
-    const today = new Date();
-    document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric'
-    });
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 }
  
 function setTrainingMessage() {
-    const today = new Date();
-    const start = new Date(CONFIG.TRAINING_START);
-    const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((new Date() - new Date(CONFIG.TRAINING_START)) / 86400000);
     const idx = ((diffDays % 30) + 30) % 30;
     const msg = TRAINING_MESSAGES[idx];
-    const dayLabel = `Day ${idx + 1} of 30`;
- 
-    document.getElementById('trainingDay').textContent = dayLabel;
-    document.getElementById('trainingTitle').textContent = msg.title;
-    document.getElementById('trainingBody').textContent = msg.body;
-    document.getElementById('studioTrainingDay').textContent = dayLabel;
-    document.getElementById('studioTrainingTitle').textContent = msg.title;
-    document.getElementById('studioTrainingBody').textContent = msg.body;
+    const label = `Day ${idx + 1} of 30`;
+    ['','studio'].forEach(p => {
+        document.getElementById(p+'trainingDay').textContent   = label;
+        document.getElementById(p+'trainingTitle').textContent = msg.title;
+        document.getElementById(p+'trainingBody').textContent  = msg.body;
+    });
 }
  
 function populateRGASelects() {
-    [1, 2, 3].forEach(n => {
+    [1,2,3].forEach(n => {
         const sel = document.getElementById(`rga${n}Select`);
         RGA_OPTIONS.forEach(opt => {
             const o = document.createElement('option');
-            o.value = opt;
-            o.textContent = opt;
+            o.value = o.textContent = opt;
             sel.appendChild(o);
         });
     });
@@ -679,33 +604,24 @@ function populateRGASelects() {
 // ============================================================
 // AIRTABLE FETCH
 // ============================================================
-async function fetchTable(tableName, filterFormula = null, maxRecords = null) {
+async function fetchTable(tableName, filterFormula=null, maxRecords=null) {
     const records = [];
     let offset = null;
-
     do {
-        const params = new URLSearchParams({
-            key:      CONFIG.API_KEY,
-            pageSize: '100'
-        });
+        const params = new URLSearchParams({ key: CONFIG.API_KEY, pageSize: '100' });
         if (filterFormula) params.append('filter', filterFormula);
         if (offset)        params.append('offset', offset);
         if (maxRecords)    params.append('maxRecords', String(maxRecords));
-
-        const resp = await fetch(
-            `${CONFIG.WORKER_URL}/airtable/${encodeURIComponent(tableName)}?${params}`
-        );
-
+ 
+        const resp = await fetch(`${CONFIG.WORKER_URL}/airtable/${encodeURIComponent(tableName)}?${params}`);
         if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
+            const err = await resp.json().catch(()=>({}));
             throw new Error(err.error?.message || `Proxy HTTP ${resp.status}`);
         }
-
         const json = await resp.json();
         json.records.forEach(r => records.push({ _id: r.id, ...r.fields }));
         offset = json.offset || null;
     } while (offset);
-
     return records;
 }
  
@@ -714,32 +630,25 @@ async function fetchTable(tableName, filterFormula = null, maxRecords = null) {
 // ============================================================
 async function initLogin() {
     const loadingEl = document.getElementById('loginLoading');
-    const selectEl = document.getElementById('userSelect');
- 
+    const selectEl  = document.getElementById('userSelect');
     loadingEl.style.display = 'flex';
+ 
+    const FALLBACK = [
+        { id:'mackenzie', Name:'MacKenzie Ort', PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
+        { id:'mary',      Name:'Mary Zangana',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
+        { id:'moriah',    Name:'Moriah Jones',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
+        { id:'chris',     Name:'Chris Cano',    PIN:'', Role:'manager',    ServiceCommission:0,    ProductCommission:0    }
+    ];
  
     try {
         const raw = await fetchTable(TABLES.employees);
         employees = raw
-            .filter(e => String(e.Active || '').toLowerCase() === 'true' || String(e.Active || '') === '1')
-            .sort((a, b) => (a.Name || '').localeCompare(b.Name || ''));
- 
-        if (employees.length === 0) {
-            employees = [
-                { id: 'mackenzie', Name: 'MacKenzie Ort', PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-                { id: 'mary',      Name: 'Mary Zangana',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-                { id: 'moriah',    Name: 'Moriah Jones',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-                { id: 'chris',     Name: 'Chris Cano',    PIN: '', Role: 'manager',    ServiceCommission: 0,    ProductCommission: 0 }
-            ];
-        }
-    } catch (err) {
-        console.warn('Could not load employees from Airtable, using fallback:', err);
-        employees = [
-            { id: 'mackenzie', Name: 'MacKenzie Ort', PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-            { id: 'mary',      Name: 'Mary Zangana',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-            { id: 'moriah',    Name: 'Moriah Jones',  PIN: '', Role: 'cerologist', ServiceCommission: 0.05, ProductCommission: 0.05 },
-            { id: 'chris',     Name: 'Chris Cano',    PIN: '', Role: 'manager',    ServiceCommission: 0,    ProductCommission: 0 }
-        ];
+            .filter(e => String(e.Active||'').toLowerCase()==='true' || String(e.Active||'')==='1')
+            .sort((a,b)=>(a.Name||'').localeCompare(b.Name||''));
+        if (!employees.length) employees = FALLBACK;
+    } catch(err) {
+        console.warn('Employee load failed, using fallback:', err);
+        employees = FALLBACK;
     }
  
     loadingEl.style.display = 'none';
@@ -749,13 +658,13 @@ async function initLogin() {
         o.textContent = emp.Name;
         selectEl.appendChild(o);
     });
- 
     selectEl.style.display = 'block';
-    selectEl.addEventListener('change', function () {
+ 
+    selectEl.addEventListener('change', function() {
         selectedEmployeeId = this.value;
         pinBuffer = '';
         updatePinDots();
-        const emp = employees.find(e => (e.id || e.Name) === this.value);
+        const emp = employees.find(e=>(e.id||e.Name)===this.value);
         const hasPin = emp && emp.PIN && emp.PIN.toString().trim().length > 0;
         document.getElementById('pinSection').style.display = hasPin ? 'block' : 'none';
         document.getElementById('loginBtn').disabled = !this.value;
@@ -763,47 +672,21 @@ async function initLogin() {
     });
 }
  
-function pinPress(digit) {
-    if (pinBuffer.length >= 4) return;
-    pinBuffer += digit;
-    updatePinDots();
-    if (pinBuffer.length === 4) {
-        document.getElementById('loginBtn').disabled = false;
-    }
-}
- 
-function pinBack() {
-    pinBuffer = pinBuffer.slice(0, -1);
-    updatePinDots();
-}
- 
-function pinClear() {
-    pinBuffer = '';
-    updatePinDots();
-    document.getElementById('loginBtn').disabled = !selectedEmployeeId;
-}
- 
-function updatePinDots() {
-    for (let i = 0; i < 4; i++) {
-        const dot = document.getElementById('dot' + i);
-        if (dot) dot.classList.toggle('filled', i < pinBuffer.length);
-    }
-}
+function pinPress(d) { if (pinBuffer.length>=4) return; pinBuffer+=d; updatePinDots(); if(pinBuffer.length===4) document.getElementById('loginBtn').disabled=false; }
+function pinBack()   { pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); }
+function pinClear()  { pinBuffer=''; updatePinDots(); document.getElementById('loginBtn').disabled=!selectedEmployeeId; }
+function updatePinDots() { for(let i=0;i<4;i++) document.getElementById('dot'+i)?.classList.toggle('filled',i<pinBuffer.length); }
  
 async function login() {
-    const emp = employees.find(e => (e.id || e.Name) === selectedEmployeeId);
+    const emp = employees.find(e=>(e.id||e.Name)===selectedEmployeeId);
     if (!emp) return;
- 
     const hasPin = emp.PIN && emp.PIN.toString().trim().length > 0;
     if (hasPin && pinBuffer !== emp.PIN.toString().trim()) {
-        const errEl = document.getElementById('loginError');
-        errEl.textContent = 'Incorrect PIN. Please try again.';
-        errEl.style.display = 'block';
-        pinBuffer = '';
-        updatePinDots();
-        return;
+        const el = document.getElementById('loginError');
+        el.textContent = 'Incorrect PIN. Please try again.';
+        el.style.display = 'block';
+        pinBuffer = ''; updatePinDots(); return;
     }
- 
     currentUser = emp;
     currentUser._initials = getInitials(emp.Name);
     localStorage.setItem('wtc_user_id', emp.id || emp.Name);
@@ -829,197 +712,152 @@ function logout() {
 async function loadAllData() {
     setSyncStatus('loading');
     showOverlay('Loading your schedule...');
- 
     try {
-        const apptFilter = `AND(IS_AFTER({Appointment Date}, DATEADD(TODAY(), -90, 'days')), IS_BEFORE({Appointment Date}, DATEADD(TODAY(), 8, 'days')))`;
-        const salesFilter = `IS_AFTER({Sale Date}, DATEADD(TODAY(), -90, 'days'))`;
- 
-        const [appointments, salesAccrual, memberships, retail, addons] = await Promise.all([
+        const apptFilter  = `AND(IS_AFTER({Appointment Date},DATEADD(TODAY(),-90,'days')),IS_BEFORE({Appointment Date},DATEADD(TODAY(),8,'days')))`;
+        const salesFilter = `IS_AFTER({Sale Date},DATEADD(TODAY(),-90,'days'))`;
+        const [appointments,salesAccrual,memberships,retail,addons] = await Promise.all([
             fetchTable(TABLES.appointments, apptFilter),
             fetchTable(TABLES.salesAccrual, salesFilter),
             fetchTable(TABLES.memberships),
             fetchTable(TABLES.retail),
             fetchTable(TABLES.addons)
         ]);
- 
-        data.appointments = appointments;
-        data.salesAccrual = salesAccrual;
-        data.memberships = memberships;
-        data.retail = retail;
-        data.addons = addons;
- 
-        hideOverlay();
-        setSyncStatus('live');
+        data = { appointments, salesAccrual, memberships, retail, addons };
+        hideOverlay(); setSyncStatus('live');
         renderAppointments();
         renderStudioPlan();
         restoreRGASelects();
         await loadChecklists();
- 
-    } catch (err) {
-        hideOverlay();
-        setSyncStatus('error');
-        showToast('Data error: ' + err.message, 'error');
+    } catch(err) {
+        hideOverlay(); setSyncStatus('error');
+        showToast('Data error: '+err.message,'error');
         console.error(err);
     }
 }
  
-async function refreshData() {
-    await loadAllData();
-    showToast('Data refreshed', 'success');
-}
+async function refreshData() { await loadAllData(); showToast('Data refreshed','success'); }
  
 // ============================================================
 // TAB SWITCHING
 // ============================================================
 function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById(tabName + 'Tab').classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tabName));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById(tabName+'Tab').classList.add('active');
 }
  
 // ============================================================
-// RENDER APPOINTMENTS (My Plan)
+// BUG FIX #2 — First Visit field normaliser
+//
+// The Cloudflare Worker proxies Airtable with cellFormat:'string'.
+// Airtable checkbox fields serialise as "true"/"false" strings,
+// NOT "yes"/"no". Every Studio section (New Clients, CO Targets,
+// Outreach) silently collapsed because the old comparisons only
+// checked for "yes". This helper accepts all real-world values.
+// ============================================================
+function isFirstVisit(a) {
+    const v = String(a['First Visit'] || '').toLowerCase().trim();
+    return v === 'yes' || v === 'true' || v === '1';
+}
+ 
+// ============================================================
+// RENDER APPOINTMENTS
 // ============================================================
 function renderAppointments() {
     if (!data.appointments.length || !currentUser) return;
  
     const todayStr = todayISO();
-    const userName = currentUser.Name;
- 
     const todaysAppts = data.appointments.filter(a => {
-        const apptDate = toISO(a['Appointment Date']);
-        const status = (a['Status'] || '').toLowerCase();
-        const cerologistMatch = (a['Cerologist'] || '').toLowerCase() === userName.toLowerCase();
-        return apptDate === todayStr && cerologistMatch && (status === 'open' || status === 'confirmed');
+        const status = (a['Status']||'').toLowerCase();
+        return toISO(a['Appointment Date'])===todayStr
+            && (a['Cerologist']||'').toLowerCase()===currentUser.Name.toLowerCase()
+            && (status==='open'||status==='confirmed');
     });
  
-    // Group by guest code
     const byGuest = {};
     todaysAppts.forEach(a => {
         const gc = a['Guest Code'];
-        if (!byGuest[gc]) {
-            byGuest[gc] = {
-                guestCode: gc,
-                guestName: a['Guest Name'],
-                startTime: a['Start Time'],
-                services: [],
-                isFirstVisit: String(a['First Visit'] || '').toLowerCase() === 'yes',
-                invoiceNo: a['Invoice No']
-            };
-        }
-        byGuest[gc].services.push({
-            name: a['Service Name'],
-            price: getServicePrice(a['Invoice No'], gc, a['Service Name'])
-        });
-        // Keep earliest start time
-        if (a['Start Time'] && (!byGuest[gc].startTime || a['Start Time'] < byGuest[gc].startTime)) {
-            byGuest[gc].startTime = a['Start Time'];
-        }
+        if (!byGuest[gc]) byGuest[gc] = { guestCode:gc, guestName:a['Guest Name'], startTime:a['Start Time'], services:[], isFirstVisit:false, invoiceNo:a['Invoice No'] };
+        byGuest[gc].services.push({ name:a['Service Name'], price:getServicePrice(a['Invoice No'],gc,a['Service Name']) });
+        if (a['Start Time']&&(!byGuest[gc].startTime||a['Start Time']<byGuest[gc].startTime)) byGuest[gc].startTime=a['Start Time'];
     });
  
-    const appointments = Object.values(byGuest).sort((a, b) => {
-        const tA = a.startTime ? new Date(a.startTime).getTime() : 0;
-        const tB = b.startTime ? new Date(b.startTime).getTime() : 0;
-        return tA - tB;
+    // Determine new vs returning from closed appointment history — more reliable
+    // than the Airtable "First Visit" field, which can be blank or use "true"/"yes"/etc.
+    const closedCounts = {};
+    data.appointments.filter(a=>(a['Status']||'').toLowerCase()==='closed').forEach(a=>{
+        closedCounts[a['Guest Code']] = (closedCounts[a['Guest Code']] || 0) + 1;
+    });
+    Object.values(byGuest).forEach(appt => {
+        appt.isFirstVisit = (closedCounts[appt.guestCode] || 0) === 0;
     });
  
+    const appointments = Object.values(byGuest).sort((a,b)=>(new Date(a.startTime||0))-(new Date(b.startTime||0)));
     document.getElementById('apptCount').textContent = appointments.length;
  
-    // Earnings
     let scheduled = 0;
-    appointments.forEach(a => a.services.forEach(s => scheduled += s.price));
-    const potential = scheduled + (appointments.length * 10) + (appointments.length * 40);
-    const svcRate = parseFloat(currentUser.ServiceCommission || 0.05);
-    const commission = scheduled * svcRate;
-    const tips = potential * 0.20;
- 
+    appointments.forEach(a=>a.services.forEach(s=>scheduled+=s.price));
+    const potential   = scheduled + appointments.length*50;
+    const svcRate     = parseFloat(currentUser.ServiceCommission||0.05);
     document.getElementById('scheduledRevenue').textContent = fmt$(scheduled);
-    document.getElementById('potentialRevenue').textContent = fmt$(potential);
-    document.getElementById('commissionValue').textContent = fmt$(commission);
-    document.getElementById('commissionRate').textContent = `${Math.round(svcRate * 100)}% svc commission`;
-    document.getElementById('tipsValue').textContent = fmt$(tips);
+    document.getElementById('potentialRevenue').textContent  = fmt$(potential);
+    document.getElementById('commissionValue').textContent   = fmt$(scheduled*svcRate);
+    document.getElementById('commissionRate').textContent    = `${Math.round(svcRate*100)}% svc commission`;
+    document.getElementById('tipsValue').textContent         = fmt$(potential*0.20);
  
     const container = document.getElementById('appointmentsList');
- 
-    if (!appointments.length) {
-        container.innerHTML = '<div class="empty-state"><p>No appointments today</p><p>Enjoy your day!</p></div>';
-        return;
-    }
+    if (!appointments.length) { container.innerHTML='<div class="empty-state"><p>No appointments today</p><p>Enjoy your day!</p></div>'; return; }
  
     container.innerHTML = appointments.map(appt => {
-        const state = appointmentStates[appt.guestCode] || {};
-        const isCompleted = !!state.completed;
+        const state      = appointmentStates[appt.guestCode]||{};
+        const done       = !!state.completed;
         const clientType = getClientType(appt);
-        const serviceType = inferServiceType(appt.services[0]?.name);
-        const addons = getSuggestedAddons(serviceType);
-        const products = getSuggestedProducts(serviceType);
-        const history = getClientHistory(appt.guestCode);
+        const serviceType= inferServiceType(appt.services[0]?.name);
+        const addons     = getSuggestedAddons(serviceType);
+        const products   = getSuggestedProducts(serviceType);
+        const history    = getClientHistory(appt.guestCode);
         const rebookDate = getRebookDate(appt.startTime);
  
-        return `
-            <div class="appointment-card ${isCompleted ? 'completed' : ''}">
-                <div class="card-header">
-                    <div class="client-info">
-                        <span class="client-time">${formatTime(appt.startTime)}</span>
-                        <span class="client-name">${appt.guestName}</span>
-                        <span class="client-badge ${clientType.cls}">${clientType.label}</span>
-                    </div>
-                    <button class="complete-check ${isCompleted ? 'checked' : ''}"
-                            onclick="toggleComplete('${appt.guestCode}')">${isCompleted ? '&#10003;' : ''}</button>
+        return `<div class="appointment-card ${done?'completed':''}">
+            <div class="card-header">
+                <div class="client-info">
+                    <span class="client-time">${formatTime(appt.startTime)}</span>
+                    <span class="client-name">${appt.guestName}</span>
+                    <span class="client-badge ${clientType.cls}">${clientType.label}</span>
                 </div>
-                <div class="card-body">
-                    ${history ? `<div class="history-text">&#128220; ${history}</div>` : ''}
- 
-                    ${appt.services.map(s => `
-                        <div class="service-row">
-                            <span class="service-name">${s.name}</span>
-                            <span class="service-price">${fmt$(s.price)}</span>
-                        </div>
-                    `).join('')}
- 
-                    <div class="action-section">
-                        <div class="action-title">Add-On Opportunity</div>
-                        <select class="product-select ${state.addonSelected ? 'selected' : ''}"
-                                onchange="updateApptState('${appt.guestCode}','addonSelected',this.value)">
-                            <option value="">Select add-on...</option>
-                            ${addons.map(a => `<option value="${a.name}" ${state.addonSelected === a.name ? 'selected' : ''}>${a.name} (${fmt$(a.cost)})</option>`).join('')}
-                        </select>
+                <button class="complete-check ${done?'checked':''}" onclick="toggleComplete('${appt.guestCode}')">${done?'&#10003;':''}</button>
+            </div>
+            <div class="card-body">
+                ${history?`<div class="history-text">&#128220; ${history}</div>`:''}
+                ${appt.services.map(s=>`<div class="service-row"><span class="service-name">${s.name}</span><span class="service-price">${fmt$(s.price)}</span></div>`).join('')}
+                <div class="action-section">
+                    <div class="action-title">Add-On Opportunity</div>
+                    <select class="product-select ${state.addonSelected?'selected':''}" onchange="updateApptState('${appt.guestCode}','addonSelected',this.value)">
+                        <option value="">Select add-on...</option>
+                        ${addons.map(a=>`<option value="${a.name}" ${state.addonSelected===a.name?'selected':''}>${a.name} (${fmt$(a.cost)})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="action-section">
+                    <div class="action-title">Product Suggestion</div>
+                    <select class="product-select ${state.productSelected?'selected':''}" onchange="updateApptState('${appt.guestCode}','productSelected',this.value)">
+                        <option value="">Select product...</option>
+                        ${products.map(p=>`<option value="${p.name}" ${state.productSelected===p.name?'selected':''}>${p.name} (${fmt$(p.cost)})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="checkbox-actions">
+                    <div class="action-checkbox ${state.rebooked?'checked':''}" onclick="toggleApptCheck('${appt.guestCode}','rebooked')">
+                        <div class="checkbox-box">${state.rebooked?'&#10003;':''}</div><span class="checkbox-label">Rebooked</span>
                     </div>
- 
-                    <div class="action-section">
-                        <div class="action-title">Product Suggestion</div>
-                        <select class="product-select ${state.productSelected ? 'selected' : ''}"
-                                onchange="updateApptState('${appt.guestCode}','productSelected',this.value)">
-                            <option value="">Select product...</option>
-                            ${products.map(p => `<option value="${p.name}" ${state.productSelected === p.name ? 'selected' : ''}>${p.name} (${fmt$(p.cost)})</option>`).join('')}
-                        </select>
+                    <div class="action-checkbox ${state.clubOrange?'checked':''}" onclick="toggleApptCheck('${appt.guestCode}','clubOrange')">
+                        <div class="checkbox-box">${state.clubOrange?'&#10003;':''}</div><span class="checkbox-label">Club Orange</span>
                     </div>
- 
-                    <div class="checkbox-actions">
-                        <div class="action-checkbox ${state.rebooked ? 'checked' : ''}"
-                             onclick="toggleApptCheck('${appt.guestCode}','rebooked')">
-                            <div class="checkbox-box">${state.rebooked ? '&#10003;' : ''}</div>
-                            <span class="checkbox-label">Rebooked</span>
-                        </div>
-                        <div class="action-checkbox ${state.clubOrange ? 'checked' : ''}"
-                             onclick="toggleApptCheck('${appt.guestCode}','clubOrange')">
-                            <div class="checkbox-box">${state.clubOrange ? '&#10003;' : ''}</div>
-                            <span class="checkbox-label">Club Orange</span>
-                        </div>
-                    </div>
- 
-                    <div class="rebook-section">
-                        <span style="color:var(--silver);font-size:0.85rem;">Suggested rebook: </span>
-                        <span class="rebook-date">${rebookDate}</span>
-                    </div>
- 
-                    <div class="notes-section">
-                        <textarea class="notes-input" placeholder="Client notes..."
-                                  onchange="updateApptState('${appt.guestCode}','notes',this.value)">${state.notes || ''}</textarea>
-                    </div>
+                </div>
+                <div class="rebook-section"><span style="color:var(--silver);font-size:0.85rem;">Suggested rebook: </span><span class="rebook-date">${rebookDate}</span></div>
+                <div class="notes-section">
+                    <textarea class="notes-input" placeholder="Client notes..." onchange="updateApptState('${appt.guestCode}','notes',this.value)">${state.notes||''}</textarea>
                 </div>
             </div>
-        `;
+        </div>`;
     }).join('');
 }
  
@@ -1029,214 +867,98 @@ function renderAppointments() {
 function renderStudioPlan() {
     if (!data.appointments.length) return;
  
-    const todayStr = todayISO();
+    const todayStr     = todayISO();
     const yesterdayStr = yesterdayISO();
+    const isEligible   = a => { const s=(a['Status']||'').toLowerCase(); return s==='open'||s==='confirmed'; };
+    const isClosed     = a => (a['Status']||'').toLowerCase()==='closed';
  
-    const isEligible = a => {
-        const status = (a['Status'] || '').toLowerCase();
-        return status === 'open' || status === 'confirmed';
-    };
+    const todaysAll    = data.appointments.filter(a=>toISO(a['Appointment Date'])===todayStr    && isEligible(a));
+    const yesterdaysAll= data.appointments.filter(a=>toISO(a['Appointment Date'])===yesterdayStr && isClosed(a));
  
-    const isClosed = a => (a['Status'] || '').toLowerCase() === 'closed';
+    const dedup = arr => { const seen=new Set(); return arr.filter(a=>{ if(seen.has(a['Guest Code']))return false; seen.add(a['Guest Code']); return true; }); };
  
-    const todaysAll = data.appointments.filter(a => toISO(a['Appointment Date']) === todayStr && isEligible(a));
-    const yesterdaysAll = data.appointments.filter(a => toISO(a['Appointment Date']) === yesterdayStr && isClosed(a));
- 
-    // Dedup by guest code, keep first occurrence
-    const dedupByGuest = arr => {
-        const seen = new Set();
-        return arr.filter(a => {
-            if (seen.has(a['Guest Code'])) return false;
-            seen.add(a['Guest Code']);
-            return true;
-        });
-    };
- 
-    // Past visit counts
     const visitCounts = {};
-    data.appointments.filter(isClosed).forEach(a => {
-        const gc = a['Guest Code'];
-        visitCounts[gc] = (visitCounts[gc] || 0) + 1;
-    });
+    data.appointments.filter(isClosed).forEach(a=>{ visitCounts[a['Guest Code']]=(visitCounts[a['Guest Code']]||0)+1; });
  
-    // 1. New Clients Today
-    const newToday = dedupByGuest(todaysAll.filter(a => String(a['First Visit'] || '').toLowerCase() === 'yes'));
- 
-    // 2. CO Members Today
-    const coToday = dedupByGuest(todaysAll.filter(a => hasActiveMembership(a['Guest Code'])));
- 
-    // 3. CO Targets (2+ visits, not member, today)
-    const coTargets = dedupByGuest(todaysAll.filter(a =>
-        !String(a['First Visit'] || '').toLowerCase().includes('yes') &&
-        !hasActiveMembership(a['Guest Code']) &&
-        (visitCounts[a['Guest Code']] || 0) >= 2
-    ));
- 
-    // 4. New Client Outreach (yesterday's new clients)
-    const newOutreach = dedupByGuest(yesterdaysAll.filter(a => String(a['First Visit'] || '').toLowerCase() === 'yes'));
+    // All four sections now use isFirstVisit() — fixes "true" vs "yes" mismatch
+    const newToday    = dedup(todaysAll.filter(a => isFirstVisit(a)));
+    const coToday     = dedup(todaysAll.filter(a => hasActiveMembership(a['Guest Code'])));
+    const coTargets   = dedup(todaysAll.filter(a => !isFirstVisit(a) && !hasActiveMembership(a['Guest Code']) && (visitCounts[a['Guest Code']]||0)>=2));
+    const newOutreach = dedup(yesterdaysAll.filter(a => isFirstVisit(a)));
  
     const sections = [];
- 
-    if (newToday.length) sections.push({
-        id: 'newClients', title: 'New Clients Today', icon: '&#128075;',
-        items: newToday.map(a => ({
-            id: `nc_${a['Guest Code']}`,
-            main: a['Guest Name'],
-            detail: `${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
-            tags: ['New Client']
-        }))
-    });
- 
-    if (coToday.length) sections.push({
-        id: 'coMembers', title: 'Club Orange Members', icon: '&#129305;',
-        items: coToday.map(a => ({
-            id: `co_${a['Guest Code']}`,
-            main: a['Guest Name'],
-            detail: `${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
-            tags: ['Member']
-        }))
-    });
- 
-    if (coTargets.length) sections.push({
-        id: 'coTargets', title: 'Club Orange Targets', icon: '&#127919;',
-        items: coTargets.map(a => ({
-            id: `ct_${a['Guest Code']}`,
-            main: a['Guest Name'],
-            detail: `${visitCounts[a['Guest Code']] || 0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`,
-            tags: [`${visitCounts[a['Guest Code']] || 0} visits`]
-        }))
-    });
- 
-    if (newOutreach.length) sections.push({
-        id: 'outreach', title: 'New Client Outreach', icon: '&#128241;',
-        hasCompletedBy: true,
-        items: newOutreach.map(a => ({
-            id: `out_${a['Guest Code']}`,
-            main: a['Guest Name'],
-            detail: `New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
-            tags: ['Yesterday']
-        }))
-    });
+    if (newToday.length)    sections.push({ id:'newClients', title:'New Clients Today',      icon:'&#128075;', items:newToday.map(a=>({    id:`nc_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['New Client'] })) });
+    if (coToday.length)     sections.push({ id:'coMembers',  title:'Club Orange Members',    icon:'&#129305;', items:coToday.map(a=>({     id:`co_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Member'] })) });
+    if (coTargets.length)   sections.push({ id:'coTargets',  title:'Club Orange Targets',    icon:'&#127919;', items:coTargets.map(a=>({   id:`ct_${a['Guest Code']}`, main:a['Guest Name'], detail:`${visitCounts[a['Guest Code']]||0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`, tags:[`${visitCounts[a['Guest Code']]||0} visits`] })) });
+    if (newOutreach.length) sections.push({ id:'outreach',   title:'New Client Outreach',   icon:'&#128241;', hasCompletedBy:true, items:newOutreach.map(a=>({ id:`out_${a['Guest Code']}`, main:a['Guest Name'], detail:`New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Yesterday'] })) });
  
     const container = document.getElementById('studioPlanSections');
- 
-    if (!sections.length) {
-        container.innerHTML = '<div class="empty-state"><p>Studio plan building...</p><p>Check back after data loads.</p></div>';
-        return;
-    }
+    if (!sections.length) { container.innerHTML='<div class="empty-state"><p>Studio plan building...</p><p>Check back after data loads.</p></div>'; return; }
  
     container.innerHTML = sections.map(section => {
-        const completedCount = section.items.filter(item => studioPlanStates[item.id]?.completed).length;
-        const pct = section.items.length > 0 ? Math.round(completedCount / section.items.length * 100) : 0;
- 
-        return `
-            <div class="studio-section">
-                <div class="section-header" onclick="toggleSection('${section.id}')">
-                    <div class="section-title">
-                        <span>${section.icon} ${section.title}</span>
-                        <span class="section-count">${section.items.length}</span>
-                    </div>
-                    <div class="section-progress">
-                        <span class="progress-text">${completedCount}/${section.items.length}</span>
-                        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-                    </div>
-                </div>
-                <div class="section-body" id="sec_${section.id}">
-                    ${section.items.map(item => {
-                        const st = studioPlanStates[item.id] || {};
-                        return `
-                            <div class="task-item ${st.completed ? 'completed' : ''}" id="task_${item.id}">
-                                <button class="task-check" onclick="toggleTask('${item.id}')">${st.completed ? '&#10003;' : ''}</button>
-                                <div class="task-content">
-                                    <div class="task-main">${item.main}</div>
-                                    <div class="task-detail">${item.detail}</div>
-                                    <div class="task-meta">
-                                        ${item.tags.map(t => `<span class="task-tag">${t}</span>`).join('')}
-                                        ${section.hasCompletedBy ? `
-                                        <select class="completed-by-select" onchange="updateTaskBy('${item.id}',this.value)">
-                                            <option value="">Completed by...</option>
-                                            ${employees.map(e => `<option value="${e.id||e.Name}" ${st.completedBy === (e.id||e.Name) ? 'selected' : ''}>${e.Name}</option>`).join('')}
-                                        </select>` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
+        const done = section.items.filter(i=>studioPlanStates[i.id]?.completed).length;
+        const pct  = Math.round(done/section.items.length*100);
+        return `<div class="studio-section">
+            <div class="section-header" onclick="toggleSection('${section.id}')">
+                <div class="section-title"><span>${section.icon} ${section.title}</span><span class="section-count">${section.items.length}</span></div>
+                <div class="section-progress"><span class="progress-text">${done}/${section.items.length}</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>
             </div>
-        `;
+            <div class="section-body" id="sec_${section.id}">
+                ${section.items.map(item=>{
+                    const st=studioPlanStates[item.id]||{};
+                    return `<div class="task-item ${st.completed?'completed':''}" id="task_${item.id}">
+                        <button class="task-check" onclick="toggleTask('${item.id}')">${st.completed?'&#10003;':''}</button>
+                        <div class="task-content">
+                            <div class="task-main">${item.main}</div>
+                            <div class="task-detail">${item.detail}</div>
+                            <div class="task-meta">
+                                ${item.tags.map(t=>`<span class="task-tag">${t}</span>`).join('')}
+                                ${section.hasCompletedBy?`<select class="completed-by-select" onchange="updateTaskBy('${item.id}',this.value)"><option value="">Completed by...</option>${employees.map(e=>`<option value="${e.id||e.Name}" ${st.completedBy===(e.id||e.Name)?'selected':''}>${e.Name}</option>`).join('')}</select>`:''}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
     }).join('');
 }
  
-function toggleSection(id) {
-    document.getElementById('sec_' + id)?.classList.toggle('collapsed');
-}
+function toggleSection(id) { document.getElementById('sec_'+id)?.classList.toggle('collapsed'); }
  
 // ============================================================
 // APPOINTMENT STATE
 // ============================================================
-function toggleComplete(gc) {
-    initState(gc);
-    appointmentStates[gc].completed = !appointmentStates[gc].completed;
-    saveLocalStates();
-    renderAppointments();
-}
- 
-function toggleApptCheck(gc, field) {
-    initState(gc);
-    appointmentStates[gc][field] = !appointmentStates[gc][field];
-    saveLocalStates();
-    renderAppointments();
-}
- 
-function updateApptState(gc, field, value) {
-    initState(gc);
-    appointmentStates[gc][field] = value || null;
-    saveLocalStates();
-}
- 
-function initState(gc) {
-    if (!appointmentStates[gc]) appointmentStates[gc] = {};
-}
+function toggleComplete(gc) { initState(gc); appointmentStates[gc].completed=!appointmentStates[gc].completed; saveLocalStates(); renderAppointments(); }
+function toggleApptCheck(gc,field) { initState(gc); appointmentStates[gc][field]=!appointmentStates[gc][field]; saveLocalStates(); renderAppointments(); }
+function updateApptState(gc,field,value) { initState(gc); appointmentStates[gc][field]=value||null; saveLocalStates(); }
+function initState(gc) { if(!appointmentStates[gc]) appointmentStates[gc]={}; }
  
 // ============================================================
 // STUDIO PLAN STATE
 // ============================================================
 function toggleTask(itemId) {
-    if (!studioPlanStates[itemId]) studioPlanStates[itemId] = {};
-    studioPlanStates[itemId].completed = !studioPlanStates[itemId].completed;
-    if (studioPlanStates[itemId].completed && currentUser) {
-        studioPlanStates[itemId].completedBy = currentUser.id || currentUser.Name;
-    }
-    saveLocalStates();
-    renderStudioPlan();
+    if (!studioPlanStates[itemId]) studioPlanStates[itemId]={};
+    studioPlanStates[itemId].completed=!studioPlanStates[itemId].completed;
+    if (studioPlanStates[itemId].completed && currentUser) studioPlanStates[itemId].completedBy=currentUser.id||currentUser.Name;
+    saveLocalStates(); renderStudioPlan();
 }
- 
-function updateTaskBy(itemId, userId) {
-    if (!studioPlanStates[itemId]) studioPlanStates[itemId] = {};
-    studioPlanStates[itemId].completedBy = userId || null;
-    saveLocalStates();
-}
+function updateTaskBy(itemId,userId) { if(!studioPlanStates[itemId])studioPlanStates[itemId]={}; studioPlanStates[itemId].completedBy=userId||null; saveLocalStates(); }
  
 // ============================================================
 // RGA STATE
 // ============================================================
-function updateRGA(num, field, value) {
-    const key = `rga${num}`;
-    rgaStates[key][field] = value;
-    const sel = document.getElementById(`rga${num}Select`);
-    if (sel) sel.classList.toggle('selected', !!rgaStates[key].activity);
+function updateRGA(num,field,value) {
+    const key=`rga${num}`; rgaStates[key][field]=value;
+    document.getElementById(`rga${num}Select`)?.classList.toggle('selected',!!rgaStates[key].activity);
     saveLocalStates();
 }
- 
 function restoreRGASelects() {
-    [1, 2, 3].forEach(n => {
-        const key = `rga${n}`;
-        const st = rgaStates[key];
-        const sel = document.getElementById(`rga${n}Select`);
-        const note = document.getElementById(`rga${n}Note`);
-        if (sel && st.activity) { sel.value = st.activity; sel.classList.add('selected'); }
-        if (note && st.note) note.value = st.note;
+    [1,2,3].forEach(n=>{
+        const st=rgaStates[`rga${n}`];
+        const sel=document.getElementById(`rga${n}Select`);
+        const note=document.getElementById(`rga${n}Note`);
+        if(sel&&st.activity){sel.value=st.activity;sel.classList.add('selected');}
+        if(note&&st.note) note.value=st.note;
     });
 }
  
@@ -1244,622 +966,301 @@ function restoreRGASelects() {
 // RECAP MODAL
 // ============================================================
 function openRecapModal() {
-    const rebooks = [], co = [], retail = [], addons = [], notes = [];
- 
-    Object.entries(appointmentStates).forEach(([gc, st]) => {
-        const name = getGuestName(gc);
-        if (st.rebooked) rebooks.push(name);
-        if (st.clubOrange) co.push(name);
-        if (st.productSelected) retail.push(`${name} — ${st.productSelected}`);
-        if (st.addonSelected) addons.push(`${name} — ${st.addonSelected}`);
-        if (st.notes?.trim()) notes.push(`${name}: ${st.notes.trim()}`);
+    const rebooks=[],co=[],retail=[],addons=[],notes=[];
+    Object.entries(appointmentStates).forEach(([gc,st])=>{
+        const name=getGuestName(gc);
+        if(st.rebooked)       rebooks.push(name);
+        if(st.clubOrange)     co.push(name);
+        if(st.productSelected)retail.push(`${name} — ${st.productSelected}`);
+        if(st.addonSelected)  addons.push(`${name} — ${st.addonSelected}`);
+        if(st.notes?.trim())  notes.push(`${name}: ${st.notes.trim()}`);
     });
- 
-    const rgaLines = [1, 2, 3]
-        .map(n => rgaStates[`rga${n}`])
-        .filter(r => r.activity)
-        .map(r => r.note ? `${r.activity}: ${r.note}` : r.activity);
- 
-    const makeSection = (title, items, empty) => `
-        <div class="recap-section">
-            <div class="recap-title">${title} (${items.length})</div>
-            ${items.length ? `<ul class="recap-list">${items.map(i => `<li class="recap-item"><span class="recap-item-name">${i}</span></li>`).join('')}</ul>` : `<div class="recap-empty">${empty}</div>`}
-        </div>`;
- 
-    document.getElementById('recapContent').innerHTML =
-        makeSection('&#10003; Rebooks', rebooks, 'No rebooks today') +
-        makeSection('&#129305; Club Orange Signups', co, 'No signups today') +
-        makeSection('&#128717; Retail Sold', retail, 'No retail today') +
-        makeSection('&#10024; Add-Ons', addons, 'No add-ons today') +
-        makeSection('&#127919; RGAs', rgaLines, 'No RGAs logged') +
-        (notes.length ? makeSection('&#128221; Notes', notes, '') : '');
- 
+    const rgaLines=[1,2,3].map(n=>rgaStates[`rga${n}`]).filter(r=>r.activity).map(r=>r.note?`${r.activity}: ${r.note}`:r.activity);
+    const sec=(title,items,empty)=>`<div class="recap-section"><div class="recap-title">${title} (${items.length})</div>${items.length?`<ul class="recap-list">${items.map(i=>`<li class="recap-item"><span class="recap-item-name">${i}</span></li>`).join('')}</ul>`:`<div class="recap-empty">${empty}</div>`}</div>`;
+    document.getElementById('recapContent').innerHTML=
+        sec('&#10003; Rebooks',rebooks,'No rebooks today')+
+        sec('&#129305; Club Orange Signups',co,'No signups today')+
+        sec('&#128717; Retail Sold',retail,'No retail today')+
+        sec('&#10024; Add-Ons',addons,'No add-ons today')+
+        sec('&#127919; RGAs',rgaLines,'No RGAs logged')+
+        (notes.length?sec('&#128221; Notes',notes,''):'');
     document.getElementById('recapModal').classList.add('visible');
 }
- 
-function closeRecapModal() {
-    document.getElementById('recapModal').classList.remove('visible');
-}
+function closeRecapModal() { document.getElementById('recapModal').classList.remove('visible'); }
  
 async function sendRecap() {
-    const btn = document.getElementById('sendRecapBtn');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
- 
-    const rebooks = [], co = [], retail = [], addons = [], notes = [], rgaArr = [];
- 
-    Object.entries(appointmentStates).forEach(([gc, st]) => {
-        const name = getGuestName(gc);
-        if (st.rebooked) rebooks.push(name);
-        if (st.clubOrange) co.push(name);
-        if (st.productSelected) retail.push(`${name} — ${st.productSelected}`);
-        if (st.addonSelected) addons.push(`${name} — ${st.addonSelected}`);
-        if (st.notes?.trim()) notes.push(`${name}: ${st.notes.trim()}`);
+    const btn=document.getElementById('sendRecapBtn');
+    btn.disabled=true; btn.textContent='Sending...';
+    const rebooks=[],co=[],retail=[],addons=[],notes=[],rgaArr=[];
+    Object.entries(appointmentStates).forEach(([gc,st])=>{
+        const name=getGuestName(gc);
+        if(st.rebooked)       rebooks.push(name);
+        if(st.clubOrange)     co.push(name);
+        if(st.productSelected)retail.push(`${name} — ${st.productSelected}`);
+        if(st.addonSelected)  addons.push(`${name} — ${st.addonSelected}`);
+        if(st.notes?.trim())  notes.push(`${name}: ${st.notes.trim()}`);
     });
- 
-    [1, 2, 3].forEach(n => {
-        const r = rgaStates[`rga${n}`];
-        if (r.activity) rgaArr.push(r.note ? `${r.activity}: ${r.note}` : r.activity);
-    });
- 
-    const payload = {
-        key: CONFIG.API_KEY,
-        type: 'recap',
-        cerologist: currentUser.Name,
-        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-        rebooks, clubOrangeSignups: co, retailSold: retail, addOnsSold: addons, notes, rgas: rgaArr
-    };
- 
+    [1,2,3].forEach(n=>{const r=rgaStates[`rga${n}`];if(r.activity)rgaArr.push(r.note?`${r.activity}: ${r.note}`:r.activity);});
+    const payload={ key:CONFIG.API_KEY, type:'recap', cerologist:currentUser.Name, date:new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}), rebooks, clubOrangeSignups:co, retailSold:retail, addOnsSold:addons, notes, rgas:rgaArr };
     try {
-        const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-        const result = await resp.json();
-        if (result.success) {
-            showToast('Recap sent to Slack!', 'success');
-            closeRecapModal();
-        } else {
-            showToast('Send failed: ' + (result.error || 'unknown'), 'error');
-        }
-    } catch (err) {
-        showToast('Network error — check connection', 'error');
-    }
- 
-    btn.disabled = false;
-    btn.innerHTML = '&#128228; Send to Slack';
+        const resp=await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const result=await resp.json();
+        result.success ? (showToast('Recap sent to Slack!','success'), closeRecapModal()) : showToast('Send failed: '+(result.error||'unknown'),'error');
+    } catch(err) { showToast('Network error — check connection','error'); }
+    btn.disabled=false; btn.innerHTML='&#128228; Send to Slack';
 }
  
 // ============================================================
-// HELPER FUNCTIONS
+// HELPERS
 // ============================================================
-function todayISO() {
-    const d = new Date();
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
- 
-function yesterdayISO() {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
- 
-function pad(n) { return String(n).padStart(2, '0'); }
- 
+function todayISO()     { const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function yesterdayISO() { const d=new Date(); d.setDate(d.getDate()-1); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function pad(n) { return String(n).padStart(2,'0'); }
 function toISO(dateStr) {
     if (!dateStr) return '';
-    // Already ISO: 2026-03-13
-    if (/^\d{4}-\d{2}-\d{2}/.test(String(dateStr))) return String(dateStr).substring(0, 10);
-    // MM/DD/YYYY
-    const parts = String(dateStr).split('/');
-    if (parts.length === 3) return `${parts[2]}-${pad(parts[0])}-${pad(parts[1])}`;
-    return String(dateStr).substring(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}/.test(String(dateStr))) return String(dateStr).substring(0,10);
+    const parts=String(dateStr).split('/');
+    if (parts.length===3) return `${parts[2]}-${pad(parts[0])}-${pad(parts[1])}`;
+    return String(dateStr).substring(0,10);
 }
- 
-function formatTime(timeStr) {
-    if (!timeStr) return '--:--';
-    // ISO datetime: 2026-03-13T14:00:00.000Z
-    if (timeStr.includes('T') || timeStr.includes('Z')) {
-        const d = new Date(timeStr);
-        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    }
-    // Already formatted
-    return timeStr;
+function formatTime(t) {
+    if (!t) return '--:--';
+    if (t.includes('T')||t.includes('Z')) return new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+    return t;
 }
- 
-function fmt$(val) {
-    return '$' + (parseFloat(val) || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+function fmt$(val) { return '$'+(parseFloat(val)||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function getInitials(name) { return (name||'??').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function getGuestName(gc) { const a=data.appointments.find(x=>x['Guest Code']===gc); return a?a['Guest Name']:gc; }
+function getServicePrice(invoiceNo,gc,serviceName) {
+    const m=data.salesAccrual.find(r=>r['Invoice No']===invoiceNo&&r['Guest Code']===gc&&r['Item Name']===serviceName);
+    return parseFloat(m?.['Sales (Exc. Tax)']||0);
 }
- 
-function getInitials(name) {
-    return (name || '??').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-}
- 
-function getGuestName(gc) {
-    const a = data.appointments.find(x => x['Guest Code'] === gc);
-    return a ? a['Guest Name'] : gc;
-}
- 
-function getServicePrice(invoiceNo, gc, serviceName) {
-    const match = data.salesAccrual.find(r =>
-        r['Invoice No'] === invoiceNo &&
-        r['Guest Code'] === gc &&
-        r['Item Name'] === serviceName
-    );
-    return parseFloat(match?.['Sales (Exc. Tax)'] || 0);
-}
- 
 function hasActiveMembership(gc) {
-    const m = data.memberships.find(x => (x['GuestCode'] || x['Guest Code']) === gc);
+    // Tolerant field name lookup — Airtable base setups vary
+    const m = data.memberships.find(x => {
+        const code = x['GuestCode'] || x['Guest Code'] || x['Guest_Code'] || x['guestCode'] || '';
+        return code === gc;
+    });
     if (!m) return false;
-    const status = (m['Recurrence Status'] || m['Membership Status'] || '').toLowerCase();
+    const status = (
+        m['Recurrence Status'] || m['RecurrenceStatus'] ||
+        m['Membership Status'] || m['MembershipStatus'] ||
+        m['Status'] || ''
+    ).toLowerCase().trim();
     return status === 'active';
 }
- 
 function getClientType(appt) {
-    if (appt.isFirstVisit) return { label: 'New', cls: 'new' };
-    if (hasActiveMembership(appt.guestCode)) return { label: 'CO', cls: 'co' };
-    return { label: 'Returning', cls: 'returning' };
+    if (appt.isFirstVisit) return {label:'New',cls:'new'};
+    if (hasActiveMembership(appt.guestCode)) return {label:'CO',cls:'co'};
+    return {label:'Returning',cls:'returning'};
 }
- 
 function getClientHistory(gc) {
-    const today = new Date();
-    const past = data.appointments
-        .filter(a => a['Guest Code'] === gc && (a['Status'] || '').toLowerCase() === 'closed')
-        .sort((a, b) => toISO(b['Appointment Date']).localeCompare(toISO(a['Appointment Date'])));
- 
-    if (!past.length) return 'First visit ever';
-    const last = past[0];
-    const d = new Date(toISO(last['Appointment Date']));
-    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const past=data.appointments.filter(a=>a['Guest Code']===gc&&(a['Status']||'').toLowerCase()==='closed').sort((a,b)=>toISO(b['Appointment Date']).localeCompare(toISO(a['Appointment Date'])));
+    if(!past.length) return 'First visit ever';
+    const last=past[0];
+    const dateStr=new Date(toISO(last['Appointment Date'])).toLocaleDateString('en-US',{month:'short',day:'numeric'});
     return `Last: ${last['Service Name']} on ${dateStr} (${past.length} total visits)`;
 }
- 
 function inferServiceType(name) {
-    if (!name) return 'Waxing Service';
-    const s = name.toLowerCase();
-    if (s.includes('brow')) return 'Brow';
-    if (s.includes('brazilian')) return 'Brazilian';
-    if (s.includes('bikini')) return 'Bikini';
-    if (s.includes('face') || s.includes('lip') || s.includes('chin') || s.includes('upper')) return 'Face';
-    if (s.includes('leg')) return 'Leg';
-    if (s.includes('arm') || s.includes('underarm')) return 'Underarm';
-    if (s.includes('back') || s.includes('chest')) return 'Body';
+    if(!name) return 'Waxing Service';
+    const s=name.toLowerCase();
+    if(s.includes('brow'))    return 'Brow';
+    if(s.includes('brazilian'))return 'Brazilian';
+    if(s.includes('bikini'))  return 'Bikini';
+    if(s.includes('face')||s.includes('lip')||s.includes('chin')||s.includes('upper')) return 'Face';
+    if(s.includes('leg'))     return 'Leg';
+    if(s.includes('arm')||s.includes('underarm')) return 'Underarm';
+    if(s.includes('back')||s.includes('chest'))   return 'Body';
     return 'Waxing Service';
 }
- 
 function getSuggestedAddons(serviceType) {
-    if (!data.addons.length) return [
-        { name: 'Hydrating Hand Mask', cost: 10 },
-        { name: 'Rejuvenating Eye Gel', cost: 5 },
-        { name: 'Calming Body Mask', cost: 10 }
-    ];
-    return data.addons
-        .filter(a => {
-            const types = (a['Service Type'] || '').split(',').map(t => t.trim());
-            return types.includes(serviceType) || types.includes('Waxing Service') || types.includes('Any');
-        })
-        .sort((a, b) => (parseFloat(a['Priority'] || 99)) - (parseFloat(b['Priority'] || 99)))
-        .slice(0, 5)
-        .map(a => ({ name: a['Add Ons'], cost: parseFloat(String(a['Cost'] || '0').replace('$','')) || 0 }));
+    if(!data.addons.length) return [{name:'Hydrating Hand Mask',cost:10},{name:'Rejuvenating Eye Gel',cost:5},{name:'Calming Body Mask',cost:10}];
+    return data.addons.filter(a=>{const t=(a['Service Type']||'').split(',').map(x=>x.trim());return t.includes(serviceType)||t.includes('Waxing Service')||t.includes('Any');}).sort((a,b)=>(parseFloat(a['Priority']||99))-(parseFloat(b['Priority']||99))).slice(0,5).map(a=>({name:a['Add Ons'],cost:parseFloat(String(a['Cost']||'0').replace('$',''))||0}));
 }
- 
 function getSuggestedProducts(serviceType) {
-    if (!data.retail.length) return [
-        { name: 'FUR Silk Scrub', cost: 55 },
-        { name: 'PFB Vanish', cost: 22 },
-        { name: 'Spongelle Buffer', cost: 14 }
-    ];
-    return data.retail
-        .filter(r => {
-            const types = (r['Service Type'] || '').split(',').map(t => t.trim());
-            return types.includes(serviceType) || types.includes('Any');
-        })
-        .sort((a, b) => (parseFloat(a['Priority '] || a['Priority'] || 99)) - (parseFloat(b['Priority '] || b['Priority'] || 99)))
-        .slice(0, 5)
-        .map(r => ({ name: r['Retail Item'], cost: parseFloat(String(r['Retail Cost'] || '0').replace('$','')) || 0 }));
+    if(!data.retail.length) return [{name:'FUR Silk Scrub',cost:55},{name:'PFB Vanish',cost:22},{name:'Spongelle Buffer',cost:14}];
+    return data.retail.filter(r=>{const t=(r['Service Type']||'').split(',').map(x=>x.trim());return t.includes(serviceType)||t.includes('Any');}).sort((a,b)=>(parseFloat(a['Priority ']||a['Priority']||99))-(parseFloat(b['Priority ']||b['Priority']||99))).slice(0,5).map(r=>({name:r['Retail Item'],cost:parseFloat(String(r['Retail Cost']||'0').replace('$',''))||0}));
 }
- 
 function getRebookDate(startTime) {
-    if (!startTime) return '4 weeks out';
-    const d = new Date(startTime);
-    if (isNaN(d)) return '4 weeks out';
-    d.setDate(d.getDate() + 28);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }) +
-           ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    if(!startTime) return '4 weeks out';
+    const d=new Date(startTime); if(isNaN(d)) return '4 weeks out';
+    d.setDate(d.getDate()+28);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',weekday:'short'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
 }
  
 // ============================================================
 // STATE PERSISTENCE
 // ============================================================
 function saveLocalStates() {
-    const key = todayISO();
-    const uid = currentUser?.id || currentUser?.Name || 'unknown';
-    localStorage.setItem(`wtc_appt_${key}`, JSON.stringify(appointmentStates));
-    localStorage.setItem(`wtc_studio_${key}`, JSON.stringify(studioPlanStates));
+    const key=todayISO(); const uid=currentUser?.id||currentUser?.Name||'unknown';
+    localStorage.setItem(`wtc_appt_${key}`,   JSON.stringify(appointmentStates));
+    localStorage.setItem(`wtc_studio_${key}`,  JSON.stringify(studioPlanStates));
     localStorage.setItem(`wtc_rga_${key}_${uid}`, JSON.stringify(rgaStates));
 }
- 
 function loadLocalStates() {
-    const key = todayISO();
-    const apptSaved = localStorage.getItem(`wtc_appt_${key}`);
-    if (apptSaved) appointmentStates = JSON.parse(apptSaved);
-    const studioSaved = localStorage.getItem(`wtc_studio_${key}`);
-    if (studioSaved) studioPlanStates = JSON.parse(studioSaved);
+    const key=todayISO();
+    const a=localStorage.getItem(`wtc_appt_${key}`);   if(a) appointmentStates=JSON.parse(a);
+    const s=localStorage.getItem(`wtc_studio_${key}`); if(s) studioPlanStates=JSON.parse(s);
 }
  
 // ============================================================
 // UI HELPERS
 // ============================================================
 function showMainApp() {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    document.getElementById('userAvatar').textContent = currentUser._initials || getInitials(currentUser.Name);
- 
-    // Load user-specific RGA state
-    const key = todayISO();
-    const uid = currentUser.id || currentUser.Name;
-    const rgaSaved = localStorage.getItem(`wtc_rga_${key}_${uid}`);
-    if (rgaSaved) rgaStates = JSON.parse(rgaSaved);
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('mainApp').style.display='block';
+    document.getElementById('userAvatar').textContent=currentUser._initials||getInitials(currentUser.Name);
+    const key=todayISO(); const uid=currentUser.id||currentUser.Name;
+    const saved=localStorage.getItem(`wtc_rga_${key}_${uid}`);
+    if(saved) rgaStates=JSON.parse(saved);
 }
- 
-function showOverlay(text) {
-    document.getElementById('loadingText').textContent = text || 'Loading...';
-    document.getElementById('loadingOverlay').style.display = 'flex';
-}
- 
-function hideOverlay() {
-    document.getElementById('loadingOverlay').style.display = 'none';
-}
- 
+function showOverlay(text) { document.getElementById('loadingText').textContent=text||'Loading...'; document.getElementById('loadingOverlay').style.display='flex'; }
+function hideOverlay()     { document.getElementById('loadingOverlay').style.display='none'; }
 function setSyncStatus(state) {
-    const dot = document.getElementById('syncDot');
-    const text = document.getElementById('syncText');
-    dot.className = 'sync-dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
-    text.textContent = state === 'loading' ? 'Syncing' : state === 'error' ? 'Offline' : 'Live';
+    document.getElementById('syncDot').className='sync-dot'+(state==='loading'?' loading':state==='error'?' error':'');
+    document.getElementById('syncText').textContent=state==='loading'?'Syncing':state==='error'?'Offline':'Live';
 }
- 
  
 // ============================================================
-// CHECKLISTS — hardcoded from Airtable export, fetched live on load
+// CHECKLISTS
 // ============================================================
 const CHECKLISTS_HARDCODED = [
-    {
-        id: 'openingA', name: 'Opening A', icon: '🌅', hasCashCount: false, hasFollowUp: false,
-        sections: [
-            { name: 'Administrative Tasks', icon: '📋', items: [
-                'Turn on Lights (4 Switches in Sanctuary)',
-                'Review Daily Standup Message in Slack (thumbs up)',
-                'Print Appointment Sheets for Cero\'s Working',
-                'Fill out referral cards for all clients',
-                'Turn On Music',
-                'Log in to Security Cameras on large TV',
-                'Verify Check in Kiosk is Ready',
-                'Review Voicemails (Outlook Email Box) Update Zenoti - Text or Call Clients',
-                'Review EZ Connect in Zenoti',
-                'Test AI by Calling the Studio and Leaving a message (614-389-0075)',
-                'Verify Retail Shelves are Fully Stocked',
-                'Unlock the Front Door (key in lock box behind office door)',
-                'Stripe Reader charged and ready to go'
-            ]},
-            { name: 'Service Room Checks', icon: '🛏️', items: [
-                'Ensure all wax pots are on for all cerologists working',
-                'Verify your room cleanliness (Floors bed surfaces garbage)',
-                'Verify all supplies are stocked in your room for your services',
-                'Client caddy is stocked (charger underwear wipes)'
-            ]},
-            { name: 'Public Area Checks', icon: '🏢', items: [
-                'Verify Lobby Swept and Mopped',
-                'Kiosk Ipad screen is clean',
-                'Podium Ipad screen is clean',
-                'Check glass and doors for smudges and streaks',
-                'Verify hallway is swept and mopped'
-            ]}
-        ]
-    },
-    {
-        id: 'openingB', name: 'Opening B', icon: '🌅', hasCashCount: true, hasFollowUp: false,
-        sections: [
-            { name: 'Restroom Checks', icon: '🚿', items: [
-                'Sink area clean', 'Mirror Clean', 'Toilet Area Clean',
-                'Floor Vacuumed / Swept', 'Floor Mopped', 'Garbage Empty',
-                'Paper Towel Stocked', 'Tampons / Pads / Wipes Stocked', 'Tissue Stocked'
-            ]},
-            { name: 'Service Room Checks', icon: '🛏️', items: [
-                'Ensure all wax pots are on for all cerologists working',
-                'Verify your room cleanliness (Floors bed surfaces garbage)',
-                'Verify all supplies are stocked in your room for your services',
-                'Client caddy is stocked (charger underwear wipes)'
-            ]}
-        ]
-    },
-    {
-        id: 'closingA', name: 'Closing A', icon: '🌙', hasCashCount: false, hasFollowUp: true,
-        sections: [
-            { name: 'Administrative Tasks', icon: '📋', items: [
-                'Turn Off lights (4 switches in sanctuary)',
-                'Turn off music',
-                'Log out of Security Cameras',
-                'Review Voicemails (Outlook Email) update Zenoti and Text / Call Client',
-                'Review EZ Connect in Zenoti',
-                'Test AI by Calling the Studio and Leaving a Message (614-389-0075)',
-                'Verify all Retail Shelves are Full Stocked as needed',
-                'Lock the Front Door',
-                'Plug in Stripe',
-                'Charge Podium Ipad'
-            ]},
-            { name: 'Public Area Tasks', icon: '🏢', items: [
-                'Lobby is swept and mopped',
-                'Glass and Doors are cleaned and smudge free',
-                'Hallway is Swept and Mopped',
-                'All Trash and Recycling are taken to dumpster'
-            ]},
-            { name: 'Rooms Tasks', icon: '🛏️', items: [
-                'Ensure All Wax Pots are Off',
-                'Ensure All Wax pots for team working tomorrow are full per training',
-                'Verify your room cleanliness (Floor Bed Surfaces Garbage)',
-                'Verify all supplies are stocked in your room',
-                'Client caddy is stocked (Charger underwear wipes)'
-            ]}
-        ]
-    },
-    {
-        id: 'closingB', name: 'Closing B', icon: '🌙', hasCashCount: true, hasFollowUp: true,
-        sections: [
-            { name: 'Restroom Tasks', icon: '🚿', items: [
-                'Sink Area Clean', 'Mirror Clean', 'Toilet Area Clean',
-                'Floor Vacuumed / Swept', 'Floor Mopped', 'Garbage Empty',
-                'Paper Towel Stocked', 'Tampons / Pads / Wipes Stocked', 'Tissue Stocked'
-            ]},
-            { name: 'Rooms Tasks', icon: '🛏️', items: [
-                'Ensure All Wax Pots are Off',
-                'Ensure All Wax pots for team working tomorrow are full per training',
-                'Verify your room cleanliness (Floor Bed Surfaces Garbage)',
-                'Verify all supplies are stocked in your room',
-                'Client caddy is stocked (Charger underwear wipes)'
-            ]}
-        ]
-    }
+    { id:'openingA', name:'Opening A', icon:'🌅', hasCashCount:false, hasFollowUp:false, sections:[
+        { name:'Administrative Tasks', icon:'📋', items:['Turn on Lights (4 Switches in Sanctuary)','Review Daily Standup Message in Slack (thumbs up)','Print Appointment Sheets for Cero\'s Working','Fill out referral cards for all clients','Turn On Music','Log in to Security Cameras on large TV','Verify Check in Kiosk is Ready','Review Voicemails (Outlook Email Box) Update Zenoti - Text or Call Clients','Review EZ Connect in Zenoti','Test AI by Calling the Studio and Leaving a message (614-389-0075)','Verify Retail Shelves are Fully Stocked','Unlock the Front Door (key in lock box behind office door)','Stripe Reader charged and ready to go'] },
+        { name:'Service Room Checks', icon:'🛏️', items:['Ensure all wax pots are on for all cerologists working','Verify your room cleanliness (Floors bed surfaces garbage)','Verify all supplies are stocked in your room for your services','Client caddy is stocked (charger underwear wipes)'] },
+        { name:'Public Area Checks', icon:'🏢', items:['Verify Lobby Swept and Mopped','Kiosk Ipad screen is clean','Podium Ipad screen is clean','Check glass and doors for smudges and streaks','Verify hallway is swept and mopped'] }
+    ]},
+    { id:'openingB', name:'Opening B', icon:'🌅', hasCashCount:true, hasFollowUp:false, sections:[
+        { name:'Restroom Checks', icon:'🚿', items:['Sink area clean','Mirror Clean','Toilet Area Clean','Floor Vacuumed / Swept','Floor Mopped','Garbage Empty','Paper Towel Stocked','Tampons / Pads / Wipes Stocked','Tissue Stocked'] },
+        { name:'Service Room Checks', icon:'🛏️', items:['Ensure all wax pots are on for all cerologists working','Verify your room cleanliness (Floors bed surfaces garbage)','Verify all supplies are stocked in your room for your services','Client caddy is stocked (charger underwear wipes)'] }
+    ]},
+    { id:'closingA', name:'Closing A', icon:'🌙', hasCashCount:false, hasFollowUp:true, sections:[
+        { name:'Administrative Tasks', icon:'📋', items:['Turn Off lights (4 switches in sanctuary)','Turn off music','Log out of Security Cameras','Review Voicemails (Outlook Email) update Zenoti and Text / Call Client','Review EZ Connect in Zenoti','Test AI by Calling the Studio and Leaving a Message (614-389-0075)','Verify all Retail Shelves are Full Stocked as needed','Lock the Front Door','Plug in Stripe','Charge Podium Ipad'] },
+        { name:'Public Area Tasks', icon:'🏢', items:['Lobby is swept and mopped','Glass and Doors are cleaned and smudge free','Hallway is Swept and Mopped','All Trash and Recycling are taken to dumpster'] },
+        { name:'Rooms Tasks', icon:'🛏️', items:['Ensure All Wax Pots are Off','Ensure All Wax pots for team working tomorrow are full per training','Verify your room cleanliness (Floor Bed Surfaces Garbage)','Verify all supplies are stocked in your room','Client caddy is stocked (Charger underwear wipes)'] }
+    ]},
+    { id:'closingB', name:'Closing B', icon:'🌙', hasCashCount:true, hasFollowUp:true, sections:[
+        { name:'Restroom Tasks', icon:'🚿', items:['Sink Area Clean','Mirror Clean','Toilet Area Clean','Floor Vacuumed / Swept','Floor Mopped','Garbage Empty','Paper Towel Stocked','Tampons / Pads / Wipes Stocked','Tissue Stocked'] },
+        { name:'Rooms Tasks', icon:'🛏️', items:['Ensure All Wax Pots are Off','Ensure All Wax pots for team working tomorrow are full per training','Verify your room cleanliness (Floor Bed Surfaces Garbage)','Verify all supplies are stocked in your room','Client caddy is stocked (Charger underwear wipes)'] }
+    ]}
 ];
  
-let checklists = CHECKLISTS_HARDCODED;
-let checklistStates = {}; // { checklistId: { 'SectionName|itemIndex': true } }
-let activeChecklistId = null;
+let checklists       = CHECKLISTS_HARDCODED;
+let checklistStates  = {};
+let activeChecklistId= null;
  
 async function loadChecklists() {
     try {
-        const raw = await fetchTable('Checklists');
-        if (raw.length > 0) {
-            checklists = parseAirtableChecklists(raw);
-        }
-    } catch (e) {
-        console.warn('Using hardcoded checklists:', e.message);
-    }
+        const raw=await fetchTable('Checklists');
+        if(raw.length>0) checklists=parseAirtableChecklists(raw);
+    } catch(e){ console.warn('Using hardcoded checklists:',e.message); }
     renderChecklistCards();
 }
  
 function parseAirtableChecklists(rows) {
-    const map = {};
-    const order = [];
-    rows.forEach(r => {
-        const id = r['ChecklistID'] || r['id'];
-        if (!id) return;
-        if (!map[id]) {
-            map[id] = {
-                id, name: r['ChecklistName'] || id, icon: r['ChecklistIcon'] || '📋',
-                hasCashCount: String(r['HasCashCount'] || '').toLowerCase() === 'true',
-                hasFollowUp: String(r['HasFollowUp'] || '').toLowerCase() === 'true',
-                sections: []
-            };
-            order.push(id);
-        }
-        const cl = map[id];
-        const secName = r['SectionName'] || '';
-        const secIcon = r['SectionIcon'] || '';
-        const item = r['ItemText'] || '';
-        if (!secName) return;
-        let sec = cl.sections.find(s => s.name === secName);
-        if (!sec) { sec = { name: secName, icon: secIcon, items: [] }; cl.sections.push(sec); }
-        if (item) sec.items.push(item);
+    const map={}, order=[];
+    rows.forEach(r=>{
+        const id=r['ChecklistID']||r['id']; if(!id) return;
+        if(!map[id]){ map[id]={id,name:r['ChecklistName']||id,icon:r['ChecklistIcon']||'📋',hasCashCount:String(r['HasCashCount']||'').toLowerCase()==='true',hasFollowUp:String(r['HasFollowUp']||'').toLowerCase()==='true',sections:[]}; order.push(id); }
+        const secName=r['SectionName']||''; const secIcon=r['SectionIcon']||''; const item=r['ItemText']||''; if(!secName) return;
+        let sec=map[id].sections.find(s=>s.name===secName); if(!sec){sec={name:secName,icon:secIcon,items:[]};map[id].sections.push(sec);} if(item) sec.items.push(item);
     });
-    return order.map(id => map[id]);
+    return order.map(id=>map[id]);
 }
  
 function renderChecklistCards() {
-    const container = document.getElementById('checklistCards');
-    if (!container) return;
- 
-    // Load saved states
-    const key = todayISO();
-    const saved = localStorage.getItem(`wtc_cl_${key}`);
-    if (saved) checklistStates = JSON.parse(saved);
- 
-    container.innerHTML = checklists.map(cl => {
-        const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
-        const doneItems = Object.values(checklistStates[cl.id] || {}).filter(Boolean).length;
-        const isDone = doneItems === totalItems && totalItems > 0;
-        return `
-            <div class="checklist-card ${isDone ? 'done' : ''}" onclick="openChecklist('${cl.id}')">
-                <div class="checklist-card-icon">${cl.icon}</div>
-                <div class="checklist-card-name">${cl.name}</div>
-                <div class="checklist-card-count">${doneItems}/${totalItems} tasks${isDone ? ' ✓' : ''}</div>
-            </div>
-        `;
+    const container=document.getElementById('checklistCards'); if(!container) return;
+    const saved=localStorage.getItem(`wtc_cl_${todayISO()}`); if(saved) checklistStates=JSON.parse(saved);
+    container.innerHTML=checklists.map(cl=>{
+        const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
+        const done=Object.values(checklistStates[cl.id]||{}).filter(Boolean).length;
+        const isDone=done===total&&total>0;
+        return `<div class="checklist-card ${isDone?'done':''}" onclick="openChecklist('${cl.id}')"><div class="checklist-card-icon">${cl.icon}</div><div class="checklist-card-name">${cl.name}</div><div class="checklist-card-count">${done}/${total} tasks${isDone?' ✓':''}</div></div>`;
     }).join('');
 }
  
 function openChecklist(id) {
-    const cl = checklists.find(c => c.id === id);
-    if (!cl) return;
-    activeChecklistId = id;
-    if (!checklistStates[id]) checklistStates[id] = {};
- 
-    document.getElementById('checklistSelector').style.display = 'none';
-    document.getElementById('activeChecklist').style.display = 'block';
-    document.getElementById('activeChecklistTitle').innerHTML = `${cl.icon} ${cl.name}`;
-    document.getElementById('cashCountSection').style.display = cl.hasCashCount ? 'block' : 'none';
-    document.getElementById('followUpSection').style.display = cl.hasFollowUp ? 'block' : 'none';
- 
-    // Populate completed-by
-    const sel = document.getElementById('checklistCompletedBy');
-    sel.innerHTML = '<option value="">Completed by...</option>' +
-        employees.map(e => `<option value="${e.Name}">${e.Name}</option>`).join('');
-    if (currentUser) sel.value = currentUser.Name;
- 
+    const cl=checklists.find(c=>c.id===id); if(!cl) return;
+    activeChecklistId=id; if(!checklistStates[id]) checklistStates[id]={};
+    document.getElementById('checklistSelector').style.display='none';
+    document.getElementById('activeChecklist').style.display='block';
+    document.getElementById('activeChecklistTitle').innerHTML=`${cl.icon} ${cl.name}`;
+    document.getElementById('cashCountSection').style.display=cl.hasCashCount?'block':'none';
+    document.getElementById('followUpSection').style.display=cl.hasFollowUp?'block':'none';
+    const sel=document.getElementById('checklistCompletedBy');
+    sel.innerHTML='<option value="">Completed by...</option>'+employees.map(e=>`<option value="${e.Name}">${e.Name}</option>`).join('');
+    if(currentUser) sel.value=currentUser.Name;
     renderActiveChecklist(cl);
 }
  
 function renderActiveChecklist(cl) {
-    const state = checklistStates[cl.id] || {};
-    const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
-    const doneItems = Object.values(state).filter(Boolean).length;
-    const pct = totalItems > 0 ? Math.round(doneItems / totalItems * 100) : 0;
- 
-    document.getElementById('checklistProgressBar').style.width = pct + '%';
-    document.getElementById('checklistProgressText').textContent = `${doneItems} / ${totalItems}`;
- 
-    const container = document.getElementById('activeChecklistSections');
-    container.innerHTML = cl.sections.map((sec, si) => {
-        const secDone = sec.items.filter((_, ii) => state[`${si}_${ii}`]).length;
-        return `
-            <div class="cl-section">
-                <div class="cl-section-header" onclick="toggleClSection('cls_${si}')">
-                    <div class="cl-section-title">${sec.icon} ${sec.name}</div>
-                    <div style="font-size:0.8rem;color:var(--silver);">${secDone}/${sec.items.length}</div>
-                </div>
-                <div class="cl-section-body" id="cls_${si}">
-                    ${sec.items.map((item, ii) => {
-                        const checked = !!state[`${si}_${ii}`];
-                        return `
-                            <div class="cl-item ${checked ? 'checked' : ''}" onclick="toggleClItem('${cl.id}',${si},${ii})">
-                                <div class="cl-checkbox">${checked ? '&#10003;' : ''}</div>
-                                <div class="cl-item-text">${item}</div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-        `;
+    const state=checklistStates[cl.id]||{};
+    const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
+    const done=Object.values(state).filter(Boolean).length;
+    const pct=total>0?Math.round(done/total*100):0;
+    document.getElementById('checklistProgressBar').style.width=pct+'%';
+    document.getElementById('checklistProgressText').textContent=`${done} / ${total}`;
+    document.getElementById('activeChecklistSections').innerHTML=cl.sections.map((sec,si)=>{
+        const secDone=sec.items.filter((_,ii)=>state[`${si}_${ii}`]).length;
+        return `<div class="cl-section"><div class="cl-section-header" onclick="toggleClSection('cls_${si}')"><div class="cl-section-title">${sec.icon} ${sec.name}</div><div style="font-size:0.8rem;color:var(--silver);">${secDone}/${sec.items.length}</div></div><div class="cl-section-body" id="cls_${si}">${sec.items.map((item,ii)=>{const checked=!!state[`${si}_${ii}`];return `<div class="cl-item ${checked?'checked':''}" onclick="toggleClItem('${cl.id}',${si},${ii})"><div class="cl-checkbox">${checked?'&#10003;':''}</div><div class="cl-item-text">${item}</div></div>`;}).join('')}</div></div>`;
     }).join('');
 }
  
-function toggleClSection(id) {
-    document.getElementById(id)?.classList.toggle('collapsed');
+function toggleClSection(id) { document.getElementById(id)?.classList.toggle('collapsed'); }
+function toggleClItem(clId,si,ii) {
+    const key=`${si}_${ii}`; if(!checklistStates[clId])checklistStates[clId]={};
+    checklistStates[clId][key]=!checklistStates[clId][key];
+    saveChecklistStates(); renderActiveChecklist(checklists.find(c=>c.id===clId)); renderChecklistCards();
 }
- 
-function toggleClItem(clId, secIdx, itemIdx) {
-    const key = `${secIdx}_${itemIdx}`;
-    if (!checklistStates[clId]) checklistStates[clId] = {};
-    checklistStates[clId][key] = !checklistStates[clId][key];
-    saveChecklistStates();
-    const cl = checklists.find(c => c.id === clId);
-    if (cl) renderActiveChecklist(cl);
-    renderChecklistCards();
-}
- 
-function saveChecklistStates() {
-    localStorage.setItem(`wtc_cl_${todayISO()}`, JSON.stringify(checklistStates));
-}
- 
-function backToChecklistSelector() {
-    activeChecklistId = null;
-    document.getElementById('activeChecklist').style.display = 'none';
-    document.getElementById('checklistSelector').style.display = 'block';
-    renderChecklistCards();
-}
+function saveChecklistStates() { localStorage.setItem(`wtc_cl_${todayISO()}`,JSON.stringify(checklistStates)); }
+function backToChecklistSelector() { activeChecklistId=null; document.getElementById('activeChecklist').style.display='none'; document.getElementById('checklistSelector').style.display='block'; renderChecklistCards(); }
  
 async function submitChecklist() {
-    const cl = checklists.find(c => c.id === activeChecklistId);
-    if (!cl) return;
- 
-    const state = checklistStates[activeChecklistId] || {};
-    const totalItems = cl.sections.reduce((sum, s) => sum + s.items.length, 0);
-    const doneItems = Object.values(state).filter(Boolean).length;
-    const completedBy = document.getElementById('checklistCompletedBy').value || currentUser?.Name || 'Unknown';
-    const cashTotal = cl.hasCashCount ? document.getElementById('cashCountInput').value : null;
-    const followUpNotes = cl.hasFollowUp ? document.getElementById('followUpInput').value : '';
- 
-    const btn = document.getElementById('submitChecklistBtn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
- 
-    const payload = {
-        key: CONFIG.API_KEY,
-        type: 'checklist',
-        checklistName: cl.name,
-        completedBy,
-        tasksCompleted: doneItems,
-        tasksTotal: totalItems,
-        cashTotal: cashTotal ? parseFloat(cashTotal) : null,
-        followUpNotes,
-        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-    };
- 
+    const cl=checklists.find(c=>c.id===activeChecklistId); if(!cl) return;
+    const state=checklistStates[activeChecklistId]||{};
+    const total=cl.sections.reduce((s,sec)=>s+sec.items.length,0);
+    const done=Object.values(state).filter(Boolean).length;
+    const completedBy=document.getElementById('checklistCompletedBy').value||currentUser?.Name||'Unknown';
+    const cashTotal=cl.hasCashCount?document.getElementById('cashCountInput').value:null;
+    const followUpNotes=cl.hasFollowUp?document.getElementById('followUpInput').value:'';
+    const btn=document.getElementById('submitChecklistBtn'); btn.disabled=true; btn.textContent='Submitting...';
+    const payload={ key:CONFIG.API_KEY, type:'checklist', checklistName:cl.name, completedBy, tasksCompleted:done, tasksTotal:total, cashTotal:cashTotal?parseFloat(cashTotal):null, followUpNotes, date:new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) };
     try {
-        const resp = await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-        const result = await resp.json();
-        if (result.success) {
-            showToast(`${cl.name} submitted to Slack!`, 'success');
-            backToChecklistSelector();
-        } else {
-            showToast('Submit failed: ' + (result.error || 'unknown'), 'error');
-        }
-    } catch (err) {
-        showToast('Network error — check connection', 'error');
-    }
- 
-    btn.disabled = false;
-    btn.innerHTML = '&#128228; Submit to Slack';
+        const resp=await fetch(`${CONFIG.WORKER_URL}?key=${CONFIG.API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const result=await resp.json();
+        result.success?(showToast(`${cl.name} submitted to Slack!`,'success'),backToChecklistSelector()):showToast('Submit failed: '+(result.error||'unknown'),'error');
+    } catch(err){ showToast('Network error — check connection','error'); }
+    btn.disabled=false; btn.innerHTML='&#128228; Submit to Slack';
 }
  
-function showToast(msg, type = 'success') {
-    const toast = document.getElementById('toast');
-    const icon = document.getElementById('toastIcon');
-    document.getElementById('toastMessage').textContent = msg;
-    icon.innerHTML = type === 'error' ? '&#9888;' : '&#10003;';
-    toast.className = 'toast visible ' + type;
-    setTimeout(() => toast.className = 'toast', 3500);
+function showToast(msg,type='success') {
+    const toast=document.getElementById('toast');
+    document.getElementById('toastIcon').innerHTML=type==='error'?'&#9888;':'&#10003;';
+    document.getElementById('toastMessage').textContent=msg;
+    toast.className='toast visible '+type;
+    setTimeout(()=>toast.className='toast',3500);
 }
  
 function openSettings() {
-    document.getElementById('settingToken').value  = localStorage.getItem('wtc_at_token') || '';
-    document.getElementById('settingBase').value   = localStorage.getItem('wtc_at_base') || '';
-    document.getElementById('settingWorker').value = localStorage.getItem('wtc_worker_url') || 'https://wtc-proxy.ccano-c46.workers.dev';
-    document.getElementById('settingApiKey').value = localStorage.getItem('wtc_api_key') || 'wtc2024shawneehills';
+    document.getElementById('settingToken').value  =localStorage.getItem('wtc_at_token')||'';
+    document.getElementById('settingBase').value   =localStorage.getItem('wtc_at_base')||'';
+    document.getElementById('settingWorker').value =localStorage.getItem('wtc_worker_url')||'https://wtc-proxy.ccano-c46.workers.dev';
+    document.getElementById('settingApiKey').value =localStorage.getItem('wtc_api_key')||'wtc2024shawneehills';
     document.getElementById('settingsModal').classList.add('visible');
 }
- 
-function closeSettings() {
-    document.getElementById('settingsModal').classList.remove('visible');
-}
- 
+function closeSettings() { document.getElementById('settingsModal').classList.remove('visible'); }
 function saveSettings() {
-    const token  = document.getElementById('settingToken').value.trim();
-    const base   = document.getElementById('settingBase').value.trim();
-    const worker = document.getElementById('settingWorker').value.trim();
-    const apiKey = document.getElementById('settingApiKey').value.trim();
- 
-    if (!token || !base) {
-        alert('Airtable Token and Base ID are required.');
-        return;
-    }
- 
-    localStorage.setItem('wtc_at_token',   token);
-    localStorage.setItem('wtc_at_base',    base);
-    if (worker) localStorage.setItem('wtc_worker_url', worker);
-    if (apiKey) localStorage.setItem('wtc_api_key',    apiKey);
- 
-    reloadConfig();
-    closeSettings();
-    setTimeout(() => location.reload(), 400);
+    const token=document.getElementById('settingToken').value.trim();
+    const base =document.getElementById('settingBase').value.trim();
+    const worker=document.getElementById('settingWorker').value.trim();
+    const apiKey=document.getElementById('settingApiKey').value.trim();
+    if(!token||!base){alert('Airtable Token and Base ID are required.');return;}
+    localStorage.setItem('wtc_at_token',token); localStorage.setItem('wtc_at_base',base);
+    if(worker) localStorage.setItem('wtc_worker_url',worker);
+    if(apiKey) localStorage.setItem('wtc_api_key',apiKey);
+    reloadConfig(); closeSettings(); setTimeout(()=>location.reload(),400);
 }
 </script>
- 
 </body>
 </html>
  
