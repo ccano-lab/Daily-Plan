@@ -635,10 +635,12 @@ async function initLogin() {
     loadingEl.style.display = 'flex';
  
     const FALLBACK = [
+        { id:'bobbi',     Name:'Bobbi Blake',   PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
+        { id:'chris',     Name:'Chris Cano',    PIN:'', Role:'manager',    ServiceCommission:0,    ProductCommission:0    },
+        { id:'kayla',     Name:'Kayla Sullivan',PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
         { id:'mackenzie', Name:'MacKenzie Ort', PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
         { id:'mary',      Name:'Mary Zangana',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
-        { id:'moriah',    Name:'Moriah Jones',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 },
-        { id:'chris',     Name:'Chris Cano',    PIN:'', Role:'manager',    ServiceCommission:0,    ProductCommission:0    }
+        { id:'moriah',    Name:'Moriah Jones',  PIN:'', Role:'cerologist', ServiceCommission:0.05, ProductCommission:0.05 }
     ];
  
     try {
@@ -1264,3 +1266,4 @@ function saveSettings() {
 </script>
 </body>
 </html>
+ 
