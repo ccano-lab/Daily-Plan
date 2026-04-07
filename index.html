@@ -880,20 +880,40 @@ function renderStudioPlan() {
  
     const dedup = arr => { const seen=new Set(); return arr.filter(a=>{ if(seen.has(a['Guest Code']))return false; seen.add(a['Guest Code']); return true; }); };
  
+    // Count closed appointments per guest — used for new vs returning and CO targeting
     const visitCounts = {};
     data.appointments.filter(isClosed).forEach(a=>{ visitCounts[a['Guest Code']]=(visitCounts[a['Guest Code']]||0)+1; });
  
-    // All four sections now use isFirstVisit() — fixes "true" vs "yes" mismatch
-    const newToday    = dedup(todaysAll.filter(a => isFirstVisit(a)));
+    // History-based new client detection (same reliable method used in My Plan tab)
+    const isNew = gc => (visitCounts[gc] || 0) === 0;
+ 
+    // All new clients today — across all cerologists, sorted by time
+    const newToday    = dedup(todaysAll.filter(a => isNew(a['Guest Code'])))
+                          .sort((a,b) => (a['Start Time']||'').localeCompare(b['Start Time']||''));
     const coToday     = dedup(todaysAll.filter(a => hasActiveMembership(a['Guest Code'])));
-    const coTargets   = dedup(todaysAll.filter(a => !isFirstVisit(a) && !hasActiveMembership(a['Guest Code']) && (visitCounts[a['Guest Code']]||0)>=2));
-    const newOutreach = dedup(yesterdaysAll.filter(a => isFirstVisit(a)));
+    const coTargets   = dedup(todaysAll.filter(a => !isNew(a['Guest Code']) && !hasActiveMembership(a['Guest Code']) && (visitCounts[a['Guest Code']]||0)>=2));
+    // Yesterday's new clients — need follow-up contact today
+    const newOutreach = dedup(yesterdaysAll.filter(a => isNew(a['Guest Code'])))
+                          .sort((a,b) => (a['Guest Name']||'').localeCompare(b['Guest Name']||''));
  
     const sections = [];
-    if (newToday.length)    sections.push({ id:'newClients', title:'New Clients Today',      icon:'&#128075;', items:newToday.map(a=>({    id:`nc_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['New Client'] })) });
-    if (coToday.length)     sections.push({ id:'coMembers',  title:'Club Orange Members',    icon:'&#129305;', items:coToday.map(a=>({     id:`co_${a['Guest Code']}`, main:a['Guest Name'], detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Member'] })) });
-    if (coTargets.length)   sections.push({ id:'coTargets',  title:'Club Orange Targets',    icon:'&#127919;', items:coTargets.map(a=>({   id:`ct_${a['Guest Code']}`, main:a['Guest Name'], detail:`${visitCounts[a['Guest Code']]||0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`, tags:[`${visitCounts[a['Guest Code']]||0} visits`] })) });
-    if (newOutreach.length) sections.push({ id:'outreach',   title:'New Client Outreach',   icon:'&#128241;', hasCompletedBy:true, items:newOutreach.map(a=>({ id:`out_${a['Guest Code']}`, main:a['Guest Name'], detail:`New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`, tags:['Yesterday'] })) });
+    if (newToday.length)    sections.push({ id:'newClients', title:'New Clients Today', icon:'&#127381;',
+        items:newToday.map(a=>({ id:`nc_${a['Guest Code']}`, main:a['Guest Name'],
+            detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags:['New Client'] })) });
+    if (coToday.length)     sections.push({ id:'coMembers',  title:'Club Orange Members', icon:'&#129305;',
+        items:coToday.map(a=>({ id:`co_${a['Guest Code']}`, main:a['Guest Name'],
+            detail:`${formatTime(a['Start Time'])} with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags:['Member'] })) });
+    if (coTargets.length)   sections.push({ id:'coTargets',  title:'Club Orange Targets', icon:'&#127919;',
+        items:coTargets.map(a=>({ id:`ct_${a['Guest Code']}`, main:a['Guest Name'],
+            detail:`${visitCounts[a['Guest Code']]||0} prior visits &mdash; ${a['Cerologist']} at ${formatTime(a['Start Time'])}`,
+            tags:[`${visitCounts[a['Guest Code']]||0} visits`] })) });
+    if (newOutreach.length) sections.push({ id:'outreach', title:'New Client Follow-Up Needed', icon:'&#128241;',
+        hasCompletedBy:true,
+        items:newOutreach.map(a=>({ id:`out_${a['Guest Code']}`, main:a['Guest Name'],
+            detail:`New yesterday with ${a['Cerologist']} &mdash; ${a['Service Name']}`,
+            tags:['Contact Today'] })) });
  
     const container = document.getElementById('studioPlanSections');
     if (!sections.length) { container.innerHTML='<div class="empty-state"><p>Studio plan building...</p><p>Check back after data loads.</p></div>'; return; }
@@ -1082,7 +1102,7 @@ function getSuggestedAddons(serviceType) {
 }
 function getSuggestedProducts(serviceType) {
     if(!data.retail.length) return [{name:'FUR Silk Scrub',cost:55},{name:'PFB Vanish',cost:22},{name:'Spongelle Buffer',cost:14}];
-    return data.retail.filter(r=>{const t=(r['Service Type']||'').split(',').map(x=>x.trim());return t.includes(serviceType)||t.includes('Any');}).sort((a,b)=>(parseFloat(a['Priority ']||a['Priority']||99))-(parseFloat(b['Priority ']||b['Priority']||99))).slice(0,5).map(r=>({name:r['Retail Item'],cost:parseFloat(String(r['Retail Cost']||'0').replace('$',''))||0}));
+    return data.retail.filter(r=>{const t=(r['Service Type']||'').split(',').map(x=>x.trim());return t.includes(serviceType)||t.includes('Any');}).sort((a,b)=>(parseFloat(a['Priority ']||a['Priority']||99))-(parseFloat(b['Priority ']||b['Priority']||99))).map(r=>({name:r['Retail Item'],cost:parseFloat(String(r['Retail Cost']||'0').replace('$',''))||0}));
 }
 function getRebookDate(startTime) {
     if(!startTime) return '4 weeks out';
@@ -1266,4 +1286,3 @@ function saveSettings() {
 </script>
 </body>
 </html>
- 
